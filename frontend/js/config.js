@@ -57,7 +57,7 @@ async function apiRequest(endpoint, options = {}) {
       headers
     });
 
-    if (res.status === 401) {
+    if (res.status === 401 && !cleanEndpoint.startsWith("/auth/login") && !cleanEndpoint.startsWith("/auth/register")) {
       console.warn(`[Sentinel API] Unauthorized access on ${endpoint}. Clearing session.`);
       clearAuthSession();
       if (!window.location.pathname.endsWith("login.html") && !window.location.pathname.endsWith("welcome.html")) {

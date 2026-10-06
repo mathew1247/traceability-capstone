@@ -32,6 +32,56 @@ def generate_jwt(user_dict: dict) -> str:
     return token
 
 
+def ensure_default_admin_users():
+    """Ensures primary default admin and inspector accounts exist in Firestore if database is unseeded."""
+    try:
+        users_ref = db.collection(Config.COLLECTION_USERS)
+        now_iso = datetime.now(timezone.utc).isoformat()
+        default_users = [
+            {
+                "user_id": "USR-ADMIN01",
+                "username": "Jack Mathew",
+                "email": "jack@sentineltrace.io",
+                "password_hash": hash_password("password123"),
+                "role": "Admin",
+                "status": "Active",
+                "created_at": now_iso
+            },
+            {
+                "user_id": "USR-ADMIN02",
+                "username": "Jack Mathew",
+                "email": "admin@sentineltrace.local",
+                "password_hash": hash_password("ChangeMe123!"),
+                "role": "Admin",
+                "status": "Active",
+                "created_at": now_iso
+            },
+            {
+                "user_id": "USR-INSPECT01",
+                "username": "Sarah Connor",
+                "email": "inspector@sentineltrace.local",
+                "password_hash": hash_password("ChangeMe123!"),
+                "role": "Inspector",
+                "status": "Active",
+                "created_at": now_iso
+            },
+            {
+                "user_id": "USR-INSPECT02",
+                "username": "Sarah Connor",
+                "email": "sarah.chen@sentineltrace.io",
+                "password_hash": hash_password("password123"),
+                "role": "Inspector",
+                "status": "Active",
+                "created_at": now_iso
+            }
+        ]
+        for u in default_users:
+            existing = users_ref.where('email', '==', u['email']).get()
+            if not list(existing):
+                users_ref.document(u['user_id']).set(u)
+    except Exception as e:
+        app_logger.warning(f"Default user auto-seed failed: {e}")
+
 def login(email, password, ip_address=None):
     """
     Authenticates user credentials and generates JWT.
@@ -45,6 +95,14 @@ def login(email, password, ip_address=None):
     for doc in matched_docs:
         user_doc = doc
         break
+
+    if not user_doc or not user_doc.exists:
+        # Attempt auto-seeding if first time running on cloud Firestore
+        ensure_default_admin_users()
+        matched_docs = users_ref.where('email', '==', clean_email).get()
+        for doc in matched_docs:
+            user_doc = doc
+            break
 
     if not user_doc or not user_doc.exists:
         app_logger.warning(f"Failed login attempt for non-existent email: {clean_email}")
