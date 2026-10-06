@@ -68,10 +68,12 @@ def get_alert_by_id(alert_id):
     return None
 
 
-def update_alert_action(alert_id, action, user_id, username, ip_address=None):
+def update_alert_action(alert_id, action, user_id, username, user_email=None, ip_address=None):
     """
-    Updates alert status (Acknowledge, Resolve, Dismiss).
+    Updates alert status (Acknowledge, Resolve, Dismiss) and dispatches email notification.
     """
+    from services.email_service import EmailService
+
     alert_ref = db.collection(Config.COLLECTION_ALERTS).document(alert_id)
     doc = alert_ref.get()
     if not doc.exists:
@@ -92,12 +94,23 @@ def update_alert_action(alert_id, action, user_id, username, ip_address=None):
         log_action = "ALERT_RESOLVE"
     elif action_clean in ('Dismiss', 'Dismissed'):
         updates['status'] = 'Dismissed'
+        updates['dismissed_at'] = now_iso
         log_action = "ALERT_DISMISS"
     else:
         return None, f"Unsupported alert action '{action}'. Valid: Acknowledge, Resolve, Dismiss"
 
     alert_ref.update(updates)
     updated_data = alert_ref.get().to_dict()
+    updated_data['id'] = alert_id
+
+    # Dispatch email notification for alert action
+    target_email = user_email or "jack@sentineltrace.io"
+    email_res, _ = EmailService.send_alert_notification(
+        alert_dict=updated_data,
+        user_email=target_email,
+        action=updates['status']
+    )
+    updated_data['email_notification'] = email_res
 
     log_activity(
         user_id=user_id,
@@ -105,7 +118,7 @@ def update_alert_action(alert_id, action, user_id, username, ip_address=None):
         action=log_action,
         resource="Alert",
         resource_id=alert_id,
-        details=f"Alert {alert_id} marked as {updates['status']} by {username}",
+        details=f"Alert {alert_id} marked as {updates['status']} by {username} ({target_email})",
         ip_address=ip_address
     )
 

@@ -521,3 +521,24 @@ function showHelpModal() {
     showToast("Sentinel-Trace v2.4 Industrial Intelligence Platform. All systems operating normally.", "info");
   }
 }
+
+// 10. Issue Cryptographic Operator RFID Key & Proof Hash
+function issueNewOperatorKey() {
+  const user = getCurrentUser();
+  const randomToken = Math.floor(1000 + Math.random() * 9000);
+  const randomHash = Math.floor(1000 + Math.random() * 9000);
+  const emailPrefix = (user.email || "jack").split("@")[0].substring(0, 4).toUpperCase();
+  const tokenStr = `OP-${emailPrefix} •••• ${randomToken}`;
+  const hashStr = `BC-TX •••• ${randomHash}`;
+
+  const tokenEl = document.getElementById("operator-token-val");
+  const proofEl = document.getElementById("ledger-proof-val");
+  if (tokenEl) tokenEl.textContent = tokenStr;
+  if (proofEl) proofEl.textContent = hashStr;
+
+  if (window.showToast) {
+    showToast(`Issued new cryptographic Operator Pass: ${tokenStr}`, "success");
+  }
+}
+
+window.issueNewOperatorKey = issueNewOperatorKey;

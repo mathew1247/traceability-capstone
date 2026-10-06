@@ -7,6 +7,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   await populateBatchDropdowns();
   await loadBatchesTable();
   initBatchForm();
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("action") === "new") {
+    openModal("add-batch-modal");
+  }
 });
 
 async function populateBatchDropdowns() {

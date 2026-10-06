@@ -50,3 +50,36 @@ function filterLogs() {
     r.style.display = matchSearch && matchAction ? "" : "none";
   });
 }
+
+async function exportAuditTrail() {
+  try {
+    showToast("Compiling immutable audit logs from Cloud Firestore...", "info");
+    const logs = await getActivityLogs();
+
+    if (!logs || logs.length === 0) {
+      showToast("No activity logs available to export.", "warning");
+      return;
+    }
+
+    let csv = "Timestamp,User,Role,Action,Resource,IP Address,Status\n";
+    logs.forEach(l => {
+      csv += `"${l.timestamp}","${l.user}","${l.role}","${l.action}","${l.resource || ''}","${l.ip}","${l.status}"\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sentinel_trace_audit_trail_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    showToast(`Exported ${logs.length} immutable audit ledger records to CSV!`, "success");
+  } catch (err) {
+    showToast(`Audit export failed: ${err.message}`, "danger");
+  }
+}
+
+window.exportAuditTrail = exportAuditTrail;

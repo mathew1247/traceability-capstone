@@ -108,14 +108,31 @@ function renderSuspiciousHosts(hosts) {
           </div>
           <div style="font-size: 0.82rem; color: #7f1d1d; margin-top: 4px;">MAC: ${h.mac || 'N/A'} &bull; ${h.vendor || 'Unregistered Host'}</div>
         </div>
-        <button class="btn btn-danger btn-sm" onclick="isolateHost('${h.ip}')">${h.action || 'Isolate'}</button>
+        <button class="btn btn-danger btn-sm" onclick="isolateHost('${h.ip}', this)">${h.action || 'Isolate'}</button>
       </div>
     `;
   });
   container.innerHTML = html;
 }
 
-function isolateHost(ip) {
+function isolateHost(ip, btnEl) {
+  if (btnEl) {
+    btnEl.textContent = "Quarantined";
+    btnEl.classList.remove("btn-danger");
+    btnEl.classList.add("btn-secondary");
+    btnEl.disabled = true;
+
+    const parent = btnEl.closest("div[style*='display: flex']");
+    if (parent) {
+      const badge = parent.querySelector(".badge-danger");
+      if (badge) {
+        badge.textContent = "Isolated";
+        badge.classList.remove("badge-danger");
+        badge.classList.add("badge-neutral");
+      }
+    }
+  }
+
   showToast(`Host ${ip} has been isolated by Sentinel firewall rule!`, "success");
 }
 

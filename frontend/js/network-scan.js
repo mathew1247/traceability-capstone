@@ -6,6 +6,13 @@
 document.addEventListener("DOMContentLoaded", async () => {
   await loadScanHistory();
   initScanControls();
+
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("action") === "scan") {
+    const input = document.getElementById("scan-target-ip");
+    if (input) input.focus();
+    showToast("Ready to run automated OT subnet scan. Click 'Start Network Scan' to begin.", "info");
+  }
 });
 
 function initScanControls() {

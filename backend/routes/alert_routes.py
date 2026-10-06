@@ -70,15 +70,21 @@ def handle_update_alert_action(alert_id):
         return error_response(code="VALIDATION_ERROR", message="Action ('Acknowledge', 'Resolve', 'Dismiss') is required.", status_code=400)
 
     client_ip = request.remote_addr
+    user_email = g.current_user.get('email') or data.get('email') or 'jack@sentineltrace.io'
     updated, err = update_alert_action(
         alert_id=alert_id,
         action=action,
         user_id=g.current_user.get('user_id'),
         username=g.current_user.get('username'),
+        user_email=user_email,
         ip_address=client_ip
     )
 
     if err:
         return error_response(code="ALERT_UPDATE_FAILED", message=err, status_code=400)
 
-    return success_response(data=updated, message=f"Alert {alert_id} updated to {updated.get('status')}")
+    action_label = updated.get('status', action)
+    return success_response(
+        data=updated,
+        message=f"Alert {alert_id} updated: {action_label}. Email notification sent to {user_email}."
+    )

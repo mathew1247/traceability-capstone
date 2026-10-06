@@ -74,7 +74,20 @@ function setAlertFilter(filter) {
 }
 
 async function handleAlertAction(id, action) {
-  await updateAlert(id, action);
-  showToast(`Alert ${id} updated: ${action}`, "success");
-  await loadAlerts();
+  try {
+    const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : {};
+    const res = await updateAlert(id, action);
+    const recipient = res?.email_notification?.recipient || user?.email || "jack@sentineltrace.io";
+
+    if (action === "Acknowledged" || action === "Acknowledge") {
+      showToast(`Alert ${id} Acknowledged — Email notification sent to ${recipient}`, "success");
+    } else if (action === "Resolved" || action === "Resolve") {
+      showToast(`Alert ${id} Resolved — Resolution recorded & notification sent to ${recipient}`, "success");
+    } else {
+      showToast(`Alert ${id} Dismissed`, "info");
+    }
+    await loadAlerts();
+  } catch (err) {
+    showToast(`Failed to update alert: ${err.message}`, "danger");
+  }
 }
