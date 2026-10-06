@@ -463,3 +463,154 @@ button {
   max-width: 380px;
   margin: 0 auto 20px;
 }
+
+/* ===================================================================
+   FLOATING DOCK BAR & CATEGORY POPOVERS (Global Shell Component)
+   =================================================================== */
+.dock-wrapper {
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  pointer-events: auto !important;
+}
+
+.dock-pill-bar {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 6px 10px !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  border-radius: 999px !important;
+  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16), 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+}
+
+.dock-category-btn {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  padding: 8px 16px !important;
+  border-radius: 20px !important;
+  border: none !important;
+  background: transparent !important;
+  color: #64748b !important;
+  text-decoration: none !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  position: relative !important;
+  min-width: 68px !important;
+  box-sizing: border-box !important;
+}
+
+.dock-category-btn svg {
+  width: 22px !important;
+  height: 22px !important;
+  transition: transform 0.2s ease !important;
+}
+
+.dock-category-btn span {
+  font-size: 0.72rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
+
+.dock-category-btn:hover {
+  color: #0f172a !important;
+  background: rgba(0, 0, 0, 0.04) !important;
+  transform: translateY(-2px) !important;
+}
+
+.dock-category-btn.active,
+.dock-category-btn.popover-open {
+  background: rgba(250, 123, 123, 0.18) !important;
+  color: #e11d48 !important;
+}
+
+.dock-category-btn.active span,
+.dock-category-btn.popover-open span {
+  font-weight: 800 !important;
+}
+
+.dock-category-btn.active::after {
+  content: "" !important;
+  position: absolute !important;
+  bottom: 3px !important;
+  width: 16px !important;
+  height: 3px !important;
+  background: #e11d48 !important;
+  border-radius: 999px !important;
+}
+
+.dock-divider {
+  width: 1px !important;
+  height: 28px !important;
+  background: rgba(0, 0, 0, 0.08) !important;
+  margin: 0 2px !important;
+}
+
+.category-popover {
+  position: absolute !important;
+  bottom: 82px !important;
+  min-width: 230px !important;
+  background: #ffffff !important;
+  border-radius: 20px !important;
+  padding: 8px !important;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.18), 0 6px 18px rgba(15, 23, 42, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.95) !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateY(10px) scale(0.95) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  z-index: 1000000 !important;
+  pointer-events: none !important;
+}
+
+.category-popover.open {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) scale(1) !important;
+  pointer-events: auto !important;
+}
+
+.category-popover-header {
+  font-size: 0.68rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.05em !important;
+  color: #94a3b8 !important;
+  padding: 6px 12px 8px !important;
+  text-transform: uppercase !important;
+}
+
+.category-popover-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  padding: 10px 14px !important;
+  border-radius: 12px !important;
+  color: #334155 !important;
+  text-decoration: none !important;
+  font-size: 0.88rem !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+}
+
+.category-popover-item:hover {
+  background: #f8fafc !important;
+  color: #0f172a !important;
+  transform: translateX(3px) !important;
+}
+
+.category-popover-item.active {
+  background: rgba(250, 123, 123, 0.12) !important;
+  color: #e11d48 !important;
+  font-weight: 700 !important;
+}
