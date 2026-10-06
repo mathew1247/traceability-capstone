@@ -27,11 +27,10 @@ def create_app():
     app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
     app.config.from_object(Config)
 
-    # Initialize CORS
-    # Requirement 28: Allow configured frontend origins
+    # Initialize CORS with dynamic origin reflection for local live servers & production domains
     CORS(
         app,
-        origins=Config.FRONTEND_URL,
+        origins=True,
         supports_credentials=True,
         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With']
