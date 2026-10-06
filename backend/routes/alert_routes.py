@@ -70,7 +70,7 @@ def handle_update_alert_action(alert_id):
         return error_response(code="VALIDATION_ERROR", message="Action ('Acknowledge', 'Resolve', 'Dismiss') is required.", status_code=400)
 
     client_ip = request.remote_addr
-    user_email = g.current_user.get('email') or data.get('email') or 'jack@sentineltrace.io'
+    user_email = data.get('recipient_email') or g.current_user.get('email') or 'probot12309@gmail.com'
     updated, err = update_alert_action(
         alert_id=alert_id,
         action=action,
@@ -84,7 +84,47 @@ def handle_update_alert_action(alert_id):
         return error_response(code="ALERT_UPDATE_FAILED", message=err, status_code=400)
 
     action_label = updated.get('status', action)
-    return success_response(
-        data=updated,
-        message=f"Alert {alert_id} updated: {action_label}. Email notification sent to {user_email}."
-    )
+    email_info = updated.get('email_notification', {})
+    recipient = email_info.get('recipient', user_email)
+    mode = email_info.get('mode', 'simulated')
+
+    if mode == 'smtp_delivered':
+        msg = f"Alert {alert_id} {action_label}! Live email delivered to {recipient}."
+    elif mode == 'smtp_error':
+        msg = f"Alert {alert_id} {action_label}! Email error: {email_info.get('error', 'Authentication failed')}. Check Google App Password."
+    else:
+        msg = f"Alert {alert_id} {action_label}! Notification queued for {recipient}."
+
+    return success_response(data=updated, message=msg)
+
+
+@alert_bp.route('/test-email', methods=['POST'])
+@token_required
+def handle_test_email():
+    """
+    POST /api/alerts/test-email
+    Body: { "recipient": "...", "app_password": "..." }
+    """
+    import os
+    from datetime import datetime, timezone
+    from services.email_service import EmailService
+
+    data = request.get_json() or {}
+    recipient = data.get('recipient') or os.environ.get('ALERT_NOTIFICATION_EMAIL') or 'probot12309@gmail.com'
+    app_pwd = data.get('app_password')
+    if app_pwd:
+        os.environ['SMTP_PASSWORD'] = app_pwd.strip()
+    
+    test_alert = {
+        "id": "ALT-TEST-VERIFY",
+        "severity": "Warning",
+        "message": "Manual test notification triggered from Sentinel-Trace Security Console.",
+        "source": "OT-Gateway-192.168.1.1",
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    }
+
+    result, err = EmailService.send_alert_notification(test_alert, recipient, action="Test Triggered")
+    if err:
+        return error_response(code="EMAIL_SEND_FAILED", message=f"Failed to transmit email: {err}", status_code=400)
+    
+    return success_response(data=result, message=result.get("message", f"Test email dispatched to {recipient}"))

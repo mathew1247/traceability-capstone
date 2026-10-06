@@ -1,13 +1,53 @@
 /* ===================================================================
    SENTINEL-TRACE ALERTS & NOTIFICATIONS CONTROLLER
    Filters, Severity Categorization, Triage Actions (Acknowledge, Resolve, Dismiss)
+   Automated SOC Email Notifications & Delivery Verification
    =================================================================== */
 
+let currentFilter = "All";
+
 document.addEventListener("DOMContentLoaded", async () => {
+  initEmailDispatchBar();
   await loadAlerts();
 });
 
-let currentFilter = "All";
+function getNotificationEmail() {
+  return localStorage.getItem("sentinel_alert_email") || "probot12309@gmail.com";
+}
+
+function initEmailDispatchBar() {
+  const emailEl = document.getElementById("current-dispatch-email");
+  if (emailEl) {
+    emailEl.textContent = getNotificationEmail();
+  }
+}
+
+function configureNotificationEmail() {
+  const current = getNotificationEmail();
+  const next = prompt("Enter the destination email address for Sentinel-Trace security notifications:", current);
+  if (next && next.includes("@")) {
+    const clean = next.trim().toLowerCase();
+    localStorage.setItem("sentinel_alert_email", clean);
+    initEmailDispatchBar();
+    showToast(`Notification email target updated to: ${clean}`, "success");
+  }
+}
+
+async function sendTestNotificationEmail() {
+  const email = getNotificationEmail();
+  showToast(`Sending test alert notification to ${email}...`, "info");
+  try {
+    const res = await sendTestEmail(email);
+    const mode = res?.mode || res?.data?.mode;
+    if (mode === "smtp_delivered") {
+      showToast(`Test email successfully delivered to ${email}! Check your Gmail inbox.`, "success");
+    } else {
+      showToast(res?.message || `Test notification queued for ${email}! (Add Google App Password in .env to deliver live)`, "info");
+    }
+  } catch (err) {
+    showToast(`Test email dispatch notice: ${err.message}`, "warning");
+  }
+}
 
 async function loadAlerts() {
   const alerts = await getAlerts();
@@ -75,14 +115,23 @@ function setAlertFilter(filter) {
 
 async function handleAlertAction(id, action) {
   try {
-    const user = (typeof getCurrentUser === 'function') ? getCurrentUser() : {};
-    const res = await updateAlert(id, action);
-    const recipient = res?.email_notification?.recipient || user?.email || "jack@sentineltrace.io";
+    const email = getNotificationEmail();
+    const res = await updateAlert(id, action, email);
+    const recipient = res?.email_notification?.recipient || email;
+    const mode = res?.email_notification?.mode;
 
     if (action === "Acknowledged" || action === "Acknowledge") {
-      showToast(`Alert ${id} Acknowledged — Email notification sent to ${recipient}`, "success");
+      if (mode === "smtp_delivered") {
+        showToast(`Alert ${id} Acknowledged — Email delivered to ${recipient}!`, "success");
+      } else {
+        showToast(`Alert ${id} Acknowledged — Notification dispatched to ${recipient}!`, "success");
+      }
     } else if (action === "Resolved" || action === "Resolve") {
-      showToast(`Alert ${id} Resolved — Resolution recorded & notification sent to ${recipient}`, "success");
+      if (mode === "smtp_delivered") {
+        showToast(`Alert ${id} Resolved — Resolution email delivered to ${recipient}!`, "success");
+      } else {
+        showToast(`Alert ${id} Resolved — Resolution recorded & notification dispatched to ${recipient}!`, "success");
+      }
     } else {
       showToast(`Alert ${id} Dismissed`, "info");
     }
@@ -91,3 +140,8 @@ async function handleAlertAction(id, action) {
     showToast(`Failed to update alert: ${err.message}`, "danger");
   }
 }
+
+window.configureNotificationEmail = configureNotificationEmail;
+window.sendTestNotificationEmail = sendTestNotificationEmail;
+window.handleAlertAction = handleAlertAction;
+window.setAlertFilter = setAlertFilter;

@@ -439,12 +439,25 @@ async function getAlerts(filters = {}) {
   }
 }
 
-async function updateAlert(id, action) {
+async function updateAlert(id, action, recipientEmail) {
+  const email = recipientEmail || localStorage.getItem("sentinel_alert_email") || "probot12309@gmail.com";
   return await apiRequest(`/alerts/${id}`, {
     method: "PUT",
-    body: JSON.stringify({ action: action.toLowerCase() })
+    body: JSON.stringify({ action: action.toLowerCase(), recipient_email: email })
   });
 }
+
+async function sendTestEmail(recipientEmail, appPassword) {
+  return await apiRequest("/alerts/test-email", {
+    method: "POST",
+    body: JSON.stringify({
+      recipient: recipientEmail || localStorage.getItem("sentinel_alert_email") || "probot12309@gmail.com",
+      app_password: appPassword || ""
+    })
+  });
+}
+
+window.sendTestEmail = sendTestEmail;
 
 // 11. Immutable Activity & Audit Logs
 async function getActivityLogs() {

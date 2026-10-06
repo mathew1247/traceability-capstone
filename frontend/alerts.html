@@ -31,11 +31,30 @@
         </div>
 
         <!-- Filter Tabs -->
-        <div style="display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap;">
           <button class="btn btn-secondary btn-sm alert-filter-pill active" onclick="setAlertFilter('All')">All Alerts</button>
           <button class="btn btn-secondary btn-sm alert-filter-pill" onclick="setAlertFilter('Critical')">&#128308; Critical</button>
           <button class="btn btn-secondary btn-sm alert-filter-pill" onclick="setAlertFilter('Warning')">&#128993; Warning</button>
           <button class="btn btn-secondary btn-sm alert-filter-pill" onclick="setAlertFilter('Notice')">&#128309; Notice</button>
+        </div>
+
+        <!-- Email Notification Dispatch Bar -->
+        <div class="card" style="margin-bottom: 24px; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; background: #fff8f7; border: 1px solid rgba(250, 123, 123, 0.25); border-radius: var(--radius-md);">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 1.3rem;">📧</span>
+            <div>
+              <div style="font-size: 0.88rem; font-weight: 700; color: #1e293b;">
+                Active SOC Notification Target: <span id="current-dispatch-email" style="color: #fa7b7b;">probot12309@gmail.com</span>
+              </div>
+              <div style="font-size: 0.78rem; color: #64748b;">
+                Triage operations (Acknowledge &bull; Resolve) automatically dispatch official security notifications.
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" onclick="sendTestNotificationEmail()">Send Test Email</button>
+            <button class="btn btn-secondary btn-sm" onclick="configureNotificationEmail()">Configure Destination</button>
+          </div>
         </div>
 
         <!-- Alerts List Feed -->
