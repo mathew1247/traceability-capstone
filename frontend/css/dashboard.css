@@ -300,9 +300,8 @@
   color: #ef4444;
 }
 
-/* Hide Sidebar & Top Header Completely (Sole Navigation is Floating Bottom Dock) */
-.app-sidebar, #sidebar-mount,
-.app-header, #header-mount {
+/* Hide Sidebar Only (Top Header & Bottom Floating Navigation Dock remain active) */
+.app-sidebar, #sidebar-mount {
   display: none !important;
 }
 

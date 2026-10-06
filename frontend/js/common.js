@@ -31,7 +31,7 @@ function getCurrentUser() {
 function initAuthGuard() {
   const path = window.location.pathname;
   const isAuthPage = path.endsWith("login.html") || path.endsWith("register.html") || path.endsWith("welcome.html");
-  const token = localStorage.getItem("sentinelToken");
+  const token = localStorage.getItem("token") || localStorage.getItem("sentinelToken");
 
   if (!isAuthPage && !token) {
     window.location.href = "welcome.html";
