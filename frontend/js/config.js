@@ -399,7 +399,7 @@ async function startNetworkScan(target = "192.168.1.0/24") {
 
 async function getNetworkHistory() {
   try {
-    const scans = await apiRequest("/network/scans");
+    const scans = await apiRequest("/network/history");
     return (scans || []).map(normalizeScanObject);
   } catch (e) {
     console.error("Failed to fetch network scans:", e);

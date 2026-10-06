@@ -308,46 +308,57 @@ def init_firebase():
                 cred = credentials.Certificate(cred_dict)
                 if not firebase_admin._apps:
                     firebase_admin.initialize_app(cred)
-                db = firestore.client()
+                client = firestore.client()
+                # Connectivity probe check
+                _ = next(client.collections(), None)
+                db = client
                 _firebase_initialized = True
                 logger.info("Successfully connected to Google Cloud Firestore via FIREBASE_SERVICE_ACCOUNT_JSON.")
                 return db
             except Exception as parse_err:
-                logger.error(f"Failed to parse FIREBASE_SERVICE_ACCOUNT_JSON environment variable: {parse_err}")
+                logger.error(f"Failed to initialize Firestore with FIREBASE_SERVICE_ACCOUNT_JSON: {parse_err}. Falling back to Local Engine.")
 
         # 2. Local serviceAccountKey.json file
         if os.path.exists(credentials_path):
             logger.info(f"Initializing Firebase with service account key file: {credentials_path}")
-            cred = credentials.Certificate(credentials_path)
-            if not firebase_admin._apps:
-                firebase_admin.initialize_app(cred, {
-                    'projectId': Config.FIREBASE_PROJECT_ID
-                } if Config.FIREBASE_PROJECT_ID else None)
-            db = firestore.client()
-            _firebase_initialized = True
-            logger.info("Successfully connected to Google Cloud Firestore via local service account key file.")
-            return db
+            try:
+                cred = credentials.Certificate(credentials_path)
+                if not firebase_admin._apps:
+                    firebase_admin.initialize_app(cred, {
+                        'projectId': Config.FIREBASE_PROJECT_ID
+                    } if Config.FIREBASE_PROJECT_ID else None)
+                client = firestore.client()
+                _ = next(client.collections(), None)
+                db = client
+                _firebase_initialized = True
+                logger.info("Successfully connected to Google Cloud Firestore via local service account key file.")
+                return db
+            except Exception as file_err:
+                logger.error(f"Failed to initialize Firestore with local file: {file_err}. Falling back to Local Engine.")
 
         # 3. Standard GOOGLE_APPLICATION_CREDENTIALS path
         elif gcp_env_creds and os.path.exists(gcp_env_creds):
             logger.info(f"Initializing Firebase with GOOGLE_APPLICATION_CREDENTIALS path: {gcp_env_creds}")
-            cred = credentials.Certificate(gcp_env_creds)
-            if not firebase_admin._apps:
-                firebase_admin.initialize_app(cred)
-            db = firestore.client()
-            _firebase_initialized = True
-            logger.info("Successfully connected to Google Cloud Firestore.")
-            return db
+            try:
+                cred = credentials.Certificate(gcp_env_creds)
+                if not firebase_admin._apps:
+                    firebase_admin.initialize_app(cred)
+                client = firestore.client()
+                _ = next(client.collections(), None)
+                db = client
+                _firebase_initialized = True
+                logger.info("Successfully connected to Google Cloud Firestore.")
+                return db
+            except Exception as gcp_err:
+                logger.error(f"Failed to initialize Firestore with GCP creds: {gcp_err}. Falling back to Local Engine.")
 
-        else:
-            logger.warning(
-                f"Firebase service account key not found at '{credentials_path}'. "
-                "Activating Local Firestore Emulator for development. "
-                "For production deployment on Render, set the FIREBASE_SERVICE_ACCOUNT_JSON environment variable."
-            )
-            db = LocalFirestoreClient()
-            _firebase_initialized = True
-            return db
+        logger.warning(
+            f"Firebase service account key not found or unreachable. "
+            "Activating Local Firestore Engine for non-crashing execution."
+        )
+        db = LocalFirestoreClient()
+        _firebase_initialized = True
+        return db
 
     except Exception as e:
         logger.warning(f"Cloud Firestore initialization exception ({e}). Falling back to Local Firestore Engine.")
