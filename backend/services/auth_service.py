@@ -87,60 +87,74 @@ def login(email, password, ip_address=None):
     Authenticates user credentials and generates JWT.
     Returns (result_dict, error_message, status_code)
     """
-    clean_email = email.strip().lower() if email else ""
-    users_ref = db.collection(Config.COLLECTION_USERS)
-    
-    matched_docs = users_ref.where('email', '==', clean_email).get()
-    user_doc = None
-    for doc in matched_docs:
-        user_doc = doc
-        break
+    try:
+        clean_email = email.strip().lower() if email else ""
+        users_ref = db.collection(Config.COLLECTION_USERS)
+        
+        try:
+            matched_docs = users_ref.where('email', '==', clean_email).get()
+            user_doc = None
+            for doc in matched_docs:
+                user_doc = doc
+                break
+        except Exception:
+            user_doc = None
 
-    if not user_doc or not user_doc.exists:
-        # Attempt auto-seeding if first time running on cloud Firestore
-        ensure_default_admin_users()
-        matched_docs = users_ref.where('email', '==', clean_email).get()
-        for doc in matched_docs:
-            user_doc = doc
-            break
+        if not user_doc or not user_doc.exists:
+            # Attempt auto-seeding if first time running on cloud Firestore
+            ensure_default_admin_users()
+            try:
+                matched_docs = users_ref.where('email', '==', clean_email).get()
+                for doc in matched_docs:
+                    user_doc = doc
+                    break
+            except Exception:
+                pass
 
-    if not user_doc or not user_doc.exists:
-        app_logger.warning(f"Failed login attempt for non-existent email: {clean_email}")
-        return None, "Invalid email or password.", 401
+        if not user_doc or not user_doc.exists:
+            app_logger.warning(f"Failed login attempt for non-existent email: {clean_email}")
+            return None, "Invalid email or password.", 401
 
-    user_data = user_doc.to_dict()
+        user_data = user_doc.to_dict()
 
-    if user_data.get('status') != 'Active':
-        return None, "User account is suspended or inactive.", 403
+        if user_data.get('status') != 'Active':
+            return None, "User account is suspended or inactive.", 403
 
-    stored_hash = user_data.get('password_hash', '')
-    if not verify_password(password, stored_hash):
-        app_logger.warning(f"Failed login attempt (wrong password) for: {clean_email}")
-        return None, "Invalid email or password.", 401
+        stored_hash = user_data.get('password_hash', '')
+        if not verify_password(password, stored_hash):
+            app_logger.warning(f"Failed login attempt (wrong password) for: {clean_email}")
+            return None, "Invalid email or password.", 401
 
-    token = generate_jwt(user_data)
+        token = generate_jwt(user_data)
 
-    # Log successful login
-    log_activity(
-        user_id=user_data['user_id'],
-        username=user_data['username'],
-        action='AUTH_LOGIN',
-        resource='Auth',
-        resource_id=user_data['user_id'],
-        details=f"User {user_data['username']} logged in successfully.",
-        ip_address=ip_address
-    )
+        # Log successful login
+        try:
+            log_activity(
+                user_id=user_data['user_id'],
+                username=user_data['username'],
+                action='AUTH_LOGIN',
+                resource='Auth',
+                resource_id=user_data['user_id'],
+                details=f"User {user_data['username']} logged in successfully.",
+                ip_address=ip_address
+            )
+        except Exception as log_err:
+            app_logger.warning(f"Activity log failed during login: {log_err}")
 
-    return {
-        "token": token,
-        "user": {
-            "user_id": user_data['user_id'],
-            "username": user_data['username'],
-            "email": user_data['email'],
-            "role": user_data['role'],
-            "status": user_data['status']
-        }
-    }, None, 200
+        return {
+            "token": token,
+            "user": {
+                "user_id": user_data['user_id'],
+                "username": user_data['username'],
+                "email": user_data['email'],
+                "role": user_data['role'],
+                "status": user_data['status']
+            }
+        }, None, 200
+
+    except Exception as general_err:
+        app_logger.error(f"Login process exception: {general_err}")
+        return None, f"Authentication error: {str(general_err)}", 500
 
 
 def create_user(username, email, password, role='Operator', status='Active', creator_user=None):

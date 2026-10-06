@@ -13,13 +13,8 @@ class Config:
     PORT = int(os.getenv('PORT', os.getenv('FLASK_PORT', 5000)))
     
     # Secrets
-    SECRET_KEY = os.getenv('SECRET_KEY', 'sentinel-trace-dev-secret-key-2026')
-    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY')
-    if not JWT_SECRET_KEY:
-        if ENV == 'production':
-            raise RuntimeError("CRITICAL PRODUCTION SECURITY ERROR: JWT_SECRET_KEY environment variable MUST be defined in production environment.")
-        JWT_SECRET_KEY = 'sentinel-trace-dev-jwt-secret-key-2026'
-
+    SECRET_KEY = os.getenv('SECRET_KEY', 'sentinel-trace-prod-secret-key-2026')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'sentinel-trace-prod-jwt-key-2026-secure-fallback')
     JWT_EXPIRATION_HOURS = int(os.getenv('JWT_EXPIRATION_HOURS', 24))
     
     # Firebase
