@@ -483,13 +483,11 @@ button {
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-  padding: 6px 10px !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.95) !important;
-  border-radius: 999px !important;
-  box-shadow: 0 20px 48px rgba(15, 23, 42, 0.16), 0 4px 16px rgba(15, 23, 42, 0.08) !important;
+  padding: 8px 12px !important;
+  background: #ffffff !important;
+  border-radius: 28px !important;
+  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.14), 0 4px 14px rgba(15, 23, 42, 0.06) !important;
+  border: 1px solid #f1f5f9 !important;
 }
 
 .dock-category-btn {
@@ -497,8 +495,8 @@ button {
   flex-direction: column !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 3px !important;
-  padding: 8px 16px !important;
+  gap: 4px !important;
+  padding: 8px 18px !important;
   border-radius: 20px !important;
   border: none !important;
   background: transparent !important;
@@ -525,19 +523,21 @@ button {
 
 .dock-category-btn:hover {
   color: #0f172a !important;
-  background: rgba(0, 0, 0, 0.04) !important;
+  background: #f8fafc !important;
   transform: translateY(-2px) !important;
 }
 
 .dock-category-btn.active,
 .dock-category-btn.popover-open {
-  background: rgba(250, 123, 123, 0.18) !important;
-  color: #e11d48 !important;
+  background: #fce7f3 !important;
+  color: #db2777 !important;
+  border-radius: 20px !important;
 }
 
 .dock-category-btn.active span,
 .dock-category-btn.popover-open span {
-  font-weight: 800 !important;
+  font-weight: 700 !important;
+  color: #db2777 !important;
 }
 
 .dock-category-btn.active::after {

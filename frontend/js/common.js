@@ -221,7 +221,15 @@ function injectDock() {
   const path = window.location.pathname;
   const isAuthPage = path.endsWith("login.html") || path.endsWith("register.html") || path.endsWith("welcome.html");
   if (isAuthPage) return;
-  if (document.getElementById("floating-dock-mount")) return;
+
+  let div = document.getElementById("floating-dock-mount");
+  if (!div) {
+    div = document.createElement("div");
+    div.id = "floating-dock-mount";
+    document.body.appendChild(div);
+  } else if (div.children.length > 0) {
+    return;
+  }
 
   const isHome = path.endsWith("dashboard.html") || path.endsWith("/");
   const isTrace = path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
@@ -230,8 +238,6 @@ function injectDock() {
   const isMon = path.endsWith("alerts.html") || path.endsWith("reports.html") || path.endsWith("activity-logs.html");
   const isProf = path.endsWith("users.html");
 
-  const div = document.createElement("div");
-  div.id = "floating-dock-mount";
   div.className = "dock-wrapper";
 
   div.innerHTML = `
