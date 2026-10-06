@@ -7,8 +7,8 @@
 const getProductionApiUrl = () => {
   if (window.APP_CONFIG?.API_BASE_URL) return window.APP_CONFIG.API_BASE_URL;
   if (window.API_BASE_URL) return window.API_BASE_URL;
-  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-  return isLocal ? "http://127.0.0.1:5000/api" : "https://traceability-capstone.onrender.com/api";
+  const isLocalFlask = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '5000';
+  return isLocalFlask ? "http://127.0.0.1:5000/api" : "https://traceability-capstone.onrender.com/api";
 };
 
 const API_BASE_URL = getProductionApiUrl();

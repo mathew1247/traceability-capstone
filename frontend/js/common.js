@@ -218,9 +218,10 @@ function injectHeader() {
 
 // Injects Floating Dock Bar with Per-Category Popover Menus (Matching User Reference Image 3)
 function injectDock() {
-  if (document.getElementById("floating-dock-mount")) return;
-
   const path = window.location.pathname;
+  const isAuthPage = path.endsWith("login.html") || path.endsWith("register.html") || path.endsWith("welcome.html");
+  if (isAuthPage) return;
+  if (document.getElementById("floating-dock-mount")) return;
 
   const isHome = path.endsWith("dashboard.html") || path.endsWith("/");
   const isTrace = path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
