@@ -164,6 +164,108 @@ class LocalFirestoreClient:
             logger.warning(f"Failed to load local firestore file: {e}")
             self._data = {}
 
+        if not self._data:
+            try:
+                from werkzeug.security import generate_password_hash
+                from datetime import datetime, timezone
+                now = datetime.now(timezone.utc).isoformat()
+                pwd_hash = generate_password_hash("password123")
+                pwd_admin = generate_password_hash("ChangeMe123!")
+
+                self._data = {
+                    "users": {
+                        "USR-ADMIN01": {
+                            "user_id": "USR-ADMIN01",
+                            "username": "Jack Mathew",
+                            "email": "jack@sentineltrace.io",
+                            "password_hash": pwd_hash,
+                            "role": "Admin",
+                            "status": "Active",
+                            "created_at": now
+                        },
+                        "USR-ADMIN02": {
+                            "user_id": "USR-ADMIN02",
+                            "username": "Jack Mathew",
+                            "email": "admin@sentineltrace.local",
+                            "password_hash": pwd_admin,
+                            "role": "Admin",
+                            "status": "Active",
+                            "created_at": now
+                        },
+                        "USR-INSPECT01": {
+                            "user_id": "USR-INSPECT01",
+                            "username": "Sarah Connor",
+                            "email": "sarah.chen@sentineltrace.io",
+                            "password_hash": pwd_hash,
+                            "role": "Inspector",
+                            "status": "Active",
+                            "created_at": now
+                        }
+                    },
+                    "suppliers": {
+                        "SUP101": {
+                            "supplier_id": "SUP101",
+                            "supplier_name": "Apex Alloys Global Corp",
+                            "contact": "+1 (555) 019-2831",
+                            "email": "logistics@apexalloys.com",
+                            "address": "450 Industrial Parkway, Sector 4, Austin, TX",
+                            "status": "Active",
+                            "rating": "4.9",
+                            "created_at": now
+                        }
+                    },
+                    "raw_materials": {
+                        "RM301": {
+                            "material_id": "RM301",
+                            "material_name": "Aircraft Grade Stainless Steel 316L",
+                            "supplier_id": "SUP101",
+                            "quantity": 12500.0,
+                            "unit": "kg",
+                            "status": "Verified",
+                            "created_at": now
+                        }
+                    },
+                    "products": {
+                        "PRD101": {
+                            "product_id": "PRD101",
+                            "product_name": "Aerospace Turbine Casing High-Temp",
+                            "product_code": "TURB-A320-X",
+                            "description": "High-precision heat-resistant alloy casing for industrial turbines.",
+                            "status": "In Production",
+                            "created_at": now
+                        }
+                    },
+                    "production_batches": {
+                        "BAT201": {
+                            "batch_id": "BAT201",
+                            "product_id": "PRD101",
+                            "material_id": "RM301",
+                            "quantity": 250,
+                            "production_date": now[:10],
+                            "status": "Completed",
+                            "created_at": now
+                        }
+                    },
+                    "compliance_records": {
+                        "CMP401": {
+                            "compliance_id": "CMP401",
+                            "product_id": "PRD101",
+                            "standard": "ISO 9001:2015",
+                            "status": "Compliant",
+                            "audited_by": "USR-ADMIN01",
+                            "expiry_date": "2027-12-31",
+                            "remarks": "Fully verified and certified.",
+                            "created_at": now
+                        }
+                    },
+                    "alerts": {},
+                    "network_scans": {},
+                    "activity_logs": {}
+                }
+            except Exception as seed_err:
+                logger.warning(f"Failed initializing default fallback data: {seed_err}")
+                self._data = {}
+
     def _save_to_disk(self):
         try:
             with open(self._persistence_file, 'w', encoding='utf-8') as f:
