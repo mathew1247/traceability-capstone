@@ -43,6 +43,18 @@ async function loadComplianceTable() {
       return;
     }
 
+    // Dynamically update the 4 Compliance KPI Cards from live Firestore records
+    const kpiCards = document.querySelectorAll(".kpi-grid-4 .kpi-card-value");
+    if (kpiCards && kpiCards.length >= 4) {
+      const compliantCount = records.filter(c => c.status === "Compliant" || c.status === "Certified").length;
+      const reviewCount = records.filter(c => c.status === "Review Required" || c.status === "Pending").length;
+      const rate = Math.round((compliantCount / records.length) * 100);
+      kpiCards[0].textContent = `${rate}.0%`;
+      kpiCards[1].textContent = compliantCount;
+      kpiCards[2].textContent = reviewCount;
+      kpiCards[3].textContent = records.filter(c => c.status === "Non-Compliant" || c.status === "Expired").length;
+    }
+
     let html = "";
     records.forEach(c => {
       let badgeClass = "badge-success";

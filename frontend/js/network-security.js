@@ -15,9 +15,40 @@ async function loadSecurityOverview() {
     const kpiCards = document.querySelectorAll(".kpi-grid-4 .kpi-card-value");
     if (kpiCards && kpiCards.length >= 4) {
       kpiCards[0].textContent = secData.network_status || "Secure";
+      kpiCards[0].style.color = (secData.network_status === "Critical") ? "#ef4444" : "#10b981";
       kpiCards[1].textContent = secData.active_devices ?? 14;
       kpiCards[2].textContent = (secData.suspicious_hosts && secData.suspicious_hosts.length) ?? 0;
       kpiCards[3].textContent = (secData.open_critical_ports && secData.open_critical_ports.length) ?? 0;
+    }
+
+    // Update Threat Meter Gauge
+    const threatGauge = document.querySelector(".threat-gauge-circle");
+    const threatTitle = document.querySelector(".threat-details h4");
+    const threatDesc = document.querySelector(".threat-details p");
+    const level = (secData.threat_level || "LOW").toUpperCase();
+
+    if (threatGauge) {
+      threatGauge.textContent = level;
+      threatGauge.style.background = (level === "HIGH" || level === "CRITICAL") ? "#ef4444" : (level === "MEDIUM") ? "#f59e0b" : "#10b981";
+      threatGauge.style.color = "#fff";
+    }
+    if (threatTitle) {
+      threatTitle.textContent = `OT Industrial Threat Condition: ${level}`;
+    }
+    if (threatDesc) {
+      threatDesc.textContent = `${secData.active_devices ?? 14} industrial devices scanned across subnet. ${(secData.open_critical_ports && secData.open_critical_ports.length) ?? 0} critical OT ports monitored.`;
+    }
+
+    // Update Active Industrial Ports & Protocols Grid
+    const portsGrid = document.querySelector(".ports-badge-grid");
+    if (portsGrid && secData.open_critical_ports && secData.open_critical_ports.length > 0) {
+      let portsHtml = "";
+      secData.open_critical_ports.forEach(p => {
+        const isCrit = p.is_critical || p.port === 502 || p.service === 'modbus';
+        const cls = isCrit ? 'port-critical' : 'port-open';
+        portsHtml += `<span class="port-pill ${cls}">Port ${p.port} &bull; ${(p.service || 'TCP').toUpperCase()} (${isCrit ? 'Critical' : 'Open'})</span>`;
+      });
+      portsGrid.innerHTML = portsHtml;
     }
 
     renderSuspiciousHosts(secData.suspicious_hosts || []);

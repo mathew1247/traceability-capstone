@@ -216,7 +216,7 @@ function injectHeader() {
   `;
 }
 
-// Injects Floating Dock Bar with Per-Category Popover Menus (Matching User Reference Image 3)
+// Injects Floating Menu Bar (Matching Reference Image 3 Variants)
 function injectDock() {
   const path = window.location.pathname;
   const isAuthPage = path.endsWith("login.html") || path.endsWith("register.html") || path.endsWith("welcome.html");
@@ -231,22 +231,23 @@ function injectDock() {
     return;
   }
 
-  const isHome = path.endsWith("dashboard.html") || path.endsWith("/");
-  const isTrace = path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
-  const isComp = path.endsWith("compliance.html");
-  const isNet = path.endsWith("network-scan.html") || path.endsWith("network-security.html");
-  const isMon = path.endsWith("alerts.html") || path.endsWith("reports.html") || path.endsWith("activity-logs.html");
-  const isProf = path.endsWith("users.html");
+  const isDash = path.endsWith("dashboard.html") || path.endsWith("/") || path.endsWith("index.html");
+  const isTrace = path.endsWith("traceability.html") || path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
+  const isComp = path.endsWith("compliance.html") || path.endsWith("reports.html") || path.endsWith("activity-logs.html");
+  const isSec = path.endsWith("alerts.html") || path.endsWith("network-security.html") || path.endsWith("network-scan.html");
+  const isAdmin = path.endsWith("users.html");
+
+  const currentStyle = localStorage.getItem("sentinelDockStyle") || "style-3";
 
   div.className = "dock-wrapper";
 
   div.innerHTML = `
-    <!-- 1. Traceability Targeted Popover Menu -->
-    <div class="category-popover" id="popover-traceability" style="left: 18%;">
-      <div class="category-popover-header">TRACEABILITY SYSTEM</div>
-      <a href="products.html" class="category-popover-item ${path.endsWith('products.html') ? 'active' : ''}">
-        ${getIconSvg('box')}
-        <span>Products Catalog</span>
+    <!-- 1. Traceability & Supply Chain Popover Menu -->
+    <div class="category-popover" id="popover-traceability">
+      <div class="category-popover-header">TRACEABILITY & SUPPLY CHAIN</div>
+      <a href="traceability.html" class="category-popover-item ${path.endsWith('traceability.html') ? 'active' : ''}">
+        ${getIconSvg('git-fork')}
+        <span>Traceability Graph</span>
       </a>
       <a href="batches.html" class="category-popover-item ${path.endsWith('batches.html') ? 'active' : ''}">
         ${getIconSvg('layers')}
@@ -254,7 +255,11 @@ function injectDock() {
       </a>
       <a href="materials.html" class="category-popover-item ${path.endsWith('materials.html') ? 'active' : ''}">
         ${getIconSvg('cubes')}
-        <span>Raw Materials</span>
+        <span>Raw Materials & Stock</span>
+      </a>
+      <a href="products.html" class="category-popover-item ${path.endsWith('products.html') ? 'active' : ''}">
+        ${getIconSvg('box')}
+        <span>Products Catalog</span>
       </a>
       <a href="suppliers.html" class="category-popover-item ${path.endsWith('suppliers.html') ? 'active' : ''}">
         ${getIconSvg('truck')}
@@ -262,90 +267,141 @@ function injectDock() {
       </a>
     </div>
 
-    <!-- 2. Network Security Targeted Popover Menu -->
-    <div class="category-popover" id="popover-network" style="left: 50%; transform: translateX(-50%);">
-      <div class="category-popover-header">NETWORK SECURITY</div>
-      <a href="network-scan.html" class="category-popover-item ${path.endsWith('network-scan.html') ? 'active' : ''}">
-        ${getIconSvg('radar')}
-        <span>Network Subnet Scanner</span>
+    <!-- 2. Compliance & Governance Popover Menu -->
+    <div class="category-popover" id="popover-compliance">
+      <div class="category-popover-header">REGULATORY & COMPLIANCE</div>
+      <a href="compliance.html" class="category-popover-item ${path.endsWith('compliance.html') ? 'active' : ''}">
+        ${getIconSvg('shield-check')}
+        <span>Compliance Standards</span>
+      </a>
+      <a href="reports.html" class="category-popover-item ${path.endsWith('reports.html') ? 'active' : ''}">
+        ${getIconSvg('bar-chart-3')}
+        <span>Audit Reports & Analytics</span>
+      </a>
+      <a href="activity-logs.html" class="category-popover-item ${path.endsWith('activity-logs.html') ? 'active' : ''}">
+        ${getIconSvg('file-text')}
+        <span>Activity Audit Trail</span>
+      </a>
+    </div>
+
+    <!-- 3. Security & Telemetry Popover Menu -->
+    <div class="category-popover" id="popover-security">
+      <div class="category-popover-header">SECURITY & TELEMETRY</div>
+      <a href="alerts.html" class="category-popover-item ${path.endsWith('alerts.html') ? 'active' : ''}">
+        ${getIconSvg('bell-ring')}
+        <span>Operational Alerts</span>
       </a>
       <a href="network-security.html" class="category-popover-item ${path.endsWith('network-security.html') ? 'active' : ''}">
         ${getIconSvg('shield-alert')}
         <span>Security Monitor SOC</span>
       </a>
-    </div>
-
-    <!-- 3. Monitoring & Audit Targeted Popover Menu -->
-    <div class="category-popover" id="popover-monitoring" style="left: 68%;">
-      <div class="category-popover-header">MONITORING & AUDIT</div>
-      <a href="alerts.html" class="category-popover-item ${path.endsWith('alerts.html') ? 'active' : ''}">
-        ${getIconSvg('bell-ring')}
-        <span>Operational Alerts</span>
-      </a>
-      <a href="reports.html" class="category-popover-item ${path.endsWith('reports.html') ? 'active' : ''}">
-        ${getIconSvg('bar-chart-3')}
-        <span>Reports & Analytics</span>
-      </a>
-      <a href="activity-logs.html" class="category-popover-item ${path.endsWith('activity-logs.html') ? 'active' : ''}">
-        ${getIconSvg('file-text')}
-        <span>Activity Audit Logs</span>
+      <a href="network-scan.html" class="category-popover-item ${path.endsWith('network-scan.html') ? 'active' : ''}">
+        ${getIconSvg('radar')}
+        <span>OT & PLC Network Scanner</span>
       </a>
     </div>
 
-    <!-- 4. Profile / Admin Targeted Popover Menu -->
-    <div class="category-popover" id="popover-profile" style="right: 2%;">
-      <div class="category-popover-header">USER & SYSTEM</div>
+    <!-- 4. Administration & System Popover Menu -->
+    <div class="category-popover" id="popover-admin">
+      <div class="category-popover-header">ADMINISTRATION & SETTINGS</div>
       <a href="users.html" class="category-popover-item ${path.endsWith('users.html') ? 'active' : ''}">
         ${getIconSvg('users')}
         <span>User Administration</span>
       </a>
-      <button class="category-popover-item" onclick="handleLogout()" style="border:none; background:transparent; width:100%; cursor:pointer; color:#ef4444;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      <button class="category-popover-item" onclick="openModal('help-telemetry-modal')" style="border:none; background:transparent; width:100%; cursor:pointer; text-align:left;">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        <span>System Diagnostics</span>
+      </button>
+      <button class="category-popover-item" onclick="handleLogout()" style="border:none; background:transparent; width:100%; cursor:pointer; color:#ef4444; text-align:left;">
+        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span>Sign Out</span>
       </button>
     </div>
 
-    <!-- Floating Category Dock Bar (Matching Reference Image 3rd Variant) -->
-    <div class="dock-pill-bar">
-      <!-- 1. Home / Overview -->
-      <a href="dashboard.html" class="dock-category-btn ${isHome ? 'active' : ''}" title="Home Dashboard">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-        <span>Home</span>
+    <!-- Floating Category Menu Bar (Matching Reference Image) -->
+    <div class="dock-pill-bar ${currentStyle}" id="dock-pill-bar">
+      <!-- Style 2 Floating Notch Dot -->
+      <div class="dock-notch-dot" id="dock-notch-dot"></div>
+
+      <!-- 1. Dashboard Tab -->
+      <a href="dashboard.html" class="dock-category-btn ${isDash ? 'active' : ''}" data-tab="dashboard" title="Executive Dashboard">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span class="dock-label">Dashboard</span>
+        <div class="dock-active-line"></div>
       </a>
 
-      <!-- 2. Traceability Category Button -->
-      <button class="dock-category-btn ${isTrace ? 'active' : ''}" id="cat-btn-traceability" onclick="toggleCategoryPopover('traceability', event)" title="Traceability Modules">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="18" r="3"/><circle cx="6" cy="6" r="3"/><circle cx="18" cy="6" r="3"/><path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/><path d="M12 12v3"/></svg>
-        <span>Traceability</span>
+      <!-- 2. Traceability Tab (Categorized Supply Chain Modules) -->
+      <button class="dock-category-btn ${isTrace ? 'active' : ''}" id="cat-btn-traceability" onclick="toggleCategoryPopover('traceability', event)" data-tab="traceability" title="Traceability & Supply Chain">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="18" r="3"/>
+            <circle cx="6" cy="6" r="3"/>
+            <circle cx="18" cy="6" r="3"/>
+            <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"/>
+            <path d="M12 12v3"/>
+          </svg>
+        </div>
+        <span class="dock-label">Traceability</span>
+        <div class="dock-active-line"></div>
       </button>
 
-      <!-- 3. Compliance Direct Link -->
-      <a href="compliance.html" class="dock-category-btn ${isComp ? 'active' : ''}" title="Compliance Engine">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-        <span>Compliance</span>
-      </a>
-
-      <!-- 4. Network Security Category Button -->
-      <button class="dock-category-btn ${isNet ? 'active' : ''}" id="cat-btn-network" onclick="toggleCategoryPopover('network', event)" title="Network Security">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M19.07 4.93a10 10 0 0 0-14.14 0"/><path d="M16.24 7.76a6 6 0 0 0-8.48 0"/><circle cx="12" cy="12" r="2"/><line x1="12" y1="12" x2="20" y2="4"/></svg>
-        <span>Network</span>
+      <!-- 3. Compliance Tab (Categorized Regulatory Modules) -->
+      <button class="dock-category-btn ${isComp ? 'active' : ''}" id="cat-btn-compliance" onclick="toggleCategoryPopover('compliance', event)" data-tab="compliance" title="Regulatory Compliance & Audits">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <span class="dock-label">Compliance</span>
+        <div class="dock-active-line"></div>
       </button>
 
-      <!-- 5. Monitoring Category Button -->
-      <button class="dock-category-btn ${isMon ? 'active' : ''}" id="cat-btn-monitoring" onclick="toggleCategoryPopover('monitoring', event)" title="Monitoring & Alerts">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <span>Monitoring</span>
+      <!-- 4. Security Tab (Categorized Telemetry & SOC Modules) -->
+      <button class="dock-category-btn ${isSec ? 'active' : ''}" id="cat-btn-security" onclick="toggleCategoryPopover('security', event)" data-tab="security" title="Security & Alert Telemetry">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="dock-badge-dot"></span>
+        </div>
+        <span class="dock-label">Security</span>
+        <div class="dock-active-line"></div>
       </button>
 
-      <!-- 6. Profile / Admin Button -->
-      <button class="dock-category-btn ${isProf ? 'active' : ''}" id="cat-btn-profile" onclick="toggleCategoryPopover('profile', event)" title="Profile & Admin">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>Profile</span>
+      <!-- 5. Admin Tab (User & Credential Settings) -->
+      <button class="dock-category-btn ${isAdmin ? 'active' : ''}" id="cat-btn-admin" onclick="toggleCategoryPopover('admin', event)" data-tab="admin" title="Administration & User Settings">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span class="dock-label">Admin</span>
+        <div class="dock-active-line"></div>
       </button>
+
+      <!-- Style Switcher Widget (Switch between 1, 2, 3 from user reference image) -->
+      <div class="dock-style-switcher">
+        <button class="dock-style-btn ${currentStyle === 'style-1' ? 'active' : ''}" onclick="setDockStyle('style-1', event)" title="Style 1: Line Indicator">1</button>
+        <button class="dock-style-btn ${currentStyle === 'style-2' ? 'active' : ''}" onclick="setDockStyle('style-2', event)" title="Style 2: Curved Notch Dot">2</button>
+        <button class="dock-style-btn ${currentStyle === 'style-3' ? 'active' : ''}" onclick="setDockStyle('style-3', event)" title="Style 3: Soft Pill Box">3</button>
+      </div>
     </div>
   `;
 
   document.body.appendChild(div);
+
+  setTimeout(updateNotchPosition, 50);
+  window.addEventListener("resize", updateNotchPosition);
 
   // Close any category popovers when clicking outside
   document.addEventListener("click", (e) => {
@@ -362,6 +418,33 @@ function injectDock() {
   });
 }
 
+function setDockStyle(styleName, e) {
+  if (e) e.stopPropagation();
+  localStorage.setItem("sentinelDockStyle", styleName);
+  const bar = document.getElementById("dock-pill-bar");
+  if (bar) {
+    bar.className = `dock-pill-bar ${styleName}`;
+  }
+  const btns = document.querySelectorAll(".dock-style-btn");
+  btns.forEach(b => {
+    b.classList.toggle("active", b.getAttribute("onclick").includes(styleName));
+  });
+  updateNotchPosition();
+}
+
+function updateNotchPosition() {
+  const bar = document.getElementById("dock-pill-bar");
+  const dot = document.getElementById("dock-notch-dot");
+  if (!bar || !dot) return;
+  const activeBtn = bar.querySelector(".dock-category-btn.active");
+  if (activeBtn) {
+    const btnRect = activeBtn.getBoundingClientRect();
+    const barRect = bar.getBoundingClientRect();
+    const centerOffset = (btnRect.left - barRect.left) + (btnRect.width / 2);
+    dot.style.left = `${centerOffset}px`;
+  }
+}
+
 function closeAllCategoryPopovers() {
   const popovers = document.querySelectorAll(".category-popover");
   const btns = document.querySelectorAll(".dock-category-btn");
@@ -374,14 +457,22 @@ function toggleCategoryPopover(category, e) {
 
   const targetPopover = document.getElementById(`popover-${category}`);
   const targetBtn = document.getElementById(`cat-btn-${category}`);
+  const dockWrapper = document.querySelector(".dock-wrapper");
 
   const isOpen = targetPopover ? targetPopover.classList.contains("open") : false;
 
   closeAllCategoryPopovers();
 
-  if (!isOpen && targetPopover && targetBtn) {
+  if (!isOpen && targetPopover && targetBtn && dockWrapper) {
     targetPopover.classList.add("open");
     targetBtn.classList.add("popover-open");
+
+    // Center popover relative to the dock wrapper based on target button position
+    const btnRect = targetBtn.getBoundingClientRect();
+    const wrapRect = dockWrapper.getBoundingClientRect();
+    const btnCenterX = (btnRect.left - wrapRect.left) + (btnRect.width / 2);
+    targetPopover.style.left = `${btnCenterX}px`;
+    targetPopover.style.transform = `translateX(-50%) translateY(0) scale(1)`;
   }
 }
 

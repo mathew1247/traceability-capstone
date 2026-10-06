@@ -6,241 +6,350 @@
   <title>Executive Dashboard | Sentinel-Trace</title>
   <link rel="stylesheet" href="css/global.css">
   <link rel="stylesheet" href="css/dashboard.css">
-  <link rel="stylesheet" href="css/tables.css">
   <link rel="stylesheet" href="css/responsive.css">
   <!-- Chart.js CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="dashboard-page-body">
 
-  <div class="app-layout">
-    <!-- Sidebar Injected Here -->
-    <div id="sidebar-mount"></div>
-
-    <!-- Main Content Area -->
-    <main class="app-main">
-      <!-- Top Header Injected Here -->
-      <div id="header-mount"></div>
-
-      <div class="app-content">
-        <!-- Page Title & Greeting -->
-        <div class="page-header-row">
-          <div>
-            <h1 class="page-title">Good Morning, Jack</h1>
-            <p class="page-subtitle">Here's what's happening with your industrial operations today.</p>
-          </div>
-          <div class="page-actions-group">
-            <a href="network-scan.html" class="btn btn-secondary btn-sm">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <line x1="12" y1="8" x2="12" y2="12"></line>
-                <line x1="12" y1="16" x2="12.01" y2="16"></line>
-              </svg>
-              Run Rapid Scan
-            </a>
-            <a href="batches.html" class="btn btn-primary btn-sm">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              New Batch
-            </a>
-          </div>
-        </div>
-
-        <!-- Intelligent Operation Matrix Banner (Reference Image 2 Feature Card) -->
-        <div class="dashboard-matrix-banner">
-          <div class="matrix-left-col">
-            <div class="matrix-tag-pill">
-              <span class="badge-dot" style="background: #fa7b7b;"></span>
-              INTELLIGENT ECO SYSTEM
-            </div>
-            <h2 class="matrix-title">Operations Matrix</h2>
-            <p class="matrix-desc">
-              Real-time synchronization across OT PLCs, automated assembly lines, and cloud compliance registries.
-            </p>
-            <div class="matrix-metrics-row">
-              <div class="matrix-stat-box">
-                <div class="matrix-stat-label">Energy / Output</div>
-                <div class="matrix-stat-value">200 kW</div>
-              </div>
-              <div class="matrix-stat-box">
-                <div class="matrix-stat-label">Current Load</div>
-                <div class="matrix-stat-value">24.5 kW</div>
-              </div>
-              <div class="matrix-stat-box">
-                <div class="matrix-stat-label">System Health</div>
-                <div class="matrix-stat-value" style="color: #e05e5e;">98.4%</div>
-              </div>
-            </div>
-          </div>
-          <div class="matrix-visual-col">
-            <img src="assets/images/dashboard_smart_factory.jpg" alt="Smart Factory Isometric" class="matrix-visual-img">
-          </div>
-        </div>
-
-        <!-- 4 KPI Cards -->
-        <div class="kpi-grid-4">
-          <!-- KPI 1 -->
-          <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Total Batches</span>
-              <div class="kpi-icon-pill">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                  <polyline points="2 17 12 22 22 17"></polyline>
-                  <polyline points="2 12 12 17 22 12"></polyline>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-card-value" id="kpi-total-batches">12</div>
-            <div class="kpi-trend-row">
-              <span class="trend-badge trend-up">&uarr; +8.4%</span>
-              <span>vs previous month</span>
-            </div>
-          </div>
-
-          <!-- KPI 2 -->
-          <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Compliance Rate</span>
-              <div class="kpi-icon-pill">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  <polyline points="9 12 11 14 15 10"></polyline>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-card-value" id="kpi-compliance-rate">98%</div>
-            <div class="kpi-trend-row">
-              <span class="trend-badge trend-up">&uarr; 0.6%</span>
-              <span>ISO 9001, RoHS, GMP</span>
-            </div>
-          </div>
-
-          <!-- KPI 3 -->
-          <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Network Status</span>
-              <div class="kpi-icon-pill">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                  <line x1="12" y1="8" x2="12" y2="12"></line>
-                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-card-value" style="color: #10b981;" id="kpi-network-status">Secure</div>
-            <div class="kpi-trend-row">
-              <span class="trend-badge trend-up">&#10003; 14 Nodes</span>
-              <span>0 Breaches Detected</span>
-            </div>
-          </div>
-
-          <!-- KPI 4 -->
-          <div class="kpi-card">
-            <div class="kpi-card-header">
-              <span class="kpi-card-title">Active Alerts</span>
-              <div class="kpi-icon-pill" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-                </svg>
-              </div>
-            </div>
-            <div class="kpi-card-value" id="kpi-active-alerts">3</div>
-            <div class="kpi-trend-row">
-              <span class="trend-badge trend-neutral">1 Critical</span>
-              <span>2 Pending Warnings</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions Bar -->
-        <div class="quick-actions-bar">
-          <div class="quick-actions-label">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+  <div class="dashboard-canvas-wrapper">
+    <!-- Main Floating App Card Frame (Finexy Architecture with Sentinel-Trace Theme) -->
+    <div class="dashboard-card-frame">
+      
+      <!-- Top Navigation Header -->
+      <header class="finexy-header">
+        <!-- Left: Brand Logo -->
+        <a href="dashboard.html" class="finexy-logo" title="Sentinel-Trace Industrial Intelligence">
+          <div class="finexy-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
             </svg>
-            Quick Actions:
           </div>
-          <div class="quick-actions-group">
-            <a href="suppliers.html" class="btn btn-secondary btn-sm">+ Add Supplier</a>
-            <a href="materials.html" class="btn btn-secondary btn-sm">+ Add Raw Material</a>
-            <a href="batches.html" class="btn btn-secondary btn-sm">+ Create Batch</a>
-            <a href="network-scan.html" class="btn btn-secondary btn-sm">&#9889; Run Network Scan</a>
-            <a href="reports.html" class="btn btn-secondary btn-sm">&#128196; Generate Report</a>
+          <span class="finexy-logo-text">Sentinel-Trace</span>
+        </a>
+
+        <!-- Right: Actions & User Capsule -->
+        <div class="finexy-header-actions">
+          <!-- Light / Dark Mode Toggle Button (Relocated from removed left rail) -->
+          <button class="finexy-icon-circle-btn" onclick="toggleDashboardTheme()" title="Toggle Light / Dark Mode" id="dash-theme-btn">
+            <svg id="theme-sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+            </svg>
+            <svg id="theme-moon-icon" style="display:none;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+          <button class="finexy-icon-circle-btn" onclick="document.getElementById('activities-search-input')?.focus()" title="Search (⌘ K)">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+          <a href="alerts.html" class="finexy-icon-circle-btn" title="Industrial Alerts & Telemetry">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </a>
+          <button class="finexy-icon-circle-btn" onclick="showHelpModal()" title="Help & System Telemetry">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" y1="16" x2="12" y2="12"/>
+              <line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+          </button>
+
+          <!-- User Profile Dropdown Pill -->
+          <div class="finexy-user-capsule" onclick="toggleUserDropdown(event)" title="Account Settings">
+            <div class="finexy-user-avatar" id="dash-user-avatar">J</div>
+            <div class="finexy-user-meta">
+              <span class="finexy-user-name" id="dash-user-name">Jack Mathew</span>
+              <span class="finexy-user-email" id="dash-user-email">jack@sentineltrace.io</span>
+            </div>
+            <svg class="finexy-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+            <div class="finexy-user-dropdown-menu" id="user-dropdown-menu">
+              <a href="users.html" class="dropdown-item">User Administration</a>
+              <a href="network-security.html" class="dropdown-item">Security Monitor SOC</a>
+              <a href="activity-logs.html" class="dropdown-item">Activity Audit Logs</a>
+              <div class="dropdown-divider"></div>
+              <button onclick="handleLogout()" class="dropdown-item text-danger">Sign Out</button>
+            </div>
           </div>
         </div>
+      </header>
 
-        <!-- Charts Grid (Production Overview + Compliance Status) -->
-        <div class="dashboard-grid-main">
-          <!-- Production Trends Line Chart -->
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <div>
-                <h3 class="chart-card-title">Production Overview</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Weekly throughput of completed vs pending inspection batches</p>
+      <!-- Dashboard Body: Full-Width Workspace (No Left Rail, Bottom Menu Bar at Bottom) -->
+      <div class="finexy-body-layout">
+        <!-- Main Workspace Area -->
+        <main class="finexy-main-content">
+          <!-- Page Greeting -->
+          <div class="finexy-greeting-block">
+            <h1 class="finexy-greeting-title">Good morning, <span id="dash-greeting-name">Jack</span></h1>
+            <p class="finexy-greeting-sub">Real-time synchronization across OT PLCs, automated assembly lines, and cloud compliance registries.</p>
+          </div>
+
+          <!-- Dashboard Two-Column Grid -->
+          <div class="finexy-grid-layout">
+            <!-- Left Column: Primary Industrial Metrics, Compliance Quota, Digital Badges -->
+            <div class="finexy-col-left">
+              <!-- Card 1: Total Batch Volume / Core Production Output Card -->
+              <div class="finexy-card finexy-balance-card">
+                <div class="balance-card-header">
+                  <span class="finexy-card-label">Total Batch Volume</span>
+                  <div class="currency-picker-pill" onclick="toggleMetricUnitPicker(event)" title="Toggle Metric Unit">
+                    <span class="flag-icon">🏭</span>
+                    <span class="currency-code">Units</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                  </div>
+                </div>
+
+                <div class="balance-card-value-row">
+                  <div class="balance-card-amount" id="kpi-main-balance">2,29,788 Units</div>
+                  <div class="balance-trend-text">
+                    <span class="trend-green" id="kpi-balance-trend">↑ Active</span> <span class="trend-sub" id="kpi-balance-trend-sub">live production volume</span>
+                  </div>
+                </div>
+
+                <!-- Two Action Pill Buttons: Industrial Actions -->
+                <div class="balance-actions-row">
+                  <a href="batches.html" class="finexy-action-btn btn-dark">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Create Batch</span>
+                  </a>
+                  <a href="network-scan.html" class="finexy-action-btn btn-light">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                    <span>Run Scan</span>
+                  </a>
+                </div>
+
+                <!-- Production Facilities & Nodes Section -->
+                <div class="wallets-sub-section">
+                  <div class="wallets-sub-title" id="dash-facilities-subtitle">Production Nodes | 3 Active Facilities</div>
+                  <div class="wallets-grid-3" id="dash-facilities-grid">
+                    <!-- Facility 1 -->
+                    <div class="wallet-mini-card">
+                      <div class="wallet-mini-header">
+                        <span class="facility-icon">🏭</span>
+                        <span class="wallet-currency-title">Line Alpha</span>
+                        <span class="wallet-dots">⋮</span>
+                      </div>
+                      <div class="wallet-mini-amount">124,500 pcs</div>
+                      <div class="wallet-mini-limit">OT-PLC: 98% Cap</div>
+                      <span class="wallet-status-badge status-active">Active</span>
+                    </div>
+
+                    <!-- Facility 2 -->
+                    <div class="wallet-mini-card">
+                      <div class="wallet-mini-header">
+                        <span class="facility-icon">🔬</span>
+                        <span class="wallet-currency-title">Synth Hub</span>
+                        <span class="wallet-dots">⋮</span>
+                      </div>
+                      <div class="wallet-mini-amount">75,288 pcs</div>
+                      <div class="wallet-mini-limit">RoHS: 99.8% Pass</div>
+                      <span class="wallet-status-badge status-active">Active</span>
+                    </div>
+
+                    <!-- Facility 3 -->
+                    <div class="wallet-mini-card">
+                      <div class="wallet-mini-header">
+                        <span class="facility-icon">📦</span>
+                        <span class="wallet-currency-title">Pack & QA</span>
+                        <span class="wallet-dots">⋮</span>
+                      </div>
+                      <div class="wallet-mini-amount">30,000 pcs</div>
+                      <div class="wallet-mini-limit">GMP Cleared</div>
+                      <span class="wallet-status-badge status-active">Active</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div class="chart-time-filter">
-                <button class="chart-filter-btn active">Week</button>
-                <button class="chart-filter-btn">Month</button>
-                <button class="chart-filter-btn">Year</button>
+
+              <!-- Card 2: Compliance Target / Inspection Quota -->
+              <div class="finexy-card finexy-limit-card">
+                <div class="limit-card-title">Monthly Compliance Target (ISO / RoHS / GMP)</div>
+                <div class="limit-progress-bar-wrap">
+                  <div class="limit-progress-bar-fill" id="compliance-bar-fill" style="width: 80%;"></div>
+                  <div class="limit-progress-bar-remaining"></div>
+                </div>
+                <div class="limit-values-row">
+                  <div class="limit-left-val"><strong id="compliance-target-txt">80.0% achieved</strong> <span>out of</span></div>
+                  <div class="limit-right-val">100.0% Audited Goal</div>
+                </div>
+              </div>
+
+              <!-- Card 3: Operator Facility Badges & Cryptographic Passes -->
+              <div class="finexy-card finexy-cards-card">
+                <div class="cards-header-row">
+                  <div class="cards-title-group">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    <span>Operator Facility Passes</span>
+                  </div>
+                  <button class="add-card-pill-btn" onclick="showToast('Issued new Operator RFID token pass', 'success')">+ Issue Key</button>
+                </div>
+
+                <div class="cards-duo-row">
+                  <!-- Charcoal Card: RFID Access -->
+                  <div class="credit-card-item card-dark">
+                    <div class="credit-card-top">
+                      <div class="nfc-and-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 8.5C5 5.5 9 4 12 4s7 1.5 10 4.5"/><path d="M5 12c2-2 4.5-3 7-3s5 1 7 3"/><path d="M8.5 15.5c1-1 2.2-1.5 3.5-1.5s2.5.5 3.5 1.5"/></svg>
+                        <span class="card-status-pill">Active</span>
+                      </div>
+                      <div class="card-brand-circles">
+                        <span class="brand-circle coral"></span>
+                        <span class="brand-circle green"></span>
+                      </div>
+                    </div>
+                    <div class="credit-card-bottom">
+                      <div class="card-meta-label">RFID Operator Token</div>
+                      <div class="card-number-val" id="operator-token-val">OP-SEC •••• 6782</div>
+                      <div class="card-sub-meta" id="operator-meta-val">
+                        <div><span class="card-meta-label">ROLE</span> <span id="operator-role-name">Level 4 Admin</span></div>
+                        <div><span class="card-meta-label">STATUS</span> <span id="operator-status-name">Active</span></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Coral Card: Blockchain Pedigree Certificate -->
+                  <div class="credit-card-item card-coral">
+                    <div class="credit-card-top">
+                      <div class="nfc-and-badge">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        <span class="card-status-pill pill-light">Verified</span>
+                      </div>
+                    </div>
+                    <div class="credit-card-bottom">
+                      <div class="card-meta-label text-peach">Ledger Proof Hash</div>
+                      <div class="card-number-val text-white" id="ledger-proof-val">BC-TX •••• 4358</div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div style="height: 280px; position: relative;">
-              <canvas id="productionOverviewChart"></canvas>
-            </div>
-          </div>
 
-          <!-- Compliance Donut Chart & Scorecard -->
-          <div class="chart-card">
-            <div class="chart-card-header">
-              <div>
-                <h3 class="chart-card-title">Compliance Status</h3>
-                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Verified standards breakdown</p>
+            <!-- Right Column: 4 KPIs + Chart + Recent Activities Table -->
+            <div class="finexy-col-right">
+              <!-- Top Row: 2x2 KPIs on left, Stacked Bar Chart on right -->
+              <div class="kpis-and-chart-row">
+                <!-- 2x2 KPI Grid (Matched to Project Modules!) -->
+                <div class="kpi-matrix-2x2">
+                  <!-- KPI 1: Signature Coral Featured Card (Batches Module) -->
+                  <div class="finexy-kpi-card kpi-coral">
+                    <div class="kpi-header-row">
+                      <span class="kpi-label">Total Batches</span>
+                      <div class="kpi-icon-bubble">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+                      </div>
+                    </div>
+                    <div class="kpi-number-val" id="kpi-val-batches">12 Batches</div>
+                    <div class="kpi-trend-note" id="kpi-trend-batches">↑ +8.4% <span>vs last month</span></div>
+                  </div>
+
+                  <!-- KPI 2: Compliance Rate (Compliance Module) -->
+                  <div class="finexy-kpi-card kpi-white">
+                    <div class="kpi-header-row">
+                      <span class="kpi-label">Compliance Rate</span>
+                      <div class="kpi-icon-bubble">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><polyline points="9 12 11 14 15 10"></polyline></svg>
+                      </div>
+                    </div>
+                    <div class="kpi-number-val" id="kpi-val-compliance" style="color: #fa7b7b;">80%</div>
+                    <div class="kpi-trend-note" id="kpi-trend-compliance">↑ 0.6% <span>ISO 9001, RoHS, GMP</span></div>
+                  </div>
+
+                  <!-- KPI 3: Raw Materials (Materials Module) -->
+                  <div class="finexy-kpi-card kpi-white">
+                    <div class="kpi-header-row">
+                      <span class="kpi-label">Raw Materials</span>
+                      <div class="kpi-icon-bubble">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+                      </div>
+                    </div>
+                    <div class="kpi-number-val" id="kpi-val-materials">24 Lots</div>
+                    <div class="kpi-trend-note" id="kpi-trend-materials">↑ 100% <span>Genealogy Linked</span></div>
+                  </div>
+
+                  <!-- KPI 4: Network Security Status (Security SOC Module) -->
+                  <div class="finexy-kpi-card kpi-white">
+                    <div class="kpi-header-row">
+                      <span class="kpi-label">Network Status</span>
+                      <div class="kpi-icon-bubble">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                      </div>
+                    </div>
+                    <div class="kpi-number-val" id="kpi-val-network" style="color: #10b981;">Secure</div>
+                    <div class="kpi-trend-note" id="kpi-trend-network">✓ 14 Nodes <span>0 Breaches</span></div>
+                  </div>
+                </div>
+
+                <!-- Stacked Bar Chart Card (Production & Compliance Velocity) -->
+                <div class="finexy-card finexy-chart-card">
+                  <div class="chart-card-top">
+                    <div>
+                      <h3 class="chart-card-heading">Production & Compliance Throughput</h3>
+                      <p class="chart-card-sub">Weekly batch volume vs pending inspection clearances</p>
+                    </div>
+                  </div>
+                  <div class="chart-legend-row">
+                    <span class="legend-title">Verification Ledger</span>
+                    <div class="legend-markers">
+                      <span class="legend-item"><span class="dot dot-coral"></span> Completed Batches</span>
+                      <span class="legend-item"><span class="dot dot-black"></span> Pending QA Checks</span>
+                    </div>
+                  </div>
+                  <div class="chart-canvas-container">
+                    <canvas id="finexyIncomeChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Bottom Row: Recent Traceability & Batches Activities Table -->
+              <div class="finexy-card finexy-activities-card">
+                <div class="activities-header-row">
+                  <h3 class="activities-title">Recent Traceability & Batch Activities</h3>
+                  <div class="activities-tools">
+                    <div class="activities-search-wrapper">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                      <input type="text" id="activities-search-input" placeholder="Search batch or product..." oninput="filterActivities(this.value)">
+                    </div>
+                    <button class="activities-filter-btn" onclick="toggleActivityStatusFilter()" title="Filter by Status">
+                      <span>Filter</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="activities-table-scroll">
+                  <table class="finexy-table" id="activities-table">
+                    <thead>
+                      <tr>
+                        <th style="width: 38px;"><input type="checkbox" id="check-all-activities" onchange="toggleAllActivityChecks(this)"></th>
+                        <th>Batch ID</th>
+                        <th>Product & Component</th>
+                        <th>Quantity / Units</th>
+                        <th>Status</th>
+                        <th>Timestamp</th>
+                        <th style="width: 32px;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="activities-table-body">
+                      <!-- Dynamic rows populated from Sentinel-Trace batches & materials -->
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-            <div style="height: 220px; position: relative; margin-bottom: 14px;">
-              <canvas id="complianceDonutChart"></canvas>
-            </div>
-            <div style="text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
-              <strong>ISO 9001 &bull; RoHS &bull; GMP</strong> &bull; All audits verified
-            </div>
           </div>
-        </div>
-
-        <!-- AI Insights Card -->
-        <div class="ai-insights-card">
-          <div>
-            <div class="ai-badge">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
-              </svg>
-              AI INSIGHTS ENGINE READY
-            </div>
-            <div class="ai-title">Predictive Anomaly Detected</div>
-            <p class="ai-desc">
-              "We found 2 unusual patterns in production data (tolerance skew in Batch 102) and 1 potential network risk on OT port 502."
-            </p>
-          </div>
-          <a href="alerts.html" class="btn btn-accent btn-sm">Review Insights &rarr;</a>
-        </div>
-
-        <!-- Recent Alerts Card -->
-        <div class="card" style="padding: 24px 28px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-            <h3 style="font-size: 1.15rem; font-weight: 700;">Recent Industrial Alerts</h3>
-            <a href="alerts.html" style="font-size: 0.85rem; color: #e05e5e; font-weight: 700;">View All Alerts &rarr;</a>
-          </div>
-          <div id="dashboard-alerts-feed"></div>
-        </div>
-
+        </main>
       </div>
-    </main>
+    </div>
   </div>
 
-  <div id="floating-dock-mount"></div>
   <div id="toast-container"></div>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>

@@ -7,8 +7,8 @@
 const getProductionApiUrl = () => {
   if (window.APP_CONFIG?.API_BASE_URL) return window.APP_CONFIG.API_BASE_URL;
   if (window.API_BASE_URL) return window.API_BASE_URL;
-  const isLocalFlask = (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port === '5000';
-  return isLocalFlask ? "http://127.0.0.1:5000/api" : "https://traceability-capstone.onrender.com/api";
+  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.hostname;
+  return isLocalHost ? "http://127.0.0.1:5000/api" : "https://traceability-capstone.onrender.com/api";
 };
 
 const API_BASE_URL = getProductionApiUrl();
@@ -516,6 +516,16 @@ async function toggleUserStatus(id) {
   });
 }
 
+// 13. Reports & Analytics Summary
+async function getReportsSummary() {
+  try {
+    return await apiRequest("/reports/summary");
+  } catch (e) {
+    console.error("Failed to fetch reports summary:", e);
+    return null;
+  }
+}
+
 // Export everything to window
 window.API_BASE_URL = API_BASE_URL;
 window.apiRequest = apiRequest;
@@ -551,3 +561,4 @@ window.getActivityLogs = getActivityLogs;
 window.getUsers = getUsers;
 window.createUser = createUser;
 window.toggleUserStatus = toggleUserStatus;
+window.getReportsSummary = getReportsSummary;
