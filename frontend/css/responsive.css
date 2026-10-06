@@ -9,21 +9,33 @@
      5. Ultra-Compact Mobile (<= 360px)
    =================================================================== */
 
-/* Global Anti-Overflow & Sizing Constraints */
-html, body {
-  width: 100% !important;
-  max-width: 100% !important;
-  overflow-x: hidden !important;
+/* Global Anti-Overflow & Mobile Scroll Restoration */
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  min-height: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
 *, *::before, *::after {
   box-sizing: border-box;
 }
 
-/* Base Mobile Navigation Classes (Always hidden on Desktop) */
+/* Base Mobile Navigation Classes (Hidden on Desktop) */
 .mobile-hamburger-btn {
   display: none;
 }
@@ -33,7 +45,7 @@ html, body {
   display: none;
 }
 
-/* Ensure all page containers never exceed viewport */
+/* Ensure all page containers never cause horizontal overflow */
 .app-layout,
 .app-main,
 .app-content,
@@ -84,15 +96,15 @@ img, svg, canvas {
 @media (min-width: 768px) and (max-width: 1199px) {
   .app-main {
     margin-left: 0 !important;
-    padding: 0 0 90px 0 !important;
+    padding: 0 0 100px 0 !important;
   }
 
   .app-content {
-    padding: 24px 24px 100px 24px !important;
+    padding: 24px 20px 120px 20px !important;
   }
 
   .finexy-main-content {
-    padding: 24px 24px 100px 24px !important;
+    padding: 24px 20px 120px 20px !important;
   }
 
   .finexy-grid-layout {
@@ -137,14 +149,14 @@ img, svg, canvas {
     width: min(88vw, 620px) !important;
     max-width: 88vw !important;
   }
+}
 
-  @media (max-width: 1024px) {
-    .header-pill-nav {
-      display: none !important;
-    }
-    .mobile-hamburger-btn {
-      display: inline-flex !important;
-    }
+@media (max-width: 1024px) {
+  .header-pill-nav {
+    display: none !important;
+  }
+  .mobile-hamburger-btn {
+    display: inline-flex !important;
   }
 }
 
@@ -161,7 +173,7 @@ img, svg, canvas {
     width: 38px;
     height: 38px;
     border-radius: 10px;
-    background: rgba(241, 245, 244, 0.9);
+    background: rgba(241, 245, 244, 0.95);
     border: 1px solid var(--border, #e2e8f0);
     color: var(--text-primary, #1e293b);
     cursor: pointer;
@@ -338,21 +350,21 @@ img, svg, canvas {
     color: #ef4444;
   }
 
-  /* Page Body & Main Content Spacing */
+  /* Page Body & Workspace Spacing (Extra Bottom Padding to clear Floating Dock) */
   .app-main {
     margin-left: 0 !important;
-    padding: 0 0 100px 0 !important;
+    padding: 0 0 140px 0 !important;
   }
 
   .app-content {
-    padding: 14px 12px 110px 12px !important;
+    padding: 14px 14px 140px 14px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
   }
 
   .finexy-main-content {
-    padding: 14px 12px 110px 12px !important;
+    padding: 14px 14px 140px 14px !important;
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
@@ -360,7 +372,7 @@ img, svg, canvas {
 
   /* Header Optimization */
   .app-header {
-    margin: 6px 0 14px 0 !important;
+    margin: 4px 0 14px 0 !important;
     padding: 10px 12px !important;
     height: auto !important;
     min-height: 52px !important;
@@ -372,27 +384,36 @@ img, svg, canvas {
 
   .finexy-header {
     padding: 10px 12px !important;
-    gap: 10px !important;
+    gap: 8px !important;
     flex-wrap: wrap !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
 
   .header-brand-title {
     font-size: 0.8rem !important;
   }
 
-  .header-brand-subtitle {
+  .header-brand-subtitle,
+  .finexy-greeting-sub,
+  .finexy-user-meta,
+  .header-search-wrapper,
+  .header-pill-nav,
+  .topo-system-pill {
     display: none !important;
   }
 
-  .header-search-wrapper,
-  .header-pill-nav,
-  .topo-system-pill,
-  .finexy-user-meta {
-    display: none !important;
+  .finexy-greeting-title {
+    font-size: 1.35rem !important;
+    margin-bottom: 2px !important;
+  }
+
+  .finexy-greeting-block {
+    margin-bottom: 14px !important;
   }
 
   .finexy-logo-text {
-    font-size: 1.1rem !important;
+    font-size: 1.05rem !important;
   }
 
   .finexy-icon-circle-btn {
@@ -441,21 +462,49 @@ img, svg, canvas {
   .grid-2-col,
   .grid-3-col,
   .grid-4-col,
-  .finexy-grid-layout,
   .dashboard-grid-main,
-  .kpis-and-chart-row,
   .cards-duo-row,
-  .wallets-grid-3,
   .traceability-layout {
     grid-template-columns: 1fr !important;
     gap: 14px !important;
     width: 100% !important;
   }
 
+  /* Dashboard Stack Flow */
+  .finexy-grid-layout {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+    width: 100% !important;
+  }
+
+  .finexy-col-left,
+  .finexy-col-right {
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+  }
+
+  /* 4 KPI Cards: Responsive 2x2 on Mobile so they don't stretch */
   .kpi-matrix-2x2 {
-    grid-template-columns: 1fr !important;
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
     gap: 10px !important;
     width: 100% !important;
+  }
+
+  .finexy-kpi-card {
+    padding: 14px 12px !important;
+    border-radius: 14px !important;
+  }
+
+  .kpi-number-val {
+    font-size: 1.25rem !important;
+  }
+
+  .kpi-trend-note {
+    font-size: 0.72rem !important;
   }
 
   .card,
@@ -469,20 +518,34 @@ img, svg, canvas {
     box-sizing: border-box !important;
   }
 
+  /* Facility Nodes: Compact Grid */
+  .wallets-grid-3 {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .wallet-card-item {
+    padding: 12px 14px !important;
+  }
+
   /* Dashboard Balance Card & Actions */
   .balance-card-amount {
-    font-size: 1.7rem !important;
+    font-size: 1.65rem !important;
   }
 
   .balance-actions-row {
-    flex-direction: column !important;
+    display: flex !important;
+    flex-direction: row !important;
     gap: 8px !important;
     width: 100% !important;
   }
 
   .balance-actions-row .finexy-action-btn {
-    width: 100% !important;
+    flex: 1 !important;
     justify-content: center !important;
+    min-height: 42px !important;
   }
 
   /* Forms & Inputs */
@@ -519,12 +582,12 @@ img, svg, canvas {
     width: 100% !important;
     max-width: 100% !important;
     box-sizing: border-box !important;
-    font-size: 16px !important; /* Prevents auto-zoom on mobile safari */
+    font-size: 16px !important;
     min-height: 44px !important;
     min-width: 0 !important;
   }
 
-  /* Tables: Data-Heavy Horizontal Scrolling */
+  /* Tables: Isolated Horizontal Scrolling */
   .table-container,
   .table-wrapper,
   .data-table-wrapper,
@@ -541,7 +604,7 @@ img, svg, canvas {
   .data-table,
   .finexy-table {
     width: 100% !important;
-    min-width: 600px !important;
+    min-width: 580px !important;
     border-collapse: collapse !important;
   }
 
@@ -739,11 +802,12 @@ img, svg, canvas {
 
   /* Floating Bottom Navigation Dock */
   .dock-wrapper {
-    bottom: 10px !important;
+    bottom: 12px !important;
     width: max-content !important;
     max-width: calc(100vw - 16px) !important;
     left: 50% !important;
     transform: translateX(-50%) !important;
+    z-index: 1000 !important;
   }
 
   .dock-pill-bar {
@@ -756,7 +820,7 @@ img, svg, canvas {
   }
 
   .dock-style-switcher {
-    display: none !important; /* Hide style toggler on mobile to keep 5 dock buttons readable */
+    display: none !important;
   }
 
   .dock-category-btn {
@@ -815,7 +879,7 @@ img, svg, canvas {
 @media (max-width: 480px) {
   .app-content,
   .finexy-main-content {
-    padding: 10px 8px 105px 8px !important;
+    padding: 10px 10px 140px 10px !important;
   }
 
   .page-title {
@@ -824,6 +888,10 @@ img, svg, canvas {
 
   .kpi-card-value {
     font-size: 1.5rem !important;
+  }
+
+  .kpi-matrix-2x2 {
+    grid-template-columns: 1fr !important;
   }
 
   .dock-category-btn {
@@ -846,7 +914,7 @@ img, svg, canvas {
    ------------------------------------------------------------------- */
 @media (max-width: 360px) {
   .dock-category-btn span {
-    display: none !important; /* Icon-only mode on ultra-narrow phones */
+    display: none !important;
   }
 
   .dock-category-btn {
