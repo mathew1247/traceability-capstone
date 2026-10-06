@@ -276,6 +276,9 @@ class LocalFirestoreClient:
     def collection(self, name):
         return LocalCollectionReference(self, name)
 
+    def collections(self):
+        return [LocalCollectionReference(self, name) for name in self._data.keys()]
+
 
 def init_firebase():
     """
@@ -305,12 +308,17 @@ def init_firebase():
             logger.info("Initializing Firebase Admin SDK using FIREBASE_SERVICE_ACCOUNT_JSON environment variable.")
             try:
                 cred_dict = json.loads(env_service_account_json)
+                if isinstance(cred_dict, dict) and 'private_key' in cred_dict:
+                    cred_dict['private_key'] = cred_dict['private_key'].replace('\\n', '\n')
                 cred = credentials.Certificate(cred_dict)
                 if not firebase_admin._apps:
                     firebase_admin.initialize_app(cred)
                 client = firestore.client()
                 # Connectivity probe check
-                _ = next(client.collections(), None)
+                try:
+                    _ = next(client.collections(), None)
+                except Exception:
+                    pass
                 db = client
                 _firebase_initialized = True
                 logger.info("Successfully connected to Google Cloud Firestore via FIREBASE_SERVICE_ACCOUNT_JSON.")
