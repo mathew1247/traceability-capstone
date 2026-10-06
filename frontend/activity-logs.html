@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Activity Logs | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Activity Logs</h1>
+            <p class="page-subtitle">Immutable audit trail tracking operator logins, record mutations, and scan events.</p>
+          </div>
+          <div class="page-actions-group">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Exporting cryptographic audit log ledger...', 'info')">
+              Export Audit Trail
+            </button>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-search-box">
+              <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="table-search-input" id="logs-search" placeholder="Search user, action, or resource..." onkeyup="filterLogs()">
+            </div>
+            <div class="table-filters-group">
+              <select class="table-filter-select" id="logs-action-filter" onchange="filterLogs()">
+                <option value="">All Actions</option>
+                <option value="AUTH_LOGIN">AUTH_LOGIN</option>
+                <option value="CREATE">CREATE</option>
+                <option value="UPDATE">UPDATE</option>
+                <option value="DELETE">DELETE</option>
+                <option value="SCAN_TRIGGER">SCAN_TRIGGER</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>User & Role</th>
+                  <th>Action Event</th>
+                  <th>Target Resource</th>
+                  <th>IP Address</th>
+                  <th>Result</th>
+                </tr>
+              </thead>
+              <tbody id="logs-table-body">
+                <!-- Injected via activity-logs.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/activity-logs.js"></script>
+</body>
+</html>

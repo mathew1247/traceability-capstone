@@ -1,0 +1,219 @@
+/* ===================================================================
+   SENTINEL-TRACE TRACEABILITY EXPLORER STYLES
+   Visual Language: Connected Node Flow, Lineage Graph,
+                    Glassmorphic Node Cards, Inspector Panel
+   =================================================================== */
+
+.traceability-layout {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+.trace-search-bar {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.trace-direction-toggle {
+  display: flex;
+  background: #f1f5f4;
+  padding: 3px;
+  border-radius: var(--radius-pill);
+}
+
+.direction-btn {
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all var(--transition-fast);
+}
+
+.direction-btn.active {
+  background: #ffffff;
+  color: var(--text-primary);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+/* Genealogy Flow Canvas */
+.lineage-canvas-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 32px 24px;
+  position: relative;
+  overflow-x: auto;
+}
+
+.lineage-pipeline-flow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-width: 900px;
+  position: relative;
+  padding: 20px 0;
+}
+
+/* Connecting Horizontal Bar */
+.lineage-pipeline-flow::before {
+  content: '';
+  position: absolute;
+  top: 60px;
+  left: 60px;
+  right: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #fb9393 0%, #fa7b7b 50%, #f97316 100%);
+  border-radius: 4px;
+  z-index: 1;
+}
+
+.lineage-stage-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+  flex: 1;
+}
+
+.stage-step-bubble {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 3px solid #fa7b7b;
+  color: #fa7b7b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(250, 123, 123, 0.2);
+  transition: all var(--transition-normal);
+}
+
+.lineage-stage-col.active .stage-step-bubble {
+  background: #fa7b7b;
+  color: #ffffff;
+  transform: scale(1.15);
+  box-shadow: 0 0 20px rgba(250, 123, 123, 0.45);
+}
+
+.stage-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Node Card */
+.node-card {
+  width: 170px;
+  background: #ffffff;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px 14px;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  text-align: left;
+}
+
+.node-card:hover {
+  transform: translateY(-4px);
+  border-color: #fa7b7b;
+  box-shadow: 0 10px 25px rgba(250, 123, 123, 0.18);
+}
+
+.node-card.selected {
+  border-color: #fa7b7b;
+  background: #fff8f8;
+  box-shadow: 0 8px 24px rgba(250, 123, 123, 0.2);
+}
+
+.node-card-id {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #e05e5e;
+  margin-bottom: 4px;
+}
+
+.node-card-name {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.25;
+}
+
+.node-card-meta {
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+}
+
+/* Inspector Drawer Panel */
+.inspector-panel {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+}
+
+.inspector-header {
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 18px;
+}
+
+.inspector-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #e05e5e;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+
+.inspector-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.inspector-field {
+  margin-bottom: 14px;
+}
+
+.inspector-field-label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.inspector-field-value {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}

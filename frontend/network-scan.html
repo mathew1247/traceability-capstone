@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Network Scanner | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/network.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Network Scanner</h1>
+            <p class="page-subtitle">Nmap automated reconnaissance across shop floor PLCs, SCADA gateways, and IoT sensors.</p>
+          </div>
+          <div class="page-actions-group">
+            <a href="network-security.html" class="btn btn-secondary btn-sm">
+              View Security Monitor &rarr;
+            </a>
+          </div>
+        </div>
+
+        <!-- Scanner Control Box -->
+        <div class="scanner-control-card">
+          <div style="margin-bottom: 16px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700;">Target Subnet & Host Scope</h3>
+            <p style="font-size: 0.85rem; color: var(--text-secondary); margin: 0;">Specify CIDR subnet mask or individual industrial IP address</p>
+          </div>
+
+          <div class="scanner-input-row">
+            <input type="text" id="scan-target-ip" class="scanner-target-input" value="192.168.1.0/24" placeholder="e.g. 192.168.1.0/24">
+            <button id="start-scan-btn" class="btn btn-primary" style="padding: 12px 28px;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              Start Network Scan
+            </button>
+          </div>
+
+          <!-- Live Scanning Terminal Simulation -->
+          <div class="scan-status-container" id="scan-status-box" style="display: none;">
+            <div class="scan-progress-header">
+              <span><strong>Nmap Engine:</strong> Scanning Target Subnet...</span>
+              <span id="scan-progress-percent" style="font-family: var(--font-mono); font-weight: 700; color: #fa7b7b;">0%</span>
+            </div>
+            <div class="scan-progress-bar-track">
+              <div class="scan-progress-bar-fill" id="scan-progress-bar"></div>
+            </div>
+            <pre class="scan-terminal-logs" id="scan-terminal-logs"></pre>
+          </div>
+        </div>
+
+        <!-- Scan Output Results (Open Ports & Hosts) -->
+        <div class="card" id="scan-results-container" style="display: none; margin-bottom: 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 16px;">
+            <div>
+              <span class="badge badge-success"><span class="badge-dot"></span> Scan Complete</span>
+              <h3 style="font-size: 1.25rem; font-weight: 800; margin-top: 6px;">Discovery Report: <span id="res-target">192.168.1.0/24</span></h3>
+            </div>
+            <div style="display: flex; gap: 20px;">
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Active Nodes</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: #e05e5e;" id="res-devices">14 Hosts Active</div>
+              </div>
+              <div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary); text-transform: uppercase;">Scan Elapsed</div>
+                <div style="font-size: 1.3rem; font-weight: 800; color: var(--text-primary);" id="res-duration">1.38s</div>
+              </div>
+            </div>
+          </div>
+
+          <h4 style="font-size: 1rem; margin-bottom: 12px;">Discovered Open Ports & Services</h4>
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Port / Protocol</th>
+                  <th>Service Detected</th>
+                  <th>Host Device</th>
+                  <th>Port State</th>
+                  <th>Vulnerability Level</th>
+                </tr>
+              </thead>
+              <tbody id="scan-ports-body">
+                <!-- Injected via network-scan.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Historical Scan Log -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <h3 style="font-size: 1.05rem; font-weight: 700;">Subnet Scan History</h3>
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Automated & on-demand Nmap audit trails</span>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Audit ID</th>
+                  <th>Target CIDR</th>
+                  <th>Timestamp</th>
+                  <th>Scan Time</th>
+                  <th>Discovered Hosts</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="scan-history-tbody">
+                <!-- Injected via network-scan.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/network-scan.js"></script>
+</body>
+</html>

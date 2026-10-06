@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.local
+
+# Firebase credentials
+*.json
+!package*.json
+serviceAccountKey.json
+firebase-credentials.json
+
+# Python bytecode and virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+*.egg-info/
+dist/
+build/
+
+# Testing & IDE
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+*.log

@@ -1,0 +1,411 @@
+/* ===================================================================
+   SENTINEL-TRACE AUTHENTICATION STYLES (Laptop & Desktop Layout)
+   Visual Architecture: Full-Width Coral Topographic Header,
+   Center Organic S-Wave Divider, Clean White Content Area
+   =================================================================== */
+
+:root {
+  --auth-coral: #fa7b7b;
+  --auth-coral-light: #fb9393;
+  --auth-coral-dark: #e86363;
+  --auth-coral-bg: #fff5f5;
+  --auth-text-dark: #1e293b;
+  --auth-text-muted: #64748b;
+  --auth-border: #e2e8f0;
+}
+
+body.auth-page {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
+  color: var(--auth-text-dark);
+  overflow-x: hidden;
+}
+
+/* Full Laptop Screen Container */
+.auth-laptop-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+}
+
+/* 1. TOP CORAL/ORANGE TOPOGRAPHIC SECTION */
+.laptop-topo-header {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #fa7b7b 0%, #f96d6d 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.laptop-topo-header.welcome-header {
+  min-height: 48vh;
+}
+
+.laptop-topo-header.form-header {
+  min-height: 34vh;
+}
+
+/* Brand Navbar inside Topographic Header */
+.topo-brand-bar {
+  position: relative;
+  z-index: 10;
+  padding: 28px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.topo-brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #ffffff;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+}
+
+.topo-brand-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+}
+
+.topo-system-pill {
+  background: rgba(255, 255, 255, 0.22);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  padding: 6px 18px;
+  border-radius: var(--radius-pill, 9999px);
+  color: #ffffff;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+/* SVG Topographic Contour Lines across Laptop Header */
+.laptop-topo-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+/* 2. ORGANIC WAVE AT THE MIDDLE */
+.laptop-wave-middle {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+  z-index: 10;
+}
+
+.laptop-wave-middle svg {
+  display: block;
+  width: 100%;
+  height: 80px;
+  min-height: 60px;
+}
+
+/* 3. BOTTOM CLEAN WHITE AREA */
+.laptop-white-body {
+  flex-grow: 1;
+  background: #ffffff;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 24px 60px;
+  position: relative;
+  z-index: 20;
+}
+
+/* WELCOME CONTENT LAYOUT FOR LAPTOPS */
+.welcome-laptop-container {
+  max-width: 680px;
+  text-align: center;
+  margin: 0 auto;
+  padding: 20px 0;
+}
+
+.welcome-laptop-title {
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  font-weight: 800;
+  color: var(--auth-text-dark);
+  margin: 0 0 16px;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.welcome-laptop-desc {
+  font-size: 1.15rem;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 580px;
+  margin: 0 auto 36px;
+}
+
+.welcome-action-pill-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  background: #ffffff;
+  padding: 8px 12px 8px 28px;
+  border-radius: var(--radius-pill, 9999px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--auth-border);
+  transition: all 0.25s ease;
+}
+
+.welcome-action-pill-row:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(250, 123, 123, 0.2);
+  border-color: var(--auth-coral-light);
+}
+
+.welcome-pill-text {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--auth-text-dark);
+}
+
+.btn-circle-coral {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--auth-coral);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(250, 123, 123, 0.4);
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-circle-coral:hover {
+  background: var(--auth-coral-dark);
+  transform: scale(1.08);
+}
+
+/* FORM CONTAINERS (SIGN IN & SIGN UP) FOR LAPTOPS */
+.form-laptop-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.form-laptop-card.wide-mode {
+  max-width: 620px;
+}
+
+.auth-form-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--auth-text-dark);
+  margin: 0 0 6px;
+  letter-spacing: -0.025em;
+}
+
+.auth-title-bar {
+  width: 36px;
+  height: 3.5px;
+  background: var(--auth-coral);
+  border-radius: 2px;
+  margin-bottom: 26px;
+}
+
+/* Input Fields */
+.auth-form-group {
+  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-input-label {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #334155;
+  margin-bottom: 8px;
+}
+
+.auth-input-field-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 8px;
+  transition: border-color 0.2s ease;
+}
+
+.auth-input-field-wrapper:focus-within {
+  border-bottom-color: var(--auth-coral);
+}
+
+.auth-field-icon {
+  color: #94a3b8;
+  width: 20px;
+  height: 20px;
+  margin-right: 12px;
+  flex-shrink: 0;
+}
+
+.auth-minimal-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 1rem;
+  color: var(--auth-text-dark);
+  padding: 4px 0;
+}
+
+.auth-minimal-input::placeholder {
+  color: #cbd5e1;
+}
+
+/* Two Column Grid for Registration */
+.auth-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.auth-grid-full {
+  grid-column: 1 / -1;
+}
+
+/* Remember Me & Forgot Password Row */
+.auth-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 18px 0 26px;
+  font-size: 0.88rem;
+}
+
+.auth-remember-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.auth-remember-checkbox input {
+  accent-color: var(--auth-coral);
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+}
+
+.auth-link-coral {
+  color: var(--auth-coral);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.auth-link-coral:hover {
+  color: var(--auth-coral-dark);
+}
+
+/* Large Solid Coral Action Button */
+.btn-auth-coral-pill {
+  width: 100%;
+  background: var(--auth-coral);
+  color: #ffffff;
+  padding: 14px 24px;
+  border-radius: var(--radius-pill, 9999px);
+  font-size: 1.05rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 8px 24px rgba(250, 123, 123, 0.35);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-auth-coral-pill:hover {
+  background: var(--auth-coral-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(250, 123, 123, 0.45);
+}
+
+.auth-bottom-switch-link {
+  text-align: center;
+  margin-top: 24px;
+  font-size: 0.92rem;
+  color: #64748b;
+}
+
+/* Quick Autofill Presets Bar */
+.auth-quick-tools {
+  margin-top: 18px;
+  padding: 10px 16px;
+  background: #fff5f5;
+  border-radius: 12px;
+  border: 1px dashed rgba(250, 123, 123, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #718096;
+}
+
+.btn-micro-chip {
+  background: #ffffff;
+  border: 1px solid #fed7d7;
+  color: var(--auth-coral-dark);
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-micro-chip:hover {
+  background: var(--auth-coral);
+  color: #ffffff;
+}
+
+@media (max-width: 768px) {
+  .topo-brand-bar {
+    padding: 20px 24px;
+  }
+  .auth-grid-2col {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}

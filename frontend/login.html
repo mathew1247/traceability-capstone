@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign in | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/auth.css">
+</head>
+<body class="auth-page">
+
+  <div class="auth-laptop-layout">
+    <!-- Top Orange/Coral Topographic Section -->
+    <header class="laptop-topo-header form-header">
+      <!-- Top Brand Navigation Bar -->
+      <div class="topo-brand-bar">
+        <a href="welcome.html" class="topo-brand-logo">
+          <div class="topo-brand-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+          </div>
+          <span>Sentinel-Trace</span>
+        </a>
+        <div class="topo-system-pill">
+          Industrial Access Gateway
+        </div>
+      </div>
+
+      <!-- Topographic Contour Lines SVG -->
+      <svg class="laptop-topo-svg" viewBox="0 0 1440 280" preserveAspectRatio="none" fill="none" stroke="rgba(255,255,255,0.28)" stroke-width="1.6">
+        <path d="M-100,70 C300,140 600,30 1000,90 C1200,120 1400,60 1540,80" />
+        <path d="M-100,120 C320,190 620,80 1020,140 C1220,170 1420,110 1540,130" />
+        <ellipse cx="720" cy="120" rx="360" ry="70" stroke="rgba(255,255,255,0.32)" />
+        <ellipse cx="715" cy="125" rx="240" ry="45" stroke="rgba(255,255,255,0.38)" />
+      </svg>
+
+      <!-- Organic Wave at the Middle -->
+      <div class="laptop-wave-middle">
+        <svg viewBox="0 0 1440 100" preserveAspectRatio="none">
+          <path d="M 0,40 C 380,105 740,-20 1100,50 C 1260,80 1380,55 1440,45 L 1440,100 L 0,100 Z" fill="#ffffff"></path>
+        </svg>
+      </div>
+    </header>
+
+    <!-- Bottom Clean White Section -->
+    <main class="laptop-white-body">
+      <div class="form-laptop-card">
+        <h1 class="auth-form-title">Sign in</h1>
+        <div class="auth-title-bar"></div>
+
+        <form id="login-form">
+          <!-- Email Field -->
+          <div class="auth-form-group">
+            <label class="auth-input-label" for="login-email">Email</label>
+            <div class="auth-input-field-wrapper">
+              <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+              <input type="email" id="login-email" class="auth-minimal-input" placeholder="demo@email.com" value="jack@sentineltrace.io" required>
+            </div>
+          </div>
+
+          <!-- Password Field -->
+          <div class="auth-form-group">
+            <label class="auth-input-label" for="login-password">Password</label>
+            <div class="auth-input-field-wrapper">
+              <svg class="auth-field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+              <input type="password" id="login-password" class="auth-minimal-input" placeholder="enter your password" value="password123" required>
+              <svg class="auth-field-icon" style="margin-right: 0; cursor: pointer;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="togglePasswordVisibility()" title="Toggle visibility">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="auth-sub-row">
+            <label class="auth-remember-checkbox">
+              <input type="checkbox" checked>
+              <span>Remember Me</span>
+            </label>
+            <a href="#" class="auth-link-coral" onclick="showToast('Password reset link sent to your registered email.', 'info'); return false;">Forgot Password?</a>
+          </div>
+
+          <!-- Submit Button -->
+          <button type="submit" class="btn-auth-coral-pill" id="login-btn">
+            Login
+          </button>
+        </form>
+
+        <!-- Quick Autofill Presets -->
+        <div class="auth-quick-tools">
+          <span>Quick Autofill:</span>
+          <div style="display: flex; gap: 6px;">
+            <button type="button" class="btn-micro-chip" onclick="fillCredentials('jack@sentineltrace.io', 'password123')">Admin</button>
+            <button type="button" class="btn-micro-chip" onclick="fillCredentials('sarah.chen@sentineltrace.io', 'password123')">Inspector</button>
+            <button type="button" class="btn-micro-chip" style="color: #dc2626;" onclick="clearCredentials()">Clear</button>
+          </div>
+        </div>
+
+        <!-- Sign Up Switch Link -->
+        <div class="auth-bottom-switch-link">
+          Don't have an Account ? <a href="register.html" class="auth-link-coral">Sign up</a>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    function togglePasswordVisibility() {
+      const p = document.getElementById('login-password');
+      if (p) p.type = p.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+</body>
+</html>

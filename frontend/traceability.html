@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traceability Explorer | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/traceability.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <!-- Page Header -->
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Traceability Explorer</h1>
+            <p class="page-subtitle">Follow product and batch genealogy across the entire industrial lifecycle.</p>
+          </div>
+          <div class="page-actions-group">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Exporting lineage tree to SVG graph...', 'info')">
+              Export Topology
+            </button>
+            <button class="btn btn-primary btn-sm" onclick="showToast('Re-indexing blockchain pedigree ledger...', 'success')">
+              Audit Lineage Chain
+            </button>
+          </div>
+        </div>
+
+        <!-- Search & Direction Control Bar -->
+        <div class="trace-search-bar">
+          <div style="flex-grow: 1; display: flex; align-items: center; gap: 10px; min-width: 280px;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #7b8e89;">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="trace-query-input" placeholder="Search Product ID, Batch ID, or Material (e.g. BATCH-101)..." class="form-control" style="background: transparent; border: none; padding-left: 0;">
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Batch Profile:</span>
+            <select class="form-control" style="width: auto; padding: 6px 30px 6px 14px;" onchange="handleBatchSelectionChange(this.value)">
+              <option value="BATCH-101">BATCH-101 (Flow Valve)</option>
+              <option value="BATCH-102">BATCH-102 (Hydraulic Unit)</option>
+            </select>
+          </div>
+
+          <div class="trace-direction-toggle">
+            <button class="direction-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active'); showToast('Mode: Forward Trace (Source to Distribution)', 'info')">
+              Forward Trace &rarr;
+            </button>
+            <button class="direction-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active'); showToast('Mode: Backward Trace (Field to Supplier)', 'info')">
+              &larr; Backward Trace
+            </button>
+          </div>
+        </div>
+
+        <!-- Interactive Lineage Flow & Inspector Layout -->
+        <div class="traceability-layout">
+          <!-- Flow Canvas -->
+          <div class="lineage-canvas-card">
+            <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+              <h3 style="font-size: 1.1rem; font-weight: 700;">Multi-Tier Genealogy Pipeline</h3>
+              <span class="badge badge-success"><span class="badge-dot"></span> 100% Chain-of-Custody Verified</span>
+            </div>
+
+            <!-- Connected Nodes Pipeline -->
+            <div class="lineage-pipeline-flow" id="lineage-flow-container">
+              <!-- Rendered via traceability.js -->
+            </div>
+
+            <div style="margin-top: 30px; padding: 14px 20px; background: #fff8f8; border: 1px solid rgba(250, 123, 123, 0.15); border-radius: var(--radius-md); font-size: 0.85rem; color: var(--text-secondary); display: flex; align-items: center; justify-content: space-between;">
+              <span>&#128161; <strong>Interactive Hint:</strong> Click on any node in the pipeline to inspect metallurgical certs, inspection stamps, and timestamps.</span>
+              <span style="font-family: var(--font-mono); font-size: 0.8rem; color: #e05e5e; font-weight: 600;">Integrity Hash: 0x7b9f...a882</span>
+            </div>
+          </div>
+
+          <!-- Inspector Panel -->
+          <aside class="inspector-panel" id="node-inspector-content">
+            <!-- Populated via traceability.js -->
+          </aside>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/traceability.js"></script>
+</body>
+</html>

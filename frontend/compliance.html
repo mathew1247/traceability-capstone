@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compliance Tracker | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Compliance Tracker</h1>
+            <p class="page-subtitle">Continuous regulatory audits, ISO / GMP / RoHS compliance certifications.</p>
+          </div>
+          <div class="page-actions-group">
+            <button class="btn btn-primary btn-sm" onclick="openModal('add-compliance-modal')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Compliance Record
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 Compliance KPI Cards -->
+        <div class="kpi-grid-4">
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Overall Compliance</span>
+              <div class="kpi-icon-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" style="color: #e05e5e;">98.4%</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-up">&uarr; +1.2%</span>
+              <span>All Standards Met</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Compliant Standards</span>
+              <div class="kpi-icon-pill" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+            <div class="kpi-card-value">4</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-up">&#10003; Active</span>
+              <span>ISO, RoHS, GMP, IEC</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Review Required</span>
+              <div class="kpi-icon-pill" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" style="color: #f59e0b;">1</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-neutral">In Audit</span>
+              <span>ASME Cryo-Manifold</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Expiring in 90 Days</span>
+              <div class="kpi-icon-pill" style="background: rgba(6, 182, 212, 0.1); color: #0891b2;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+              </div>
+            </div>
+            <div class="kpi-card-value">1</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-neutral">Scheduled</span>
+              <span>GMP Recertification</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compliance Table -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-search-box">
+              <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="table-search-input" id="compliance-search" placeholder="Search standard, product, or auditor..." onkeyup="filterCompliance()">
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Compliance ID</th>
+                  <th>Product Assembly</th>
+                  <th>Governing Standard</th>
+                  <th>Audit Status</th>
+                  <th>Auditing Authority</th>
+                  <th>Expiry Date</th>
+                  <th>Certificate</th>
+                </tr>
+              </thead>
+              <tbody id="compliance-table-body">
+                <!-- Loaded via compliance.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Compliance Record Modal -->
+  <div class="modal-overlay" id="add-compliance-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Record Compliance Certification</h3>
+        <button class="modal-close" onclick="closeModal('add-compliance-modal')">&times;</button>
+      </div>
+      <form id="add-compliance-form">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group form-grid-full">
+              <label class="form-label">Regulated Product <span class="required">*</span></label>
+              <select id="comp-product" class="form-select" required>
+                <option value="Industrial Sentinel Flow Valve">Industrial Sentinel Flow Valve</option>
+                <option value="Hydraulic Control Unit HCU-4">Hydraulic Control Unit HCU-4</option>
+                <option value="Pressure Regulation Assembly">Pressure Regulation Assembly</option>
+                <option value="Turbine Sensor Gateway TSG-12">Turbine Sensor Gateway TSG-12</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Regulatory Standard <span class="required">*</span></label>
+              <input type="text" id="comp-standard" class="form-input" placeholder="e.g. ISO 9001:2015" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Compliance Status</label>
+              <select id="comp-status" class="form-select">
+                <option value="Compliant">Compliant</option>
+                <option value="Review Required">Review Required</option>
+                <option value="Non-Compliant">Non-Compliant</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Auditing Body / Inspector</label>
+              <input type="text" id="comp-auditor" class="form-input" placeholder="e.g. TUV Rheinland" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Expiration Date</label>
+              <input type="date" id="comp-expiry" class="form-input" value="2027-10-01" required>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('add-compliance-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Record Certification</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/compliance.js"></script>
+</body>
+</html>

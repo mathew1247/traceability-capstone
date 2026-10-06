@@ -1,0 +1,28 @@
+# Environment variables
+.env
+.env.*
+
+# Firebase credentials
+**/serviceAccountKey.json
+serviceAccountKey.json
+firebase-credentials.json
+*.json
+!package*.json
+!frontend/**/*.json
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+.pytest_cache/
+.coverage
+htmlcov/
+*.log
+
+# IDE
+.vscode/
+.idea/
+.DS_Store

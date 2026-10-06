@@ -1,0 +1,974 @@
+AI-POWERED FACE RECOGNITION FOR SYSTEM FOR AUTOMATED EVENT PHOTO RETRIEVAL 
+Submitted by 
+PUGHALVANAN C
+(Reg. No.: 2428B0336) 
+Under the Guidance of 
+Mr. B. Ramesh Kumar MSC, MCA, M.Phil., NET, SET(Ph.D.).
+Assistant Professor,
+Department of Computer Science with Data Analytics 
+DEPARTMENT OF COMPUTER SCIENCE WITH DATA ANALYTICS 
+KPR COLLEGE OF ARTS SCIENCE AND RESEARCH 
+(Approved by Government of Tamilnadu & Affiliated to Bharathiar University, Coimbatore) 
+Arasur, Coimbatore – 641407
+OCTOBER 2026
+AI-POWERED FACE RECOGNITION FOR SYSTEM FOR AUTOMATED EVENT PHOTO RETRIEVAL 
+Submitted by 
+PUGHALVANAN C
+(Reg. No.: 2428B0336) 
+Under the Guidance of 
+Mr. B. Ramesh Kumar MSC, MCA, M.Phil., NET, SET(Ph.D.)., 
+Assistant Professor, 
+Department of Computer Science with Data Analytics 
+DEPARTMENT OF COMPUTER SCIENCE WITH DATA ANALYTICS 
+KPR COLLEGE OF ARTS SCIENCE AND RESEARCH 
+(Approved by Government of Tamilnadu & Affiliated to Bharathiar University, Coimbatore) 
+Arasur, Coimbatore – 641407
+                                              OCTOBER 2026
+AI-POWERED FACE RECOGNITION FOR SYSTEM FOR AUTOMATED EVENT PHOTO RETRIEVAL 
+Submitted by 
+PUGHALVANAN C
+(Reg. No.: 2428B0336) 
+Under the Guidance of 
+Mr. B. Ramesh Kumar MSC, MCA, M.Phil., NET, SET(Ph.D.)., 
+Assistant Professor 
+Department of Computer Science with Data Analytics 
+ In partial fulfillment of the requirements for the 
+Award of the Degree of 
+B.Sc., Computer Science with Data Analytics
+DEPARTMENT OF COMPUTER SCIENCE WITH DATA ANALYTICS
+KPR COLLEGE OF ARTS SCIENCE AND RESEARCH 
+(Approved by Government of Tamilnadu & Affiliated to Bharathiar University, Coimbatore) 
+Arasur, Coimbatore – 641407 
+OCTOBER 2026
+KPR COLLEGE OF ARTS SCIENCE AND RESEARCH 
+(Approved by Government of Tamilnadu & Affiliated to Bharathiar University, Coimbatore) 
+Arasur, Coimbatore – 641407 
+      CERTIFICATE21717014554872171701455487
+This is to certify that this project report entitled  
+AI-POWERED FACE RECOGNITION FOR SYSTEM FOR AUTOMATED EVENT PHOTO RETRIEVAL 
+  is a Bonafide record of project work done by  
+PUGHALVANAN C
+(Reg.No.: 2428B0336) 
+Submitted in partial fulfillment of the requirements for the Degree of 
+B.SC., OF COMPUTER SCIENCE WITH DATA ANALYTICS  
+____________________                                                  ______________________      Faculty Guide                                                              Head of the Department Submitted for Viva-Voce Examination held on ___________________.
+______________________                                             ______________________ Internal Examiner                                                            External Examiner Office Seal 
+KPR COLLEGE OF ARTS SCIENCE AND RESEARCH 
+(Approved by Government of Tamilnadu & Affiliated to Bharathiar University, Coimbatore) 
+Arasur, Coimbatore – 641407 
+                          DECLARATION2189798-962002189798-96200
+I PUGHALVANAN C (Reg.No.2428B0336) hereby declare that the project AI-POWERED FACE RECOGNITION FOR SYSTEM FOR AUTOMATED EVENT PHOTO RETRIEVAL  submitted to KPR COLLEGE OF ARTS SCIENCE AND RESEARCH, partial fulfilment for the award of degree of B.SC. OF COMPUTER SCIENCE WITH DATA ANALYTICS is a record of original project work done by me during the academic year 2025-2026 under the supervision and guidance of Mr. B. Ramesh Kumar MSC, MCA, M.Phil., NET, SET(Ph.D.).,Assistant Professor, Department of Computer Science with Data Analytics  KPR College of Arts Science and Research, and that it has not formed the basis for the award of any Degree/Diploma/Associate ship/fellowship or other similar title to any candidate of any University.
+Signature of Student
+Date : 
+Place : Coimbatore
+ACKNOWLEDGEMENT
+ACKNOWLEDGEMENT1915477-1876391915477-187639
+I wish to extend my profound gratitude to Dr. K.P.Ramasamy, Chairman of the KPR Group, for graciously providing the institutional facilities and resources essential for the completion of this project. 
+I would like to express our gratitude to Mrs. Gayathri Anandakrishnan, Secretary of the KPR Institutions, for her visionary leadership and for fostering an academic environment that prioritizes student excellence and research. 
+I sincerely thank Dr. P. Geetha, Principal of KPR College of Arts Science and Research, for her constant encouragement and steadfast support throughout my academic tenure. I am equally grateful to Dr. K. Pradeepa, Dean School of Intelligent Systems and Data Science, for her valuable administrative oversight and the motivation she provided during the various stages of this project. 
+I am deeply indebted to Dr. G. Satyavathy, Head of the Department of Computer Science with Data Analytics, for her leadership and for ensuring a conducive environment that allowed me to complete my work effectively. A special word of thanks is reserved for my esteemed guide, Mr. B. Ramesh Kumar, Assistant Professor  of the Department of Computer Science with Data Analytics, for her scholarly expertise and patient guidance, which were pivotal in shaping this study. 
+I also appreciate the collective support and constructive feedback provided by the entire faculty of the Department of Computer science with data Analytics, who contributed to my learning experience. Finally, I offer my humble prayers to the Almighty God for granting me the strength, sound health, and mental perseverance required to successfully conclude this project journey 
+                                                                                                       PUGHALVANAN C
+CONTENTS
+TABLE CONTENTS2098358-1876392098358-187639
+CONTENTS
+Pg. No.
+ACKNOWLEDGEMENT
+SYNOPSIS
+INTRODUCTION
+1
+ 1.1 Organization Profile
+4
+ 1.2 System Specification
+6
+1.2.1 Hardware Configuration
+8
+1.2.2 Software Configuration
+10
+SYSTEM STUDY
+16
+ 2.1 Existing System
+17
+   2.1.1 Drawbacks
+19
+ 2.2 Proposed System
+19
+   2.2.1 Features
+22
+   2.2.2 Modules
+26
+SYSTEM DESIGN
+32
+ 3.1 Form Design
+33
+ 3.2 Input Design
+35
+ 3.3 Output Design
+36
+ 3.4 Database Design
+38
+ 3.5 System Development
+39
+     3.5.1 Dashboard Module 
+42
+     3.5.2 Product Management Module 
+43
+     3.5.3 Inventory Management Module 
+44
+     3.5.4 Product Search Module 
+45
+     3.5.5 Shopping Cart Module 
+46
+    3.5.6 Checkout Module 
+47
+    3.5.7 Order Placement Module 
+48
+    3.5.8 Order Confirmation Module 
+49
+    3.5.9 Order Management Module 
+50
+    3.5.10 Customer Management Module 
+50
+    3.5.11 Analytics Module 
+51
+    3.5.12 Machine Learning Module 
+52
+    3.5.13 User Authentication Module
+52
+    3.5.14 UI Enhancement Module 
+53
+    3.5.15 Logout Module 
+54
+SOFTWARE TESTING AND IMPLEMENTATION 
+54
+  4.1 Testing
+54
+  4.2 Test cases
+55
+CONCLUSION
+56
+     5.1. Future Enhancement
+58
+BIBLIOGRAPHY
+59
+APPENDICES
+61
+   A. Data Flow Diagram
+61
+   B. Table Structure
+64
+   C. Sample Coding
+65
+   D. Sample Input
+70
+   E. Sample Output
+73
+SYNOPSIS
+SYNOPSIS
+Sentinel-Trace is a web-based intelligent product traceability, compliance monitoring, and network security management system developed to improve the visibility, reliability, and security of product-related information across different stages of an organizational workflow. Traditional product tracking and monitoring processes often depend on manual records, spreadsheets, disconnected systems, and periodic inspections, making it difficult to maintain accurate traceability information, monitor compliance requirements, identify security-related activities, and obtain a centralized view of operational data. These approaches can result in duplicated records, delayed identification of issues, difficulty in tracking product history, inconsistent monitoring, and increased manual effort.
+The proposed system provides a centralized digital platform that enables authorized users to manage product information, track product movement and related activities, monitor compliance conditions, identify potential network security issues, and generate useful operational information through a unified interface. The Phase 2 version extends the functionality defined during Phase 1 by moving from the initial system design and specification toward an implemented and integrated application. The updated system combines product traceability, compliance monitoring, network scanning, security monitoring, alert management, activity logging, analytics, and reporting within a common platform.
+The application is developed using Python, Flask, React.js, SQLite/MySQL, Nmap, RESTful APIs, JavaScript, HTML, CSS, and related Python libraries. React.js is used to develop the interactive frontend interface, while Flask provides the backend services and REST API required for communication between the frontend and application logic. Python provides the core processing environment for traceability, monitoring, data processing, and security-related operations. SQLite/MySQL is used for structured storage of application information, while SQLAlchemy provides database interaction and management. Nmap is integrated to support network discovery and scanning activities. Axios is used for communication between the frontend and backend services.
+The system includes important features such as user authentication, dashboard management, product traceability, product and batch management, supplier information management, compliance monitoring, network scanning, network security monitoring, alert generation, activity logging, data visualization, report generation, and administrative management. These modules provide a structured approach for monitoring both product-related information and security-related activities. The centralized dashboard allows authorized users to obtain an overview of important system information and monitor activities without depending on separate applications or manually maintained records.
+The Product Traceability Module maintains information related to products and their associated records throughout the traceability process. Product and batch information can be organized so that users can identify relevant product details, track associated activities, and retrieve information when required. The system maintains traceability information in a structured database, reducing dependence on manual documentation and improving the consistency of product records.
+The Compliance Monitoring Module supports the identification and monitoring of compliance-related information associated with products and organizational activities. It provides a centralized method for recording compliance information, identifying conditions that require attention, and presenting relevant information through the system interface. This helps authorized users monitor compliance-related activities more efficiently and provides better visibility into records that may require review.
+The Network Scanning and Security Monitoring Modules extend Sentinel-Trace beyond conventional product management by providing network-related monitoring capabilities. Network scanning can be used to identify active devices and available services within the authorized monitoring environment. The collected information can be processed and presented through the application so that users can observe network activity and identify conditions that may require further investigation. The system is intended for authorized network monitoring and security assessment.
+The Alert and Notification Module provides information about events or conditions that require user attention. Alerts can be associated with compliance issues, network-related observations, or other monitored activities. By presenting important events through a centralized interface, the system helps users identify potential issues more quickly and reduces the possibility of important information being overlooked during manual monitoring.
+The Activity Logging Module maintains records of important actions performed within the application. These records support monitoring, accountability, and traceability of system activities. Maintaining an activity history allows authorized users to review relevant operations and provides useful information when investigating changes or events within the system.
+The Analytics and Reporting functionality provides a structured representation of system information through dashboards, tables, and reports. Users can obtain an overview of product records, traceability activities, compliance information, network observations, alerts, and other operational data. This centralized presentation supports easier interpretation of system information and assists users in making informed decisions based on the available records.
+The system also incorporates AI-assisted functionality to support the interpretation and handling of information available within Sentinel-Trace. The AI component is designed to assist users by providing relevant explanations, summaries, and guidance based on system information. This reduces the effort required to manually interpret large amounts of operational or monitoring information and provides an additional layer of assistance for users working with the system.
+Security is an important aspect of Sentinel-Trace. JWT-based authentication is used to manage authenticated access to protected application resources, while role-based access control helps restrict administrative and sensitive functionality to authorized users. The system also maintains structured activity records to improve accountability. Database access is managed through the application backend, helping separate frontend interaction from direct database operations and providing controlled access to stored information.
+The Phase 2 implementation also improves the overall user interface and interaction experience of Sentinel-Trace. The system provides a centralized dashboard, organized navigation, structured forms, tables, status indicators, alerts, and visual representations of important information. The interface is designed to make traceability, compliance, and security monitoring easier to understand and operate. Responsive design principles are applied so that the major system functions can be accessed through different screen sizes.
+The database component of the system provides centralized storage for important entities such as users, products, suppliers, production or tracking batches, compliance records, network scan information, security events, alerts, activity logs, and related system records. Structured database management improves data consistency and allows information generated by different modules to be retrieved and displayed when required. The database also provides the foundation for analytics, reporting, traceability, and monitoring functions.
+Software testing is carried out in Phase 2 to verify the functionality and integration of the major Sentinel-Trace modules. Individual operations such as user authentication, product management, traceability processing, compliance monitoring, network scanning, alert generation, activity logging, dashboard operations, and report generation are tested by comparing expected results with actual results. Integration testing is also performed to verify communication between the React.js frontend, Flask backend, database, and security-related processing components.
+The testing process helps identify errors and inconsistencies within the application and provides an opportunity to improve the reliability and usability of the implemented system. The interaction between the frontend interface, REST API services, backend processing, and database is verified to ensure that information is correctly submitted, processed, stored, retrieved, and displayed. The major modules are evaluated individually as well as as part of the integrated Sentinel-Trace application.
+Overall, the Phase 2 version of Sentinel-Trace provides an integrated digital solution for product traceability, compliance monitoring, and network security management. By combining centralized data management, traceability operations, compliance monitoring, network scanning, security alerts, activity logging, analytics, reporting, and AI-assisted functionality, the system reduces manual effort and improves the visibility of important organizational information. The Phase 2 implementation establishes a stronger foundation for future improvements such as advanced predictive analytics, enhanced AI-based anomaly detection, expanded compliance frameworks, improved network security analysis, real-time monitoring, cloud-based deployment, mobile accessibility, and integration with additional enterprise systems.
+INTRODUCTION
+In the modern digital environment, organizations depend heavily on interconnected systems, digital platforms, suppliers, products, and network infrastructure to support their daily operations. As the number of products, production activities, suppliers, compliance requirements, and connected devices increases, maintaining accurate product information and monitoring operational and network activities becomes increasingly difficult. Traditional methods of maintaining product records, monitoring compliance information, and identifying network-related issues often involve multiple tools and manual processes, which can make information difficult to manage and analyze efficiently.
+With the rapid advancement of Artificial Intelligence, web technologies, automation, and network security tools, intelligent systems can be developed to simplify the management and monitoring of complex digital environments. Automated data processing, network scanning, security event monitoring, and AI-assisted analysis can help organizations identify important information more efficiently. By combining product traceability with compliance monitoring and network security capabilities, a centralized system can provide better visibility into both operational and technical activities.
+The Sentinel-Trace system is a web-based intelligent platform developed to provide centralized product traceability, compliance monitoring, AI-assisted analysis, and network security monitoring. The system extends the initial Phase 1 design by moving toward a more integrated and implementation-oriented application. Instead of maintaining product information, compliance records, security information, and monitoring activities separately, the proposed system provides a unified environment through which users can manage, monitor, analyze, and retrieve important information from a centralized platform.
+The proposed system provides product traceability functionality for maintaining information related to products, suppliers, production activities, and batches. Product and batch information can be organized systematically so that relevant records can be traced throughout the defined process. This improves visibility into product-related information and reduces dependence on scattered or manually maintained records. The traceability functionality also provides a structured foundation for monitoring product information and generating useful reports.
+One of the important functionalities of Sentinel-Trace is compliance monitoring. The system provides a centralized mechanism for maintaining and monitoring compliance-related information associated with products, processes, or organizational activities. Compliance records can be organized and monitored so that users can identify important requirements and potential issues more efficiently. Alerts and status information can be used to bring attention to compliance-related conditions that require further review or action.
+The system also incorporates network scanning and network security monitoring capabilities. Network-related information can be collected and analyzed to provide better visibility into connected systems and possible security events. Tools such as Nmap can be utilized for network scanning and identification of available network information. The system can organize scan results and security-related events so that users can monitor network conditions from a centralized dashboard rather than depending entirely on separate command-line tools or manually reviewed information.
+The AI-assisted functionality of Sentinel-Trace provides an additional layer of intelligent analysis. The system is designed to assist users in understanding collected information, identifying important patterns or conditions, and obtaining useful responses from the available system data. AI assistance can support the analysis of product, compliance, and security-related information and can help users interact with the system in a more convenient manner. This functionality provides a foundation for incorporating more advanced intelligent analysis into future versions of the application.
+The application is developed using modern web development and programming technologies. The backend is implemented using Python and Flask, which provides the application logic and REST-based API services. React.js is used for developing the interactive frontend and dashboard components. SQLite is used for structured data storage as defined in the project implementation, while the architecture can support database-based management of system records. Nmap is incorporated for network scanning activities, and Postman can be used for testing and validating API functionality. Supporting technologies such as JavaScript, HTML, CSS, and Python libraries are used to develop the complete application environment.
+Security and controlled access are important considerations in the proposed system because the application handles product information, compliance records, network information, and system activities. The system provides authentication and access-control mechanisms to restrict unauthorized access to protected functionality. User-related information and system activities are maintained through structured records, while activity logging provides a mechanism for tracking important operations performed within the application. These capabilities help improve accountability and provide better control over the use of the system.
+The user interface of Sentinel-Trace is designed to provide a centralized and organized experience for users. A dashboard provides access to important system information and monitoring components, while individual modules allow users to manage products, suppliers, production batches, compliance information, network scans, security events, and reports. Organized navigation, status information, alerts, tables, and visual representations help users understand the information available within the system with reduced complexity.
+The system follows a modular architecture in which each major functionality is implemented as an independent but connected component. Modules such as User Authentication and Access Control, Dashboard Management, Product Traceability, Supplier and Raw Material Management, Production Batch Management, Compliance Monitoring, Network Scanning, Network Security Monitoring, AI-Assisted Analysis, Alert and Notification Management, Data Visualization, Activity Logging, Report Generation, Error Detection, and Logout Management work together to provide an integrated monitoring and traceability platform. The modular architecture improves maintainability and provides flexibility for adding additional capabilities in future development stages.
+The Product Traceability Module provides structured management of product-related information and supports the tracking of products and associated records. The Supplier and Raw Material Management Module maintains information related to suppliers and materials associated with the product process. The Production Batch Management Module provides an organized method for managing batch-related information and connecting production records with traceability data. These modules collectively establish a structured foundation for monitoring product movement and associated information.
+The Compliance Monitoring Module is responsible for organizing compliance-related information and identifying records that require attention. The system can provide status information and alerts to help users monitor compliance conditions. This reduces the need for manual checking of separate records and provides a centralized location for reviewing compliance-related information.
+The Network Scanning and Network Security Monitoring Modules provide facilities for monitoring network-related information. Network scans can be performed using Nmap, and the resulting information can be organized within the application. Security-related events and conditions can be monitored through the system so that users can review network information and identify potential issues. The combination of scanning and monitoring provides a more structured approach to basic network security visibility.
+The system also includes Alert and Notification functionality to highlight important conditions identified through compliance monitoring, network monitoring, or other system activities. Alerts can help users identify issues that require attention without manually reviewing every available record. The Activity Logging Module maintains information about relevant system operations and supports monitoring of user and application activities.
+The Data Visualization and Report Generation Modules provide mechanisms for presenting collected information in a more understandable format. Dashboards, tables, status information, and reports can help users interpret product, compliance, and network-related information. By converting raw system records into organized information, the application supports more efficient monitoring and decision-making.
+The implementation of Sentinel-Trace demonstrates how modern web technologies, automation, network security tools, and AI-assisted functionality can be combined to create a centralized monitoring and traceability environment. By integrating product management, compliance monitoring, network scanning, security monitoring, alerts, activity logging, and reporting, the system reduces dependence on disconnected manual processes and provides users with a unified platform for managing important operational information.
+The system also provides a foundation for integrating additional data sources and services as the project develops. The modular design allows future versions to incorporate more advanced AI models, improved security analysis, additional compliance standards, real-time monitoring capabilities, and enhanced reporting mechanisms. This provides flexibility for adapting the system to different organizational requirements and expanding its functionality beyond the initial implementation.
+The proposed system provides several opportunities for future enhancement. Advanced predictive analytics can be incorporated to identify potential compliance or security issues before they become significant problems. AI-based anomaly detection can be introduced for more intelligent network monitoring and event analysis. Additional compliance frameworks, real-time network monitoring, improved security alerts, cloud-based deployment, mobile access, automated report generation, and integration with enterprise systems can also be considered. These enhancements can improve the scalability, intelligence, and practical applicability of Sentinel-Trace.
+Overall, Sentinel-Trace provides a centralized and integrated solution for product traceability, compliance monitoring, AI-assisted analysis, and network security monitoring. The system combines structured product and batch management with compliance tracking, network scanning, security event monitoring, alerts, activity logging, visualization, and reporting. By extending the concepts developed during Phase 1 into a more implementation-oriented Phase 2 system, Sentinel-Trace provides a foundation for improving operational visibility, security awareness, information management, and decision-making within a unified digital environment.
+1.1 Organizational Profile
+An organizational profile provides an overview of the organization or environment for which the system is developed. In this project, the organization is considered to be a modern industrial and manufacturing environment involved in product manufacturing, raw material management, production activities, quality monitoring, compliance management, and network-based digital operations. Efficient monitoring of production processes, product information, compliance requirements, and digital infrastructure is important for maintaining operational efficiency, transparency, product quality, and security.
+The organization manages different types of operational information generated throughout the manufacturing process. This includes supplier details, raw material information, production batch records, product information, quality and compliance documentation, and network-related information. In traditional environments, these records may be maintained using separate spreadsheets, paper-based documentation, standalone applications, or independent databases. As the amount of information increases, maintaining accurate records and obtaining a complete view of organizational activities becomes difficult.
+To overcome these limitations, the Sentinel-Trace system provides a web-based integrated solution for product traceability, compliance monitoring, AI-assisted analysis, and network security management. The system is designed to provide a centralized platform through which authorized users can manage product and production information, monitor compliance-related records, and observe network activities. By combining these functionalities into a single platform, the system reduces the dependency on disconnected tools and manual coordination.
+The system supports product traceability by maintaining information related to raw materials, suppliers, production batches, manufacturing stages, and products. These records help organizations trace product information throughout the production lifecycle. Maintaining structured product records also helps administrators identify the source of production issues, quality problems, or other abnormalities more efficiently.
+The system also provides compliance monitoring functionality for managing regulatory and quality-related information. Compliance documentation, certification information, inspection records, and related requirements can be maintained in an organized manner. This provides users with a centralized method for reviewing compliance status and identifying records that may require attention.
+Another important component of Sentinel-Trace is network security monitoring. Modern industrial environments depend on interconnected computers, servers, devices, and communication networks. The system uses Nmap for network scanning and provides facilities for monitoring connected devices and network-related information. This helps administrators obtain better visibility into the network environment and identify potential security-related conditions.
+The system also incorporates Artificial Intelligence and data analysis capabilities to assist with the analysis of operational information. AI-based functionality can support the identification of patterns, anomalies, and important information within the available system data. The AI-assisted approach provides a foundation for generating useful insights and supporting better decision-making within the industrial environment.
+Administrators and authorized users can access the system through a centralized dashboard. The dashboard provides access to product information, production records, compliance information, network monitoring activities, alerts, and reports. Activity logging and controlled access mechanisms help maintain accountability and protect important system information.
+The application is developed using Python, Flask, React, Nmap, SQLite, Visual Studio Code, and Postman, along with supporting web technologies such as JavaScript, HTML, and CSS. Flask provides the backend application environment, while React is used for developing the frontend interface. SQLite provides structured database storage, Nmap supports network scanning activities, Visual Studio Code is used as the development environment, and Postman is used for testing API functionality.
+Overall, the proposed system helps the organization move from traditional and disconnected monitoring methods toward an integrated digital monitoring platform. By combining product traceability, compliance monitoring, AI-assisted analysis, network security monitoring, alerts, activity logging, and reporting, Sentinel-Trace improves operational visibility, reduces manual effort, supports faster identification of issues, and provides a centralized environment for managing industrial information.
+1.2 System Specification
+System specification describes the hardware and software requirements needed for the development and operation of the Sentinel-Trace system. These specifications define the technical environment required to implement the product traceability, compliance monitoring, AI-assisted analysis, and network security monitoring functionalities effectively.
+The system follows a web-based application architecture, where the frontend interface communicates with the backend application for processing requests, managing data, and performing system operations. The frontend is developed using React, while the backend is implemented using Python and Flask. This architecture separates the user interface from the application logic and allows different modules of the system to communicate through the backend services.
+The system uses SQLite as the database technology for structured data storage. The database maintains important information such as supplier details, raw materials, production batches, product records, compliance information, device information, and network monitoring records. The relational structure allows related information to be connected through identifiers and retrieved when required by different system modules.
+For network monitoring activities, the system incorporates Nmap as the network scanning technology. Administrators can provide network scanning information such as target IP addresses and scan-related parameters. The results can be used to identify connected devices and obtain information required for network monitoring and security analysis.
+The system provides different functional components including Product Traceability, Supplier and Raw Material Management, Production Batch Management, Compliance Monitoring, Network Scanning, Network Security Monitoring, AI-Assisted Analysis, Alert Management, Data Visualization, Activity Logging, Report Generation, User Authentication, and Access Control. These modules work together to provide an integrated environment for industrial monitoring and management.
+The Product Traceability component maintains product and production information throughout the defined lifecycle. Supplier and raw material information can be connected with production batch records, allowing users to trace the origin and related information of products. This structured approach improves transparency and makes it easier to investigate production-related issues.
+The Compliance Monitoring component provides facilities for maintaining compliance-related documentation and quality information. Users can manage certification records, inspection information, and regulatory-related data through the system. This supports better organization of compliance information and helps administrators monitor the status of important requirements.
+The Network Security Monitoring component works together with Nmap to provide information about network devices and scanning activities. The system can maintain device information such as device identifiers, names, IP addresses, operational status, and scan information. This provides administrators with a centralized view of network-related activities.
+The system also provides AI-assisted analysis for supporting the interpretation of operational information. AI-based functionality can be used to analyze available data, identify patterns or unusual conditions, and provide useful summaries or recommendations. This functionality supports the project's objective of combining Artificial Intelligence with industrial monitoring and management.
+The application includes controlled access and user management functionality to protect system information. Authentication mechanisms help ensure that only authorized users can access protected functions. Activity information can also be maintained through logging mechanisms, providing better accountability for important operations performed within the application.
+The system is developed using Python, Flask, React, Nmap, SQLite, Visual Studio Code, and Postman. Python provides the core programming environment, Flask supports backend development and application services, React provides the frontend interface, Nmap supports network scanning, SQLite provides database storage, Visual Studio Code is used for development, and Postman supports API testing and validation.
+The hardware environment defined for the system includes an Intel Core i5 processor, 8 GB RAM, 64 GB storage, and a 5V adapter, with optional components such as a barcode scanner and QR code printer for supporting product identification and traceability activities. These components provide the basic technical environment required for operating the proposed system.
+Overall, the system specification provides the technical foundation required to develop and operate Sentinel-Trace as an integrated industrial monitoring platform. The combination of web technologies, structured database management, network scanning, Artificial Intelligence, and monitoring functionality enables the system to manage product information, monitor compliance requirements, observe network activities, and provide useful operational information through a centralized application.
+1.2.1 Hardware Configuration
+The hardware configuration defines the physical components required for the development, testing, and execution of the AI-Powered Face Recognition System for Automated Event Photo Retrieval. Since the system involves web development, Artificial Intelligence, facial recognition, image processing, and database operations, a computer with sufficient processing power, memory, and storage is required.
+A modern multi-core processor is recommended for running Visual Studio Code, Python, Flask, React.js, Vite, databases, web browsers, and AI-related libraries simultaneously. A minimum of 8 GB RAM is suitable for basic development and testing, while 16 GB RAM provides better performance when processing larger photo collections and running multiple applications.
+A Solid State Drive (SSD) is recommended for faster system startup, application loading, project file access, and processing of large collections of photographs. Adequate storage is required for source code, dependencies, database files, documentation, and high-resolution event photographs.
+A webcam or built-in camera is required for the guided facial capture feature. The camera provides facial input that can be processed for embedding generation and photo searching. A keyboard, mouse, and suitable display are required for development, application interaction, photo management, and administrative operations.
+A stable internet connection is also recommended for installing dependencies, accessing development resources, testing web functionality, and synchronizing photographs through supported cloud services such as Google Drive.
+The recommended hardware configuration for developing and testing the proposed system is given below:
+DEVICE NAME
+Jack
+PROCESSOR
+AMD Ryzen 5 5500U with Radeon Graphics (2.10 GHz) 
+INSTALLED RAM
+16.0 GB 
+STORAGE
+256 GB SSD 
+SYSTEM TYPE
+64-BIT OPERATING SYSTEM, X64-BASED PROCESSOR
+PRODUCT ID
+00342-42670-52715-AAOEM
+DEVICE ID
+C5FAFC77-936D-4CE7-ABAF-212E96B83F7F
+    Table 1.2.1: Hardware Configuration
+The software configuration defines the software environment required for the development, testing, and execution of the Sentinel-Trace system. The system combines web development, database management, product traceability, compliance monitoring, Artificial Intelligence, and network security technologies to provide an integrated platform for industrial monitoring and management.
+The frontend is developed using React.js, along with HTML, CSS, and JavaScript, to provide interactive pages, dashboards, product management interfaces, traceability views, compliance information, network monitoring displays, alerts, and administrative functions. The backend is developed using Python and Flask, which provides RESTful APIs for authentication, product and supplier management, production batch tracking, compliance monitoring, network scanning, security monitoring, and database operations.
+For network security monitoring, Nmap is used to perform network scanning and identify available devices and services within the monitored network. The system uses the scanning results to support network monitoring and security analysis. Python-based processing is used to analyze collected information and present relevant security events and alerts through the application.
+For data management, SQLite is used as the database system for storing application data. The database maintains information related to users, suppliers, raw materials, products, production batches, compliance records, network devices, network scan results, security events, alerts, and activity logs. The backend provides the required database operations for storing, retrieving, updating, and managing these records.
+The application uses REST APIs to facilitate communication between the React frontend and Flask backend. Authentication and access control are used to protect application functions and restrict administrative operations. Visual Studio Code is used as the primary development environment for writing, testing, debugging, and managing the project source code.
+The system is designed to operate in a web-based development and testing environment. Google Chrome and Microsoft Edge can be used for testing the web application, dashboards, authentication, product traceability functions, compliance monitoring, network security displays, and API communication. The software environment supports the integration of product information, compliance records, network monitoring data, and analytical results within a centralized application.
+The software configuration used for developing the proposed system is given below:
+OPERATING SYSTEM
+WINDOWS 11
+PROGRAMMING LANGUAGE
+PYTHON, JAVASCRIPT 
+FRONTEND FRAMEWORK
+HTML,CSS
+BACKEND RUNTIME
+VITE 
+BACKEND FRAMEWORK
+FLASK 
+NETWORK SCANNING
+NMAP
+FRONTEND TECHNOLOGIES 
+HTML, CSS, JAVASCRIPT  
+DATABASE 
+FIREBASE
+DATABASE LIBRARY 
+FIREBASE ADMIN SDK 
+API COMMUNICATION 
+REST API / FETCH 
+IDE / CODE EDITOR 
+VISUAL STUDIO CODE 
+WEB BROWSER
+GOOGLE CHROME
+Table 1.2.2: Software Configuration
+Windows 11 is used as the operating system for developing and running the Sentinel-Trace system. It provides a stable environment for running development tools such as Visual Studio Code, Python, React.js, Flask, Firebase services, web browsers, and other supporting software.
+Windows 11 provides compatibility with the web development, database, Artificial Intelligence, and network security technologies used in the project. Its support for Python, React.js, Flask, Firebase, Nmap, and Visual Studio Code makes it suitable for developing, testing, and executing the proposed system. It also provides the required environment for managing project files, running backend and frontend services, maintaining product and compliance records, performing network scans, and testing the application's functionality.
+Programming Language – Python and JavaScript
+Python and JavaScript are the primary programming languages used in the development of the Sentinel-Trace application. Python is mainly used for backend development, data processing, network security operations, and Artificial Intelligence-related functionality, while JavaScript is used to develop the interactive frontend of the system.
+Python is used with the Flask framework to implement backend services, API operations, database communication, data processing, network monitoring, and security-related functionality. JavaScript is used with React.js to implement the user interface, user interactions, API communication, dashboards, product traceability views, compliance monitoring interfaces, network monitoring displays, alerts, and other frontend features. The combination of Python and JavaScript provides a suitable environment for developing the proposed intelligent web-based monitoring system.
+Frontend Framework – Html, Css and Javascript
+HTML, CSS, and JavaScript are used to develop the frontend of the Sentinel-Trace system. HTML is used to create the basic structure of the web pages, including navigation elements, forms, tables, dashboards, product information sections, compliance records, and network monitoring interfaces.
+CSS is used to design and style the application interface. It provides the layout, spacing, fonts, buttons, forms, tables, alerts, and other visual elements required to create a clear and user-friendly interface.
+JavaScript is used to provide interactive functionality and dynamic behaviour within the application. It supports user interactions, form handling, data retrieval, API communication, dashboard updates, product traceability functions, compliance monitoring, network monitoring, and display of security alerts and system information.
+The combination of HTML, CSS, and JavaScript provides a simple and effective frontend environment for the Sentinel-Trace application. These technologies allow the system to present product, compliance, and network security information in an organized manner while providing interactive functionality for users and administrators.
+Backend Runtime – Python
+Python is used as the primary backend programming language for the Sentinel-Trace system. It provides the foundation for developing the backend services and implementing the application logic, data processing, network monitoring, and security-related functionalities of the system.
+In this project, Python is used with the Flask framework to handle client requests, process application logic, communicate with the Firebase database, manage authentication, and support product traceability and compliance monitoring operations. Python also supports the integration of Nmap for network scanning and monitoring activities. The collected network information can be processed by the backend and presented through the application for monitoring devices, identifying network-related information, and generating security alerts.
+The combination of Python and Flask provides a suitable backend environment for developing the Sentinel-Trace application and integrating product traceability, compliance monitoring, network security monitoring, and other system functionalities.
+Backend Framework – Flask
+Flask is a lightweight Python web framework used to develop the backend of the Sentinel-Trace system. It provides the required structure for developing web services, handling client requests, routing, responses, and backend application operations.
+In the proposed system, Flask manages backend operations related to user authentication, product and supplier management, production batch tracking, compliance monitoring, network scanning, security monitoring, and administrative operations. It provides communication between the frontend and backend while supporting database operations and the integration of network monitoring functionality.
+Frontend Technologies – HTML, CSS and JavaScript
+HTML, CSS, and JavaScript are used together to create the structure, appearance, and interactive behaviour of the Sentinel-Trace application's user interface.
+HTML (HyperText Markup Language) is used to structure web pages and define elements such as forms, buttons, navigation sections, product information, tables, dashboards, compliance records, network monitoring sections, and other interface components.
+CSS (Cascading Style Sheets) is used to control the visual appearance, layout, spacing, responsiveness, and styling of the application. It provides styling for navigation components, authentication pages, dashboards, product information, compliance interfaces, network monitoring displays, alerts, tables, and administrative interfaces.
+JavaScript provides dynamic behaviour and user interaction within the application. It is used for handling user actions, communicating with backend APIs, managing form submissions, retrieving information, updating dashboard content, displaying product and compliance information, and implementing interactive features throughout the system.
+Database – Firebase Firestore
+Firebase Firestore is used as the database management system for storing the application's structured data. It provides a cloud-based database environment for storing and retrieving information required by different modules of the Sentinel-Trace system.
+In the Sentinel-Trace system, Firebase Firestore is used to maintain information related to users, suppliers, products, raw materials, production batches, compliance records, network devices, network scan information, security events, alerts, and other application records.
+Firestore provides flexible data storage and retrieval capabilities that support the different operations of the application. Its cloud-based structure also allows the application to access required information through the Firebase services used by the system.
+Database Library / SDK – Firebase Admin SDK
+Firebase Admin SDK is used to provide server-side communication between the Flask backend and Firebase services. It allows the backend application to securely access and manage data stored in Firebase Firestore.
+In this project, the Firebase Admin SDK is used by the backend to perform database operations such as storing, retrieving, updating, and managing application records. It provides the required connection between the Python Flask backend and Firebase services, allowing the Sentinel-Trace system to manage its product, compliance, network monitoring, and user-related information.
+Network Scanning – Nmap
+Nmap (Network Mapper) is used as a network scanning tool in the Sentinel-Trace system to identify devices and services available within a monitored network.
+In the proposed system, Nmap supports network monitoring by collecting information about connected devices, open ports, available services, and other network-related details. The scanning results can be processed by the backend and displayed through the application to assist in network security monitoring and identification of potential security-related events.
+Nmap provides an important component of the network security functionality of Sentinel-Trace by helping administrators obtain information about the monitored network environment.
+API Communication – REST API
+REST API is used for communication between the frontend and backend components of the Sentinel-Trace application. It allows the frontend to send requests to the Flask backend and receive the required responses.
+REST API communication is used for operations such as user authentication, product management, supplier information, production batch information, compliance records, network scanning, security monitoring, alerts, and other application services. This provides structured communication between the client-side interface and the backend services.
+IDE / Code Editor – Visual Studio Code
+Visual Studio Code is used as the primary code editor for developing the Sentinel-Trace system. It provides support for Python, Flask, JavaScript, HTML, and CSS, making it suitable for developing the different components of the web-based application.
+Visual Studio Code provides useful features such as syntax highlighting, auto-completion, debugging, integrated terminal support, extensions, and project file management. These features simplify development and help identify and resolve programming errors efficiently.
+The integrated terminal can be used to install required Python packages, run the Flask backend, execute project commands, test APIs, and perform other development-related operations within the project environment.
+Web Browser – Google Chrome
+Google Chrome is used for running and testing the Sentinel-Trace web application. It provides support for modern web standards and developer tools that help in testing the application's frontend and backend communication.
+Chrome Developer Tools can be used to inspect HTML elements, analyze CSS, monitor API requests, identify JavaScript errors, and test the responsiveness and behaviour of the application. This helps ensure that the Sentinel-Trace system operates correctly and provides a consistent user experience.
+The software configuration described above provides a suitable development environment for implementing the Sentinel-Trace system. The combination of Python, Flask, HTML, CSS, JavaScript, Firebase Firestore, Firebase Admin SDK, Nmap, REST API, and Visual Studio Code provides the required foundation for developing the product traceability, compliance monitoring, and network security management functionalities of the proposed system.
+2. SYSTEM STUDY
+System study is an essential phase in the software development process that involves analyzing the existing system, identifying its limitations, and determining the requirements for a new and improved solution. It provides a clear understanding of the current workflow, operational challenges, and the improvements that can be achieved through automation and centralized system management.
+In industrial environments, efficient management of product information, production activities, compliance records, and network security information is important for maintaining transparency, operational efficiency, and system security. Many industrial workflows continue to depend on separate systems, manual records, spreadsheets, paper-based documentation, and independent network monitoring tools. These traditional approaches make it difficult to maintain a centralized view of product movement, compliance status, and network activities.
+The study of the existing system revealed several challenges in tracking products throughout their lifecycle. Product information may be maintained across different departments and records, making it difficult to trace products from raw material procurement through production, quality inspection, storage, and distribution. Manual compliance record management can also result in delayed verification and difficulty in maintaining updated compliance information.
+Network security monitoring is another important challenge in the existing environment. When network devices and activities are monitored separately from operational systems, it becomes difficult to obtain a centralized view of connected devices, available services, and security-related events. Delayed identification of network issues can increase the difficulty of maintaining a secure industrial environment.
+To address these issues, the Sentinel-Trace system was developed as an integrated web-based platform for product traceability, compliance monitoring, and network security management. The proposed system provides a centralized environment for managing product and production information, maintaining compliance records, monitoring network information, and presenting important system information through an organized interface.
+The proposed system also provides management functions through which authorized users can maintain supplier information, raw material details, product information, production batch records, compliance documentation, and network monitoring information. The system supports product lifecycle tracking from raw materials through production and distribution while providing centralized access to relevant records.
+The system is developed using Python, Flask, HTML, CSS, and JavaScript, with Firebase Firestore used for data management. Nmap is used to support network scanning and monitoring activities. The Flask backend handles application logic and communication with Firebase services, while HTML, CSS, and JavaScript provide the user interface. The system also provides dashboards, alerts, reports, and analytical information to assist users in monitoring operational and security-related activities.
+The system study confirms that implementing an integrated product traceability, compliance monitoring, and network security solution can reduce manual effort, improve information accessibility, support product lifecycle visibility, simplify compliance management, and provide better monitoring of network activities. The modular structure of the proposed system also provides a foundation for future enhancements and expansion of intelligent industrial monitoring capabilities.
+2.1 Existing System
+The existing system used for managing industrial product information, compliance activities, and network monitoring is primarily based on separate departmental systems and manual record-keeping methods. Product and production information may be maintained using spreadsheets, paper-based records, or independent applications, while network monitoring and security activities may be performed separately. Although these methods can support individual activities, they become increasingly difficult to manage as the amount of operational information increases.
+In the manual system, product information is generally recorded at different stages of the product lifecycle. Supplier details, raw material information, production records, quality information, storage details, and distribution information may be maintained separately. When users need to trace a product, they may have to check multiple records or contact different departments to obtain the required information.
+The process of tracking products becomes more difficult when a large number of products and production batches are involved. Users may need to search through multiple files or records to identify the source of raw materials, production details, compliance information, or other lifecycle information. This manual process can be time-consuming and may result in incomplete or delayed traceability information.
+The existing system also provides limited integration between product management and compliance monitoring. Compliance documents and verification records may be maintained separately from product and production information. As a result, obtaining a complete view of a product's compliance status can require checking multiple sources of information.
+Network monitoring is another major limitation of the existing approach. Network devices, services, and security-related information may be monitored using separate tools or manual procedures. Without a centralized system, administrators may find it difficult to obtain an organized view of network activity and identify important security events quickly.
+The existing system also provides limited support for centralized reporting and analysis. Product lifecycle information, compliance records, and network security information may exist in different locations, making it difficult to generate comprehensive reports or obtain meaningful insights from the collected data.
+Furthermore, traditional industrial management methods provide limited automation for processing and monitoring large amounts of information. Tasks such as maintaining product records, checking compliance information, tracking production activities, monitoring network devices, and identifying security-related events may require significant manual effort. This increases the workload for users and can reduce the efficiency of industrial operations.
+Security and access control can also be concerns when operational information is maintained through loosely organized storage methods. Without proper authentication and controlled access, unauthorized users may gain access to sensitive product, compliance, or network information. Separate systems may also lack a centralized mechanism for maintaining user activity and administrative operations.
+Overall, the existing industrial management and monitoring approach is fragmented, manual, time-consuming, and inefficient when handling large amounts of operational information. It lacks integrated product traceability, centralized compliance monitoring, unified network security monitoring, organized reporting, and a common platform for managing related industrial information. These limitations make the existing approach less suitable for providing efficient, centralized, and reliable monitoring of modern industrial operations.
+2.1.1 Drawbacks
+The major drawbacks of the existing system are:
+Product information is often maintained separately using spreadsheets, paper-based records, or independent systems.
+Tracking a product throughout its complete lifecycle is difficult when information is stored across different locations.
+Manual product tracking requires considerable time and effort.
+There is no centralized system for managing product traceability information.
+Supplier and raw material information may be maintained separately from production records.
+Identifying the source and movement of products can be difficult when records are distributed across different departments.
+Production and batch information may require manual searching and verification.
+Compliance records may be maintained separately from product and production information.
+Checking the compliance status of products can be time-consuming when documentation is stored in different locations.
+Delayed updating of compliance information can make monitoring and verification difficult.
+There is limited integration between product traceability and compliance monitoring.
+Network monitoring may be performed separately from other industrial management activities.
+Identifying connected devices and available network services can require separate monitoring tools and procedures.
+Security-related network information may not be available through a centralized monitoring interface.
+Large amounts of operational and network information are difficult to manage using manual methods.
+Generating combined product, compliance, and network monitoring reports can be difficult.
+There is limited centralized visualization of important operational and security information.
+Manual monitoring can delay the identification of operational and network-related issues.
+User access and administrative operations may be difficult to manage when separate systems are used.
+Overall, the existing industrial monitoring and management process is fragmented, manual, time-consuming, and less efficient for integrated product traceability, compliance monitoring, and network security management.
+2.2 Proposed System
+The proposed Sentinel-Trace system is a web-based application designed to integrate and simplify the management of product traceability, compliance monitoring, and network security information. The system replaces fragmented manual record-keeping and separate monitoring approaches with an integrated digital platform that provides centralized access to product, production, compliance, and network-related information.
+The application provides a structured environment where authorized users can manage product and industrial information through a centralized interface. Supplier details, raw material information, product records, production batch information, compliance records, and network monitoring information are maintained through the application's database using Firebase Firestore. This provides organized storage and retrieval of application information required by different modules of the system.
+The proposed system provides users with a convenient way to track products throughout their lifecycle. Product-related information can be maintained from the raw material stage through production, quality-related activities, storage, and distribution. By maintaining related information in a centralized system, users can obtain better visibility into the movement and status of products.
+To improve product monitoring, the system includes a Product Traceability Module. This module maintains product and production-related information and supports tracking of products across different stages of the lifecycle. It helps users access relevant product information and reduces the dependency on manually searching through separate records.
+The system also provides a Supplier and Raw Material Management Module for maintaining information related to suppliers and raw materials. Supplier details and raw material records can be managed through the application and associated with relevant product or production information. This supports better visibility into the sources of materials used during production.
+The proposed system includes a Production Batch Management Module for maintaining production-related information. Production batches can be recorded and associated with the relevant product and raw material information. This provides a structured method for maintaining production records and supporting product lifecycle traceability.
+The system also incorporates a Compliance Monitoring Module to manage compliance-related information and documentation. Compliance records can be maintained and associated with relevant products or production activities. This helps users monitor compliance information and provides a centralized location for accessing verification records.
+In addition to product and compliance management, the proposed system includes a Network Scanning and Security Monitoring Module. Nmap is used to perform network scanning and identify available devices, ports, and services within the monitored network. The collected information can be processed and presented through the application to support network monitoring and identification of security-related events.
+The system provides an Alert and Notification Module to present important operational and security-related information to users. Alerts can be used to highlight relevant compliance conditions, network-related events, or other important information identified by the system. This helps users pay attention to conditions that may require further inspection or action.
+The proposed system also includes a Dashboard and Data Visualization Module that presents important product, compliance, and network information through an organized interface. Dashboards provide users with a centralized view of relevant system information and help simplify the monitoring of different activities.
+The system provides a Report Generation Module for organizing and presenting collected information. Reports can be used to present product traceability information, compliance records, network monitoring information, security events, and other relevant system data. This supports better documentation and analysis of system activities.
+The application is developed using Python, Flask, HTML, CSS, and JavaScript. HTML and CSS are used to structure and design the user interface, while JavaScript provides interactive functionality and communication with backend services. Python and Flask provide backend processing and application services. Firebase Firestore is used for data storage, while the Firebase Admin SDK provides server-side communication between the Flask backend and Firebase services. Nmap supports network scanning and monitoring operations.
+The proposed system also includes secure access mechanisms to protect application information and administrative functions. User authentication and access control help restrict application functions to authorized users. Administrative operations can be managed through controlled access to the system, helping protect product, compliance, and network security information.
+The system follows a modular architecture in which each functional component is designed to perform a specific task while communicating with the other components through backend services and centralized data management. Major components include User Authentication, Dashboard, Product Traceability, Supplier and Raw Material Management, Production Batch Management, Compliance Monitoring, Network Scanning, Network Security Monitoring, Alerts and Notifications, Data Visualization, Report Generation, Activity Logging, and Administrative Management. The modular architecture simplifies maintenance and allows additional functionalities to be incorporated with minimal modifications to the existing application.
+The system provides a foundation for future improvements such as advanced Artificial Intelligence-based analysis, predictive monitoring, automated anomaly detection, enhanced compliance frameworks, real-time network monitoring, improved reporting, cloud deployment, mobile access, and integration with additional industrial systems. These enhancements can further improve the ability of Sentinel-Trace to support intelligent industrial monitoring and management.
+Overall, the proposed Sentinel-Trace system provides an integrated and user-friendly solution for product traceability, compliance monitoring, and network security management. By centralizing product information, production records, compliance information, network monitoring data, alerts, and reports, the system reduces dependence on manual processes, improves information accessibility, supports better monitoring, and provides users with a more organized approach to managing industrial operational and security information.
+2.2.1 Features
+The Sentinel-Trace system provides several important features that help automate product traceability, compliance monitoring, network security monitoring, and industrial information management through a centralized web-based platform.
+1. User Authentication
+The Sentinel-Trace system provides a user authentication mechanism to ensure that only authorized users can access the application. Users can log in using their credentials, while authorized administrators can access management and monitoring functionalities. Authentication helps protect product information, compliance records, network information, and other application data from unauthorized access. This feature provides a secure foundation for the major operations of the system.
+2. Dashboard
+The Dashboard serves as a centralized interface for accessing important Sentinel-Trace activities. It provides an organized view of product information, production activities, compliance status, network monitoring information, alerts, and other relevant system details. By presenting important information through a single interface, the dashboard helps users monitor different aspects of the system efficiently.
+3. Product Traceability
+The Product Traceability module enables users to maintain and track product information throughout different stages of the product lifecycle. Information related to raw materials, production, quality-related activities, storage, and distribution can be organized to support product tracking. This feature improves product visibility and reduces the need to manually search through separate records.
+4. Supplier Management
+The Supplier Management module enables authorized users to maintain information related to suppliers. Supplier details can be recorded and managed through the system and associated with relevant raw materials or products. This provides a structured approach to maintaining supplier information and supports better visibility into the source of materials.
+5. Raw Material Management
+The Raw Material Management module provides functionality for maintaining information about raw materials used during production. Raw material details can be recorded and associated with suppliers and relevant production information. This helps users maintain organized records and supports traceability from the initial material stage.
+6. Production Batch Management
+The Production Batch Management module enables users to maintain information related to production batches. Production records can be associated with relevant products and raw materials to provide better visibility into manufacturing activities. This feature supports product lifecycle tracking and helps users identify production-related information when required.
+7. Compliance Monitoring
+The Compliance Monitoring module enables users to maintain and monitor compliance-related information and documentation. Compliance records can be associated with relevant products or production activities, allowing users to access important verification information from a centralized system. This reduces dependence on separate manual records and simplifies compliance monitoring.
+8. Network Scanning
+The Network Scanning module supports network monitoring by using Nmap to identify devices, ports, and available services within the monitored network. The scanning functionality provides network-related information that can be processed and displayed through the Sentinel-Trace application. This feature assists administrators in understanding the current network environment.
+9. Network Security Monitoring
+The Network Security Monitoring module provides a centralized interface for monitoring network-related information obtained through scanning activities. It helps users review connected devices, available services, and security-related information. Centralizing this information makes network monitoring more organized and helps administrators identify conditions that may require further investigation.
+10. Security Alerts
+The Security Alerts feature provides notifications or indications of important network and system-related events. Relevant information identified during monitoring can be presented to users through the application. This helps administrators focus on important events and take appropriate action when further investigation is required.
+11. Data Visualization
+The Data Visualization module presents important product, compliance, and network information in an organized visual format. Dashboards, tables, status information, and other visual elements can be used to make collected information easier to understand. This feature supports faster interpretation of operational and security-related information.
+12. Report Generation
+The Report Generation module provides a structured way to present information collected by the system. Reports can include product traceability information, production records, compliance information, network monitoring results, security events, and other relevant system data. This supports documentation, monitoring, and analysis of system activities.
+13. Activity Logging
+The Activity Logging feature maintains information about important activities performed within the application. User and administrative operations can be recorded to support monitoring and accountability. Activity records also provide useful information when reviewing system operations or investigating particular events.
+14. Product Lifecycle Monitoring
+The Product Lifecycle Monitoring feature supports the tracking of products from the raw material stage through production, storage, and distribution. Relevant product information can be maintained at different stages to provide a more complete view of the product lifecycle. This helps users understand the movement and status of products within the system.
+15. Centralized Database Management
+The application uses Firebase Firestore for centralized data management. The database stores information related to users, suppliers, raw materials, products, production batches, compliance records, network information, security events, alerts, and other application records. The Firebase Admin SDK provides server-side communication between the Flask backend and Firebase services, supporting the storage, retrieval, and management of application information.
+16. Administrative Management
+The Administrative Management feature provides authorized users with control over important system information and operations. Administrators can manage product-related records, supplier information, production information, compliance records, and network monitoring activities. Restricting administrative operations to authorized users helps maintain organized and controlled management of the system.
+17. Responsive User Interface
+The application provides a web-based user interface developed using HTML, CSS, and JavaScript. HTML is used to structure application pages, CSS is used for layout and styling, and JavaScript provides interactive behaviour and dynamic functionality. The interface includes authentication pages, dashboards, product management sections, compliance interfaces, network monitoring displays, alerts, reports, and administrative screens.
+18. Backend and API Communication
+The system uses Flask as the backend framework to handle application logic, client requests, routing, and backend operations. Communication between the frontend and backend is performed through web-based API services. The backend communicates with Firebase Firestore through the Firebase Admin SDK and supports operations related to authentication, product management, compliance monitoring, network scanning, security monitoring, and other system functions.
+Overall, these features work together to provide a comprehensive Sentinel-Trace system for product traceability, compliance monitoring, and network security management. The combination of user authentication, centralized dashboard, product traceability, supplier and raw material management, production batch management, compliance monitoring, Nmap-based network scanning, security monitoring, alerts, data visualization, reporting, activity logging, Firebase database management, and administrative controls provides users with an integrated platform for managing industrial operational and security information.
+2.2.2 Modules
+The Sentinel-Trace system is divided into several functional modules to manage different aspects of product traceability, compliance monitoring, network security monitoring, and industrial information management efficiently. Each module is responsible for performing specific tasks such as managing user access, maintaining product information, tracking production activities, monitoring compliance records, scanning networks, identifying security-related information, and generating reports. The modular structure improves system organization, simplifies system management, and allows future enhancements.
+In an industrial environment, where large amounts of product, production, compliance, and network information need to be maintained, it is essential to have a clear and well-organized system structure. The modular approach ensures that each function of the system is handled independently, reducing complexity and making the application easier to develop, maintain, test, and update. By dividing the system into separate modules, the overall monitoring and management workflow becomes more structured and manageable.
+Each module in the system is designed to handle a specific part of the industrial monitoring process. For example, the User Authentication Module manages user access, while the Product Traceability Module manages product lifecycle information. Similarly, the Compliance Monitoring Module manages compliance-related records, and the Network Security Monitoring Module supports monitoring of network devices and security-related information. This separation of functionalities ensures that each component operates efficiently while interacting with other modules to provide a complete industrial monitoring solution.
+The modular design also enhances system flexibility, as new features can be added or existing modules can be modified without significantly affecting the entire application. This is particularly useful when the number of products, production records, compliance records, and network devices increases. Additional capabilities such as advanced AI-based analysis, predictive monitoring, real-time security monitoring, mobile application support, and additional industrial integrations can be incorporated into the system in the future.
+The Sentinel-Trace system is developed using a modular architecture in which each module performs a specific function while interacting with other modules to provide a complete product traceability, compliance monitoring, and network security management solution. The major modules of the system are described below.
+1. User Authentication Module
+The User Authentication Module manages user access to the Sentinel-Trace application. It helps ensure that only authorized users can access protected application functions and information. Authentication provides a security layer for product records, compliance information, network monitoring data, and administrative operations.
+2. Dashboard Module
+The Dashboard Module provides a centralized interface for displaying important information from different parts of the system. It can present product information, production activities, compliance status, network monitoring information, alerts, and other relevant system details. This module helps users obtain an overall view of the current system status.
+3. Product Traceability Module
+The Product Traceability Module manages product information and supports tracking products throughout their lifecycle. It provides a structured method for maintaining product-related information from raw material procurement through production, storage, and distribution. This module helps users access relevant product information without depending on separate manual records.
+4. Supplier Management Module
+The Supplier Management Module manages information related to suppliers and their associated materials. Authorized users can maintain supplier details and use the information as part of the product and raw material traceability process. This module supports organized management of supplier-related information.
+5. Raw Material Management Module
+The Raw Material Management Module manages information about raw materials used in production. Raw material records can be maintained and associated with supplier and production information. This helps provide traceability from the source of materials to the products in which they are used.
+6. Production Batch Management Module
+The Production Batch Management Module manages production batch information and connects production activities with relevant product and raw material records. This module supports organized maintenance of production information and helps users trace products through their manufacturing stages.
+7. Compliance Monitoring Module
+The Compliance Monitoring Module manages compliance-related information and documentation associated with products and production activities. It provides a centralized location for maintaining and reviewing compliance records. This module helps users monitor compliance information and supports organized verification of relevant records.
+8. Network Scanning Module
+The Network Scanning Module supports network discovery and monitoring using Nmap. It can identify available devices, ports, and services within the monitored network. The information collected through network scanning can be processed by the backend and presented through the application for further monitoring and analysis.
+9. Network Security Monitoring Module
+The Network Security Monitoring Module provides a centralized interface for reviewing network-related information and security events. It supports the monitoring of connected devices, available services, and other relevant network information. This module helps administrators identify conditions that may require further investigation.
+10. Alerts and Notification Module
+The Alerts and Notification Module presents important operational, compliance, and network-related information that may require user attention. Relevant events identified by the system can be displayed as alerts to help users and administrators monitor conditions requiring further review or action.
+11. Report Generation Module
+The Report Generation Module organizes and presents information collected from different modules of the Sentinel-Trace system. Reports can include product traceability details, production information, compliance records, network scanning results, security events, and other relevant system information. This module supports documentation and analysis of system activities.
+12. Data Visualization Module
+The Data Visualization Module presents important information through organized dashboards, tables, status indicators, and other visual elements. It helps users understand product, compliance, production, and network monitoring information more easily and supports efficient interpretation of collected data.
+13. Activity Logging Module
+The Activity Logging Module maintains records of important activities performed within the application. User and administrative operations can be recorded to support monitoring and accountability. These records can also assist administrators when reviewing previous system activities.
+14. Database Management Module
+The Database Management Module manages the storage and retrieval of application information using Firebase Firestore. The database maintains information related to users, suppliers, raw materials, products, production batches, compliance records, network information, security events, alerts, and other system records. The Firebase Admin SDK provides server-side communication between the Flask backend and Firebase services.
+15. Administrative Management Module
+The Administrative Management Module provides authorized administrators with centralized control over important system information and operations. Administrators can manage product records, supplier information, raw materials, production batches, compliance information, and network monitoring activities. Restricting these operations to authorized users helps maintain controlled system management.
+16. API and User Interface Module
+The API and User Interface Module provides communication between the web interface and backend services. HTML, CSS, and JavaScript are used to create the user interface, while Flask provides the backend services and API functionality. This module supports communication for operations such as authentication, product management, compliance monitoring, network scanning, alerts, reporting, and administrative activities.
+Overall, these major modules work together to provide a complete Sentinel-Trace system for product traceability, compliance monitoring, and network security management. The modular architecture separates the major functions of the system while allowing them to work together efficiently, providing better maintainability, scalability, organized system management, and opportunities for future enhancement.
+3. SYSTEM DESIGN
+System design is an important phase of software development that converts the requirements identified during system analysis into a structured and implementable solution. It defines the system architecture, module interaction, data organization, user interface design, and overall workflow of the application.
+The Sentinel-Trace system is designed as a web-based application using a modular architecture. The system uses HTML, CSS, and JavaScript for developing the user interface, Python and Flask for backend processing, and Firebase Firestore for database management. The Firebase Admin SDK is used to provide server-side communication between the Flask backend and Firebase services, while Nmap is used to support network scanning and monitoring activities.
+The system provides a centralized platform for managing product information, supplier and raw material records, production batches, compliance information, and network monitoring activities. Users can access product traceability information, monitor compliance records, view network-related information, and receive relevant alerts and reports through the application.
+The application follows a web-based architecture where the HTML, CSS, and JavaScript frontend communicates with the Flask backend through web-based API services. The backend handles application logic, user access, database operations, product management, compliance monitoring, network scanning, and security-related processing.
+The system is designed with a simple and organized interface that includes user authentication, dashboards, product management, supplier and raw material management, production batch management, compliance monitoring, network scanning, network security monitoring, alerts, reports, and administrative controls.
+This chapter presents the major design components of the system, including Form Design, Input Design, Output Design, Database Design, and System Development.
+3.1 Form Design
+Form design provides the interface through which users interact with the Sentinel-Trace system. The forms are designed to be simple, clear, and easy to use, reducing input errors and improving the overall user experience.
+The system includes forms for user authentication, supplier registration, raw material entry, product information, production batch details, compliance documentation, network scan requests, and administrative operations. Each form contains clearly labeled fields, buttons, navigation controls, and suitable feedback messages.
+Input validation is performed before submitting information to ensure that required fields are completed correctly. Appropriate validation and feedback help users identify incorrect or incomplete information before it is processed by the system.
+The forms are developed using HTML, CSS, and JavaScript with an organized web-based layout. Submitted information is sent to the Flask backend, where it is processed and stored using Firebase Firestore through the Firebase Admin SDK.
+The form design therefore provides a simple, organized, and reliable interface for product management, compliance monitoring, network monitoring, and administrative activities.
+3.2 Input Design
+Input design focuses on collecting and validating the information required by the system. Proper input design ensures that accurate and complete data is provided for processing and storage.
+The system accepts inputs such as user information, supplier details, raw material information, product details, production batch information, compliance records, and network scan requests. Suitable input fields and controls are provided based on the type of information being entered.
+Validation is performed before processing the submitted information. Required fields are checked, invalid or incomplete inputs are identified, and suitable messages are displayed to help users correct errors. Network scan inputs are processed by the backend and passed to the network scanning functionality where required.
+The validated information is processed through the Flask backend and stored in Firebase Firestore. The Firebase Admin SDK provides the required server-side communication for storing and retrieving application information.
+Overall, the input design provides a simple and reliable method for collecting product, supplier, production, compliance, and network-related information while maintaining data consistency and organized system operation.
+3.3 Output Design
+Output design focuses on presenting the processed information in a clear and user-friendly manner. The Sentinel-Trace system provides outputs based on product traceability, compliance monitoring, network scanning, security monitoring, and administrative operations.
+The main outputs include product traceability information, production batch details, supplier information, compliance records, network scan results, network device information, security alerts, dashboards, reports, and administrative information.
+Product-related information is presented in an organized format so that users can understand the lifecycle and current status of products. Compliance information is displayed to support monitoring and verification, while network scanning results provide information about monitored devices, ports, and services.
+The system also provides feedback messages for successful operations, validation errors, authentication activities, data updates, network scanning operations, and other system activities. Administrative users can view and manage relevant information through the administrative interface.
+The HTML, CSS, and JavaScript frontend receives processed information from the Flask backend and presents it through organized web pages, tables, dashboards, and status displays. The output design therefore provides clear, structured, and easily accessible information for users and administrators.
+3.4 Database Design
+Database design defines how the system stores, organizes, and manages its information. The Sentinel-Trace system uses Firebase Firestore for storing application data.
+The database stores important information such as users, suppliers, raw materials, products, production batches, compliance records, network devices, network scan information, security events, alerts, activity records, and other application data. The Firebase Admin SDK provides communication between the Flask backend and Firebase Firestore for database operations.
+The database supports user management, product traceability, supplier and raw material management, production tracking, compliance monitoring, network monitoring, security-related operations, and administrative functions. The centralized database structure allows different modules of the system to access the information required for their operations.
+Overall, Firebase Firestore provides a centralized and flexible environment for storing and retrieving the information required by the different components of the Sentinel-Trace system.
+3.5 System Development
+System development involves converting the designed system into a functional application. The Sentinel-Trace system is developed using HTML, CSS, JavaScript, Python, Flask, Firebase Firestore, Firebase Admin SDK, and Nmap.
+The system is developed using a modular approach. The major functions include User Authentication, Dashboard, Product Traceability, Supplier Management, Raw Material Management, Production Batch Management, Compliance Monitoring, Network Scanning, Network Security Monitoring, Alerts and Notifications, Data Visualization, Report Generation, Activity Logging, and Administrative Management.
+The Product Traceability module manages product lifecycle information, while the Supplier and Raw Material modules maintain information related to material sources. The Production Batch module maintains production-related records, and the Compliance Monitoring module manages compliance information and documentation.
+The Network Scanning module uses Nmap to identify network devices, ports, and available services. The collected information is processed by the backend and presented through the network monitoring interface. The Network Security Monitoring and Alert modules help users review relevant network information and identify events that may require attention.
+The frontend is developed using HTML, CSS, and JavaScript, providing the application's forms, dashboards, tables, navigation, and interactive elements. Python and Flask handle backend processing, application logic, API services, and communication with Firebase. Firebase Firestore provides centralized data storage, while the Firebase Admin SDK supports server-side database operations.
+Overall, the system development integrates the major modules into a centralized platform that provides an organized solution for product traceability, compliance monitoring, and network security management. The modular design makes the system easier to maintain and provides a foundation for future enhancements and additional industrial monitoring capabilities.
+IMAGE3.5.1 Dashboard Module
+The Dashboard Module provides the main interface for users and administrators of the Sentinel-Trace system. After authentication, users can access important functions such as product traceability, compliance monitoring, network scanning, security monitoring, and report viewing.
+Administrators can access product, supplier, raw material, production batch, compliance, network, and system management functions through the dashboard. The dashboard provides organized navigation to the major features of the system and presents important information in a centralized manner.
+The module is developed using HTML, CSS, and JavaScript for the frontend and communicates with the Python Flask backend through web APIs. It provides a simple and organized interface for accessing the major functionalities of Sentinel-Trace.
+3.5.2 Product Traceability Module
+The Product Traceability Module is responsible for managing and tracking product information throughout the product lifecycle. It allows authorized users to maintain product details and monitor the movement of products from raw materials and production stages to further distribution activities.
+The module works with Firebase Firestore to store and retrieve product-related information in an organized manner. Product records can be associated with suppliers, raw materials, and production batches to support complete traceability.
+Through centralized product traceability, users can easily access product information and identify the related production and material details. This reduces dependency on separate manual records and improves the availability of product lifecycle information.
+3.5.3 Supplier Management Module
+The Supplier Management Module is responsible for maintaining information about suppliers involved in the product lifecycle. Authorized users can add, update, view, and manage supplier details required for tracking raw materials and products.
+The module stores supplier information in Firebase Firestore and allows supplier records to be associated with relevant raw materials and production activities. This provides a centralized method for maintaining supplier-related information.
+Overall, the module supports organized supplier management and helps improve the traceability of materials from their source.
+3.5.4 Raw Material Management Module
+The Raw Material Management Module manages information related to raw materials used in the production process. Users can enter and maintain details about raw materials and associate them with suppliers and relevant production batches.
+The module communicates with the Flask backend and Firebase Firestore for storing and retrieving raw material information. The maintained records can be used during product traceability and production monitoring.
+This module helps provide a clear relationship between suppliers, raw materials, production batches, and finished products, improving the overall traceability of the product lifecycle.
+3.5.5 Production Batch Management Module
+The Production Batch Management Module is responsible for managing production batch information within Sentinel-Trace. Users can create and maintain records related to production activities and associate batches with products and raw materials.
+The module stores production batch information in Firebase Firestore and provides access to batch-related records through the application interface. This allows users to identify the production information associated with a particular product.
+Overall, the module supports organized production monitoring and helps maintain a connection between raw materials, production activities, and products.
+3.5.6 Compliance Monitoring Module
+The Compliance Monitoring Module is responsible for maintaining and monitoring compliance-related information associated with products and production activities. Users can enter and manage compliance records and related documentation through the system.
+The module stores compliance information in Firebase Firestore and allows users to review the available records through the application interface. Compliance information can be associated with relevant products or production activities to support easier verification.
+The module reduces dependency on separate manual compliance records and provides centralized access to compliance-related information.
+3.5.7 Network Scanning Module
+The Network Scanning Module is responsible for identifying devices, ports, and services available within the monitored network environment. The module uses Nmap to perform network scanning operations based on the required scanning parameters.
+The Flask backend communicates with Nmap and processes the scanning results before presenting the information through the web interface. The identified network information can be stored and reviewed for further monitoring.
+This module helps administrators obtain information about the network environment and provides a foundation for network security monitoring within Sentinel-Trace.
+3.5.8 Network Security Monitoring Module
+The Network Security Monitoring Module is responsible for monitoring network-related information obtained from scanning activities. It helps administrators review detected devices, open ports, available services, and other relevant network security information.
+The module works with the Flask backend, Nmap, and Firebase Firestore to process and maintain network monitoring information. Security-related events can be reviewed through the system interface to support identification of potentially important network conditions.
+Overall, the module provides centralized network security information and reduces the need to depend on separate network monitoring records.
+3.5.9 Alerts and Notification Module
+The Alerts and Notification Module provides users and administrators with information about important system conditions. Alerts can be generated for relevant compliance, network security, and operational events identified by the system.
+The module presents alert information through the Sentinel-Trace interface so that administrators can review important conditions and take appropriate action. Alert-related information can be maintained using Firebase Firestore.
+This module improves awareness of important events and helps users identify issues without manually checking every system record.
+3.5.10 User Authentication Module
+The User Authentication Module manages user registration and login required to access Sentinel-Trace. User credentials are processed through the backend and authentication controls are used to restrict access to protected system functions.
+The module helps ensure that only authorized users can access features such as product management, compliance information, network scanning, security monitoring, and administrative functions.
+The authentication process is integrated with the Flask backend and Firebase services to provide controlled access to the application.
+3.5.11 Admin Management Module
+The Admin Management Module provides authorized administrators with facilities to manage important system information and operations. Administrators can manage product, supplier, raw material, production batch, compliance, network monitoring, and user-related activities through the administrative interface.
+The module provides centralized administrative control over the major functions of Sentinel-Trace. It helps administrators maintain system records and monitor the activities performed through the application.
+Overall, this module improves administrative efficiency by providing access to important management functions from a centralized interface.
+3.5.12 Database and Data Management Module
+The Database and Data Management Module manages the storage and retrieval of system information such as users, suppliers, raw materials, products, production batches, compliance records, network scanning information, security events, alerts, and activity records.
+Firebase Firestore is used as the database for storing application data. The Firebase Admin SDK provides server-side communication between the Python Flask backend and Firestore, allowing the application to create, retrieve, update, and manage stored information.
+This module provides centralized and organized data management for Sentinel-Trace and supports the different system modules through shared access to the required information.
+3.5.13 Data Visualization Module
+The Data Visualization Module presents important system information in an organized and understandable format. It helps users and administrators view product traceability information, compliance status, network monitoring information, alerts, and other relevant system records.
+The module uses HTML, CSS, and JavaScript to present information through the web interface. Data retrieved from the Flask backend can be organized into suitable dashboard elements for easier interpretation.
+Overall, the module improves the understanding of system information and helps administrators review important operational and security information efficiently.
+3.5.14 Report Generation Module
+The Report Generation Module is responsible for presenting organized information related to product traceability, compliance monitoring, production activities, and network security monitoring.
+The module retrieves relevant information from Firebase Firestore through the Flask backend and presents it through the application interface. Reports provide a structured view of system records and help administrators review important information.
+This module supports better record management and provides useful information for monitoring and decision-making.
+3.5.15 Activity Logging Module
+The Activity Logging Module maintains information about important activities performed within the Sentinel-Trace system. Relevant user and administrative operations can be recorded to provide a history of system activities.
+The activity information is maintained using Firebase Firestore and can be accessed by authorized administrators when required. The module supports monitoring of application usage and provides additional visibility into system operations.
+Overall, activity logging improves system monitoring and helps maintain an organized record of important application activities.
+4. SOFTWARE TESTING AND IMPLEMENTATION
+4.1 Testing  
+Software testing was carried out to verify the proper functioning of the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System. The major modules were tested by providing different inputs and comparing the actual results with the expected results.
+Testing was performed for user authentication, dashboard access, supplier management, raw material management, product management, production batch management, compliance monitoring, network scanning, network security monitoring, alerts, data visualization, report generation, activity logging, and administrative functions.
+The integration between the HTML, CSS, and JavaScript frontend, Python Flask backend, REST APIs, Firebase Firestore database, Firebase Admin SDK, and Nmap network scanning component was also checked to ensure proper data flow between the different parts of the system.
+Errors identified during testing were corrected to improve the reliability, usability, functionality, and performance of the system. The testing process also ensured that authorized users could access the required functions and that system information was properly stored and retrieved.
+4.2 Test Cases
+The following test cases were used to verify the major functionalities of the proposed system.
+S.No 
+Module 
+Test Input/Action 
+Expected Result 
+Result 
+1
+User Registration 
+Enter valid Login credentials
+User authenticated and redirected to that appropriate page
+Passed 
+2
+Invalid Login 
+Enter incorrect email or password 
+Error message is displayed and access is denied 
+Passed 
+3
+DashBoard
+Access the dashboard after authentication
+Dashboard and available System functions are displayed correctly
+Passed 
+4
+Supplier Management 
+Enter Valid Supplier information 
+Supplier information stored successfully
+Passed 
+5
+Raw Material Management 
+Enter Valid Raw material details
+Raw material record is created and stored successfully
+Passed 
+6
+Product Management
+Enter Valid product information
+Product information stored successfully
+Passed 
+7
+Production Batch 
+Create a Production batch with valid details
+Production batch is created successfully
+Passed 
+8
+Product Traceability
+Search for an existing product 
+Related Product and lifecycle information is displayed
+Passed 
+9
+Compliance Monitoring
+Enter and view compliance information 
+Compliance record is stored and displayed successfully
+Passed 
+10
+Network Scanning
+Perform a network scan using Nmap
+Network devices, ports and services are identified and display
+Passed 
+11
+Network Security Monitoring
+View network scanning/security information
+Relevant network security information is displayed correctly
+Passed 
+5. CONCLUSION
+The Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System has been successfully developed to provide an integrated and user-friendly solution for managing product information, monitoring compliance activities, and observing network security conditions. The system automates and centralizes important activities such as user authentication, dashboard management, supplier management, raw material management, product traceability, production batch management, compliance monitoring, network scanning, network security monitoring, alerts, reporting, and administrative management.
+The system uses Python and Flask for backend development, while HTML, CSS, and JavaScript are used to provide the frontend interface. Firebase Firestore is used for centralized data storage and the Firebase Admin SDK provides server-side communication between the Flask backend and the database. Nmap is integrated for network scanning and helps identify network devices, ports, and services for security monitoring.
+The application follows a modular architecture that separates the major functionalities, making the system easier to maintain, test, and enhance. The centralized database allows product, supplier, raw material, production, compliance, network, alert, and activity information to be managed in an organized manner. The administrative interface provides centralized control over important system operations.
+Overall, Sentinel-Trace reduces dependency on separate manual records, improves product traceability, provides centralized compliance information, and supports network security monitoring through an integrated digital platform. The system provides a strong foundation for further development in industrial monitoring, intelligent analysis, security management, and product lifecycle management.
+5.1 Future Enhancement
+Although the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System successfully provides product traceability, compliance monitoring, network scanning, security monitoring, centralized data management, reporting, and administrative functions, several enhancements can be added in future versions. The modular architecture of the system makes it flexible and suitable for further development.
+One possible enhancement is the development of a mobile application for Android and iOS platforms. This would allow authorized users and administrators to access product information, compliance records, alerts, reports, and network monitoring information directly through smartphones and other mobile devices.
+The system can be enhanced by supporting advanced cloud-based deployment and storage capabilities. This would provide improved scalability for organizations managing large amounts of product, production, compliance, and network monitoring information. Cloud deployment could also improve accessibility and system availability for authorized users.
+Another important enhancement is the integration of Artificial Intelligence and Machine Learning techniques for intelligent analysis. Future versions could analyze product, compliance, and network data to identify unusual patterns, potential risks, and operational issues. AI-based analysis could provide useful recommendations and summaries to assist administrators in decision-making.
+The product traceability module can also be enhanced with additional identification technologies such as QR codes, barcodes, and IoT-based tracking devices. These technologies could allow products and production batches to be identified more quickly and provide more detailed information about product movement throughout the lifecycle.
+Future versions can provide advanced compliance monitoring features by supporting additional compliance standards, automated verification, document validation, compliance reminders, and scheduled monitoring. This would help organizations maintain compliance information more efficiently and reduce the possibility of missing important compliance activities.
+The network security monitoring module can also be improved by introducing continuous or real-time network monitoring. Future versions could provide more advanced detection of unusual network behavior, suspicious devices, open ports, and potentially risky services. Integration with additional security tools could further strengthen the network monitoring capabilities of the system.
+The system can further include advanced analytics and notification features. Administrators could view product-wise, batch-wise, compliance-wise, and network-wise statistics through interactive dashboards. Notifications could also be provided for important compliance conditions, network security events, and other system alerts.
+Additional reporting and visualization capabilities can be introduced to provide detailed analytical reports. Future versions could generate customized reports based on selected products, suppliers, production batches, compliance records, network scans, and security events. Improved visualization could make large amounts of operational information easier to understand.
+Security can also be strengthened through multi-factor authentication, improved role-based access control, stronger encryption, secure API communication, and detailed activity monitoring. These enhancements would provide better protection for product information, compliance records, user accounts, and network security data.
+Overall, the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System provides a strong foundation for future development. By adding mobile support, advanced AI and Machine Learning, IoT integration, real-time network monitoring, expanded compliance capabilities, cloud deployment, advanced analytics, improved reporting, and enhanced security, the system can evolve into a comprehensive intelligent platform for industrial product traceability, compliance management, and cybersecurity monitoring.
+BIBLIOGRAPHY
+Pressman, R. S., & Maxim, B. R. (2020). Software Engineering: A Practitioner’s Approach (9th ed.). McGraw-Hill Education.
+Sommerville, I. (2016). Software Engineering (10th ed.). Pearson Education.
+Elmasri, R., & Navathe, S. (2017). Fundamentals of Database Systems (7th ed.). Pearson.
+Silberschatz, A., Korth, H. F., & Sudarshan, S. (2019). Database System Concepts (7th ed.). McGraw-Hill.
+Flanagan, D. (2020). JavaScript: The Definitive Guide (7th ed.). O’Reilly Media.
+Duckett, J. (2014). HTML and CSS: Design and Build Websites. Wiley.
+Freeman, E., & Robson, E. (2020). Head First JavaScript Programming. O’Reilly Media.
+Grinberg, M. (2018). Flask Web Development: Developing Web Applications with Python (2nd ed.). O’Reilly Media.
+Python Software Foundation. (2024). Python Documentation. Retrieved from Python Documentation.
+Flask Documentation. (2024). Flask Documentation. Retrieved from Flask Documentation.
+Firebase Documentation. (2024). Firebase Documentation. Retrieved from Firebase Documentation.
+Firebase. (2024). Cloud Firestore Documentation. Retrieved from Firebase Documentation.
+Firebase. (2024). Firebase Admin SDK Documentation. Retrieved from Firebase Documentation.
+Nmap Project. (2024). Nmap Network Scanning Documentation. Retrieved from Nmap Documentation.
+Nmap Project. (2024). Nmap Reference Guide. Retrieved from Nmap Documentation.
+MDN Web Docs. (2024). HTML, CSS, and JavaScript Documentation. Retrieved from MDN Web Docs.
+Google Developers. (2024). Firebase and Cloud Development Documentation. Retrieved from Google Developers.
+Microsoft. (2024). Web Development and Programming Documentation. Retrieved from Microsoft Learn.
+Gamma, E., Helm, R., Johnson, R., & Vlissides, J. (1994). Design Patterns: Elements of Reusable Object-Oriented Software. Addison-Wesley.
+Fowler, M. (2018). Refactoring: Improving the Design of Existing Code (2nd ed.). Addison-Wesley.
+Dennis, A., Wixom, B. H., & Tegarden, D. (2015). Systems Analysis and Design. Wiley.
+Rob, P., & Coronel, C. (2016). Database Systems: Design, Implementation, and Management. Cengage Learning.
+OWASP Foundation. (2024). OWASP Web Security Documentation. Retrieved from OWASP.
+OWASP Foundation. (2024). OWASP Application Security Verification Standard. Retrieved from OWASP.
+Cisco. (2024). Network Security and Monitoring Documentation. Retrieved from Cisco.
+National Institute of Standards and Technology. (2024). Cybersecurity Framework (CSF). National Institute of Standards and Technology.
+National Institute of Standards and Technology. (2024). Computer Security Resource Center Documentation. National Institute of Standards and Technology.
+W3C. (2024). HTML and Web Standards Documentation. Retrieved from World Wide Web Consortium.
+W3C. (2024). Cascading Style Sheets (CSS) Specifications. Retrieved from World Wide Web Consortium.
+GitHub. (2024). Software Development and Version Control Documentation. Retrieved from GitHub.
+APPENDICES
+A. Data Flow Diagram
+A Data Flow Diagram (DFD) is a graphical representation of the movement of data within a system. It illustrates how information enters the system, how it is processed through different functional modules, where it is stored, and how the processed information is provided as output. DFDs help in understanding the logical flow of data without focusing on programming or implementation details. They are commonly used during the system analysis and design phase to clearly represent the interaction between users, processes, and data stores.
+The Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System uses Data Flow Diagrams to represent the movement of user information, supplier details, raw material information, product details, production batch information, compliance records, network scanning information, security events, alerts, and reports throughout the application. The diagrams illustrate how Users and Administrators interact with the different functional modules and how information is processed and stored within the Firebase Firestore database.
+The DFD represents important processes such as user authentication, product management, supplier management, raw material management, production batch management, compliance monitoring, network scanning, network security monitoring, alert management, report generation, and administrative management. When users enter product, supplier, raw material, production, or compliance information, the system processes the information through the Flask backend and stores the required records in Firebase Firestore.
+For network monitoring, the user or administrator provides the required network scanning request through the system interface. The Flask backend communicates with Nmap to perform the network scan. The scanning results, including identified network devices, ports, and services, are processed by the system and presented through the application interface. Relevant network information can also be maintained for further monitoring and review.
+The DFD is divided into different levels to progressively describe the functionality and data movement of the application. The Context Level DFD provides a high-level view of the complete system and shows the interaction between users, administrators, and the Sentinel-Trace system. The Level 1 DFD further divides the system into major processes such as authentication, product traceability, supplier and material management, production management, compliance monitoring, network scanning, security monitoring, and administration. Further levels can be used to describe individual processes in greater detail where required.
+The major data stores represented in the DFD include User Data, Supplier Data, Raw Material Data, Product Data, Production Batch Data, Compliance Data, Network Scan Data, Security Event Data, Alert Data, and Activity Log Data. These data stores are maintained using Firebase Firestore and support the different operations performed by the system.
+The overall data flow demonstrates how user and administrator inputs are transformed through the different processing modules into useful outputs such as product traceability information, production records, compliance information, network scan results, security alerts, dashboards, and reports.
+Thus, the Data Flow Diagram provides a clear logical representation of how information moves through the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System, from user or administrator input to processing, storage, monitoring, and final system output.
+A.1 Context Diagram (Level 0 DFD)
+The Context Diagram, also known as the Level 0 Data Flow Diagram, provides a high-level overview of the entire Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System. It represents the complete application as a single process and illustrates its interaction with external entities.
+In this project, the primary external entities are the User and Administrator. The User interacts with the system to authenticate, view the dashboard, manage or view authorized product information, access traceability information, review compliance records, and view relevant reports and alerts. The Administrator interacts with the system to manage users, suppliers, raw materials, products, production batches, compliance information, network scanning activities, security monitoring, alerts, and system records.
+The User sends login credentials, product-related information, traceability requests, compliance-related inputs, and other authorized requests to the system. The Administrator sends management information, product and production details, compliance information, network scan requests, and administrative commands to the system.
+The system processes these requests through the Python Flask backend, communicates with Firebase Firestore for data storage and retrieval, and uses Nmap when network scanning operations are requested. It returns appropriate outputs such as authentication status, product information, traceability details, compliance information, network scanning results, security alerts, dashboard information, reports, and administrative information.
+The Context Diagram therefore provides a simplified representation of the overall interaction between Users, Administrators, and the Sentinel-Trace system, showing how information enters the system, is processed, stored, and returned as useful output.
+Figure A.1: Context Diagram (Level 0 DFD)
+A.2 Data Flow Diagram – Level 1
+The Level 1 Data Flow Diagram expands the Context Diagram by dividing the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System into its major functional modules. Instead of representing the application as a single process, this diagram illustrates how information flows between different processes, the User, the Administrator, and the Firebase Firestore database.
+The major processes include User Authentication, Dashboard Management, Product Traceability, Supplier Management, Raw Material Management, Production Batch Management, Compliance Monitoring, Network Scanning, Network Security Monitoring, Alerts and Notifications, Report Generation, Data Visualization, Activity Logging, and Administrative Management. Each module interacts with the required data stores and system components to store, retrieve, and process information required for completing user and administrator requests.
+The Level 1 DFD demonstrates how user information is maintained, how suppliers, raw materials, products, and production batches are managed, and how product lifecycle information is maintained for traceability. It also illustrates how compliance information is entered, stored, and retrieved for monitoring purposes.
+The diagram also shows how a network scanning request is passed to the Network Scanning Module, which uses Nmap to identify available network devices, ports, and services. The scanning information is then processed by the system and used by the Network Security Monitoring Module for reviewing relevant network security information. Alerts and related information can be presented to authorized users through the application interface.
+The Firebase Firestore database acts as the centralized data store for important system information such as user records, supplier information, raw materials, products, production batches, compliance records, network scanning information, security events, alerts, and activity records. The Firebase Admin SDK enables the Python Flask backend to communicate with Firestore for storing and retrieving application data.
+The diagram also shows how the Administrator can manage users, products, suppliers, raw materials, production batches, compliance information, network activities, and other system records through the administrative functions. Users can access the functions permitted to them and receive outputs such as product traceability information, compliance details, network information, alerts, dashboards, and reports.
+This provides a clear representation of the overall data flow within the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System.
+This diagram provides a detailed understanding of the internal operation of the application while maintaining a logical representation of data movement between the User, Administrator, Flask backend, product and compliance processes, Nmap network scanning component, Firebase Firestore database, and system outputs.
+Figure A.2: Data Flow Diagram – Level 1
+Table Structure
+The data structure of the Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System is designed to store and manage user, supplier, raw material, product, production batch, compliance, network, security, alert, and activity information in an organized manner.
+Since Firebase Firestore is a NoSQL database, the system stores information using collections and documents rather than traditional relational database tables. The following structures represent the major collections and their commonly maintained fields.
+User Table 
+Field Name
+Data Type
+Description
+Example
+user_id 
+Integer
+Unique ID for each user
+U101
+username 
+String
+Name of the user
+jack
+email
+String
+Registered email address
+user@gmail.com
+password
+String
+Encrypted user password
+******
+role
+String
+User access role 
+User
+created_at
+Date and Time
+Account creation date
+25-09-2026
+Table 1 : User Table 
+Supplier Collection
+Field Name
+Data Type
+Description
+Example
+supplier_id
+Integer
+Unique ID for each event 
+001
+supplier_name
+String
+Name of the supplier
+ABC Materials
+contact 
+String
+Supplier contact information
+9943062711
+email
+String
+Supplier email address
+supplier@gmail.
+com
+address
+String
+Supplier Address
+Coimbatore 
+created_at 
+Date and Time
+Event creation date
+18-09-2026
+Table 2 : Supplier Table
+Raw Material Collection Table
+Field Name
+Data Type
+Description
+Example
+material_id
+String
+Unique ID for each raw material
+RM301 
+material_name
+String
+Name of the raw material
+         Steel Sheet
+supplier_id
+String
+Related supplier ID
+SUP101
+quantity
+String 
+Quantity of raw material
+1Kg
+unit
+String
+Measurement Unit
+Kg
+created_at
+Da
+Record creation date
+25-03-26
+Table 3 : Photo Table
+Product Collection Table
+Field Name
+Data Type
+Description
+Example
+product_id
+String
+Unique ID for each detected face 
+401
+product_name
+String
+ID of the photograph containing the face  
+301
+product_code
+Vector
+Numerical facial representation  
+512-D Vector 
+description
+      String
+Facial recognition model used 
+ArcFace 
+status
+      Float
+Quality value of the detected face  
+0.92 
+created_at
+Date and Time
+Embedding creation time 
+2026-09-20 
+Table 4: Face / Embedding Table
+5.Production Batch Collection
+Field Name
+Data Type
+Description
+Example
+batch_id
+String
+Unique ID for each production batch
+BATCH101
+product_id
+String
+Related product ID
+PRD101
+material_id
+String
+Related raw material ID
+RM101
+quantity
+Number
+Production quantity
+100
+production_date
+Date
+Date of production
+26-09-2026
+status
+String
+Production batch status
+Completed
+created_at
+Date and Time
+Record creation date
+26-09-2026
+Table 4: Family Circle Table
+6. Network Scan Collection
+Field Name
+Data Type
+Description
+Example
+scan_id
+String
+Unique ID for each network scan
+SCAN101
+target
+String
+Network target used for scanning
+192.168.1.0/24
+scan_date
+Date and Time
+Date and time of scan
+26-09-2026
+devices_found
+Number
+Number of identified devices
+12
+status
+String
+Scan status
+Completed
+created_by
+String
+User who initiated the scan
+U101
+APPENDIX C – SAMPLE CODING
+The Sentinel-Trace Product Traceability, Compliance Monitoring, and Network Security Management System has been developed using HTML, CSS, and JavaScript for frontend development and Python with Flask for backend processing. Firebase Firestore is used for database management, while the Firebase Admin SDK provides server-side communication between the Flask backend and Firebase services. Nmap is used for network scanning and network information collection.
+The application follows a modular architecture, where each module is responsible for a specific functionality such as user authentication, dashboard management, product traceability, supplier management, raw material management, production batch management, compliance monitoring, network scanning, network security monitoring, alerts, reporting, and administrative management.
+The following code sections represent selected portions of the important modules implemented in the application. Only selected portions of the source code are included to demonstrate the core functionality of the system. The complete source code is maintained separately as part of the project files.
+C.1 User Authentication
+This module handles the authentication process required to access the Sentinel-Trace system. It verifies the user credentials submitted through the application and provides access to the appropriate system functions based on the authenticated user's access level.
+The Flask backend receives the authentication request from the frontend and communicates with the Firebase services to verify the required user information. Successful authentication allows the user to access protected application features.
+Sample Code:
+Figure C.1: User Authentication Code
+C.2 Product Management
+The Product Management module allows authorized users to add and retrieve product information. Product details submitted through the frontend are received by the Flask backend and stored in the Firebase Firestore database.
+Sample Code:
+Figure C.2:Event Management Code
+C.3 Firebase Firestore Data Management
+Firebase Firestore is used to store the application information in collections and documents. The Firebase Admin SDK provides server-side access to Firestore from the Flask backend.
+Figure C.3: Inventory Management Code
+C.4 Network Scanning Using Nmap
+The Network Scanning module uses Nmap to identify network devices, ports, and services. The Flask backend can execute an Nmap scan and process the resulting information for presentation through the system interface.
+Figure C.4: Shopping Cart Code
+C.5 Product Traceability
+The Product Traceability module retrieves product-related information from Firestore and displays the associated information through the web interface. This allows users to review product records and related lifecycle information.                                                                
+Figure C.5Checkout and Order Placement  Code
+C.6 Network Security Monitoring
+This module allows administrators to review network information obtained through the network scanning process. The identified devices, ports, and services are processed by the system and presented through the Sentinel-Trace interface for monitoring and analysis.
+The module works with the Python Flask backend, Nmap, and Firebase Firestore to process and maintain network-related information. This feature helps administrators identify relevant network conditions and review potential security-related information.
+Figure C.6: Order Management Code
+C.7 Alert Management 
+This module provides alerts related to important system conditions identified during product, compliance, and network monitoring activities. The system stores relevant alert information and displays it to authorized users through the application interface.
+Alert information can include the alert type, message, severity, status, and creation time. The Flask backend communicates with Firebase Firestore to store and retrieve alert information.
+C.8 API Communication
+The frontend and backend communicate through RESTful APIs. JavaScript is used to send requests from the HTML, CSS, and JavaScript frontend to the Python Flask backend. The backend processes the requests, performs the required operations, and communicates with Firebase Firestore through the Firebase Admin SDK.
+The API-based architecture provides communication between the user interface and the backend modules. It allows the frontend to request information such as product details, supplier records, compliance information, network scan results, alerts, and reports.
+Sample Code:
+APPENDIX D – SAMPLE INPUT
+D.1 Login Input
+The Login page allows registered users and authorized administrators to enter their email and password to access the Sentinel-Trace system. The entered credentials are validated by the authentication system before access is granted. This ensures that only authorized users can access the appropriate product traceability, compliance monitoring, and network security functions of the application.
+Figure D.1: Login Input
+D.2 User Registration Input 
+The User Registration page is used to enter and store user details in the system. The user provides the required registration information, which is validated before being stored in the database. Successful registration allows the user to access the protected features of the Sentinel-Trace application according to the assigned user role.
+Figure D.2: Worker Registration Input
+D.3 Supplier Input 
+The Supplier Input allows the administrator or authorized user to enter supplier information into the system. Details such as supplier name, contact information, email, address, and other required supplier information are provided through the form. The entered information is validated before being stored in Firebase Firestore.
+D.4 Raw Material Input 
+The Raw Material Input allows the user to enter details of raw materials used in the production process. Information such as material name, supplier, quantity, and unit is provided through the input form. The entered information is validated and stored in Firebase Firestore for further product traceability.
+Figure D.4: Photo Upload Input  
+D.5 Product Input 
+The Guided Webcam Capture Input allows users to provide their facial information through the webcam. The system guides the user during the capture process to obtain a suitable reference facial image. The captured image is then used for facial embedding generation and photo searching.
+Figure D.5: Guided Webcam Input 
+D.6 Production Batch Input
+The Production Batch Input allows users to enter production batch information associated with a product and its raw materials. Details such as product, raw material, quantity, production date, and batch status are provided. The entered information is validated and stored in Firebase Firestore for tracking the product lifecycle.
+Figure D.6: Face Search Input 
+D.7 Compliance Input 
+The Compliance Input allows authorized users to enter compliance-related information for a product. Details such as compliance requirement, compliance status, remarks, and associated product information are entered through the form. The information is validated before being stored and displayed through the compliance monitoring module.
+Figure D.7: Checkout & Cash on Delivery Input 
+D.8 Compliance Input 
+The Network Scan Input allows an authorized user or administrator to provide the target information required for network scanning. The system uses the entered target information to initiate a network scan through the Nmap component. The scan results are then processed by the backend and stored for network security monitoring.
+Figure D.7: Checkout & Cash on Delivery Input 
+APPENDIX E – SAMPLE OUTPUT
+The Sentinel-Trace Dashboard provides a consolidated view of important system information after the user or administrator successfully logs in. It provides access to major functions such as product traceability, supplier management, raw material management, production batch management, compliance monitoring, network scanning, security alerts, reports, and administrative operations according to the user's role.
+E.1 Dashboard Output
+The Dashboard Output displays a consolidated view of important system information after the user or administrator successfully logs in. It presents key product, supplier, production, compliance, and network security information through summary cards, tables, and other interface elements. The dashboard enables authorized users to monitor important system activities from a single interface.
+Figure E.1: Dashboard Output
+E.2 Supplier Management Output 
+The Supplier Management Output displays supplier information stored within the system in an organized format. Authorized users can view supplier details and use the information for managing supplier relationships and connecting suppliers with the relevant raw materials used in production.
+Figure E.2: Event Management Output 
+E.3 Raw Material Management Output 
+The Raw Material Management Output displays raw material information stored in the system. It provides details such as material name, supplier, quantity, and unit, allowing users to monitor raw materials associated with production activities.
+Figure E.3:Photo Processing Output 
+E.4 Product Management Output 
+The Product Management Output displays product information maintained within the Sentinel-Trace system. Users can view product details such as product name, product code, description, and status. The output provides access to product information required for traceability.
+Figure E.4: Facial Search Output 
+E.5 Product Batch Output
+The Production Batch Output displays production batch information associated with products and raw materials. It presents details such as batch identification, product, material, quantity, production date, and status. This output helps users track production activities and product lifecycle information.
+Figure E.5: Family Circle Search Output 
+E.6 Compliance Monitoring Output 
+The Compliance Monitoring Output displays compliance information associated with products in an organized format. It presents compliance requirements, status, and relevant remarks, allowing authorized users to monitor the compliance condition of products.
+Figure E.6: Compliance Monitoring Output
+E.7 Network Scanning and Security Management Output 
+The Alerts and Report Output displays relevant system alerts and generated reports for authorized users. Alerts can provide information about important product, compliance, or network security conditions, while reports present system information in an organized format for monitoring and administrative purposes.
+Figure E.7: Network Scanning and Security Output
+E.8 Alerts and Report Output 
+The Alerts and Report Output displays relevant system alerts and generated reports for authorized users. Alerts can provide information about important product, compliance, or network security conditions, while reports present system information in an organized format for monitoring and administrative purposes.
+Figure E.8: Photo Retrieval Output

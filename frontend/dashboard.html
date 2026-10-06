@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Executive Dashboard | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <!-- Sidebar Injected Here -->
+    <div id="sidebar-mount"></div>
+
+    <!-- Main Content Area -->
+    <main class="app-main">
+      <!-- Top Header Injected Here -->
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <!-- Page Title & Greeting -->
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Good Morning, Jack</h1>
+            <p class="page-subtitle">Here's what's happening with your industrial operations today.</p>
+          </div>
+          <div class="page-actions-group">
+            <a href="network-scan.html" class="btn btn-secondary btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+              </svg>
+              Run Rapid Scan
+            </a>
+            <a href="batches.html" class="btn btn-primary btn-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              New Batch
+            </a>
+          </div>
+        </div>
+
+        <!-- Intelligent Operation Matrix Banner (Reference Image 2 Feature Card) -->
+        <div class="dashboard-matrix-banner">
+          <div class="matrix-left-col">
+            <div class="matrix-tag-pill">
+              <span class="badge-dot" style="background: #fa7b7b;"></span>
+              INTELLIGENT ECO SYSTEM
+            </div>
+            <h2 class="matrix-title">Operations Matrix</h2>
+            <p class="matrix-desc">
+              Real-time synchronization across OT PLCs, automated assembly lines, and cloud compliance registries.
+            </p>
+            <div class="matrix-metrics-row">
+              <div class="matrix-stat-box">
+                <div class="matrix-stat-label">Energy / Output</div>
+                <div class="matrix-stat-value">200 kW</div>
+              </div>
+              <div class="matrix-stat-box">
+                <div class="matrix-stat-label">Current Load</div>
+                <div class="matrix-stat-value">24.5 kW</div>
+              </div>
+              <div class="matrix-stat-box">
+                <div class="matrix-stat-label">System Health</div>
+                <div class="matrix-stat-value" style="color: #e05e5e;">98.4%</div>
+              </div>
+            </div>
+          </div>
+          <div class="matrix-visual-col">
+            <img src="assets/images/dashboard_smart_factory.jpg" alt="Smart Factory Isometric" class="matrix-visual-img">
+          </div>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="kpi-grid-4">
+          <!-- KPI 1 -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Total Batches</span>
+              <div class="kpi-icon-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                  <polyline points="2 17 12 22 22 17"></polyline>
+                  <polyline points="2 12 12 17 22 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" id="kpi-total-batches">12</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-up">&uarr; +8.4%</span>
+              <span>vs previous month</span>
+            </div>
+          </div>
+
+          <!-- KPI 2 -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Compliance Rate</span>
+              <div class="kpi-icon-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <polyline points="9 12 11 14 15 10"></polyline>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" id="kpi-compliance-rate">98%</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-up">&uarr; 0.6%</span>
+              <span>ISO 9001, RoHS, GMP</span>
+            </div>
+          </div>
+
+          <!-- KPI 3 -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Network Status</span>
+              <div class="kpi-icon-pill">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+                  <line x1="12" y1="8" x2="12" y2="12"></line>
+                  <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" style="color: #10b981;" id="kpi-network-status">Secure</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-up">&#10003; 14 Nodes</span>
+              <span>0 Breaches Detected</span>
+            </div>
+          </div>
+
+          <!-- KPI 4 -->
+          <div class="kpi-card">
+            <div class="kpi-card-header">
+              <span class="kpi-card-title">Active Alerts</span>
+              <div class="kpi-icon-pill" style="background: rgba(239, 68, 68, 0.1); color: #ef4444;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                </svg>
+              </div>
+            </div>
+            <div class="kpi-card-value" id="kpi-active-alerts">3</div>
+            <div class="kpi-trend-row">
+              <span class="trend-badge trend-neutral">1 Critical</span>
+              <span>2 Pending Warnings</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions Bar -->
+        <div class="quick-actions-bar">
+          <div class="quick-actions-label">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+            Quick Actions:
+          </div>
+          <div class="quick-actions-group">
+            <a href="suppliers.html" class="btn btn-secondary btn-sm">+ Add Supplier</a>
+            <a href="materials.html" class="btn btn-secondary btn-sm">+ Add Raw Material</a>
+            <a href="batches.html" class="btn btn-secondary btn-sm">+ Create Batch</a>
+            <a href="network-scan.html" class="btn btn-secondary btn-sm">&#9889; Run Network Scan</a>
+            <a href="reports.html" class="btn btn-secondary btn-sm">&#128196; Generate Report</a>
+          </div>
+        </div>
+
+        <!-- Charts Grid (Production Overview + Compliance Status) -->
+        <div class="dashboard-grid-main">
+          <!-- Production Trends Line Chart -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-card-title">Production Overview</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Weekly throughput of completed vs pending inspection batches</p>
+              </div>
+              <div class="chart-time-filter">
+                <button class="chart-filter-btn active">Week</button>
+                <button class="chart-filter-btn">Month</button>
+                <button class="chart-filter-btn">Year</button>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="productionOverviewChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Compliance Donut Chart & Scorecard -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-card-title">Compliance Status</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Verified standards breakdown</p>
+              </div>
+            </div>
+            <div style="height: 220px; position: relative; margin-bottom: 14px;">
+              <canvas id="complianceDonutChart"></canvas>
+            </div>
+            <div style="text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+              <strong>ISO 9001 &bull; RoHS &bull; GMP</strong> &bull; All audits verified
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Insights Card -->
+        <div class="ai-insights-card">
+          <div>
+            <div class="ai-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"></path>
+              </svg>
+              AI INSIGHTS ENGINE READY
+            </div>
+            <div class="ai-title">Predictive Anomaly Detected</div>
+            <p class="ai-desc">
+              "We found 2 unusual patterns in production data (tolerance skew in Batch 102) and 1 potential network risk on OT port 502."
+            </p>
+          </div>
+          <a href="alerts.html" class="btn btn-accent btn-sm">Review Insights &rarr;</a>
+        </div>
+
+        <!-- Recent Alerts Card -->
+        <div class="card" style="padding: 24px 28px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+            <h3 style="font-size: 1.15rem; font-weight: 700;">Recent Industrial Alerts</h3>
+            <a href="alerts.html" style="font-size: 0.85rem; color: #e05e5e; font-weight: 700;">View All Alerts &rarr;</a>
+          </div>
+          <div id="dashboard-alerts-feed"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

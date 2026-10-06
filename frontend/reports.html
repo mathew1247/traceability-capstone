@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics & Reports | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Analytics & Reports</h1>
+            <p class="page-subtitle">Executive throughput telemetry, regulatory compliance trends, and OT threat statistics.</p>
+          </div>
+          <div class="page-actions-group">
+            <button class="btn btn-secondary btn-sm" onclick="exportReport('csv')">Export CSV</button>
+            <button class="btn btn-secondary btn-sm" onclick="exportReport('pdf')">Export PDF</button>
+          </div>
+        </div>
+
+        <!-- Filter & Generation Controls -->
+        <div class="card" style="margin-bottom: 24px; padding: 20px 24px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
+            <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Reporting Scope</label>
+                <select id="report-module" class="form-select" style="padding: 7px 14px;">
+                  <option value="All Modules">All Modules (Consolidated)</option>
+                  <option value="Production Batches">Production Batches & Yield</option>
+                  <option value="Compliance Records">Regulatory Compliance & Audits</option>
+                  <option value="Network Security">OT Network Security & Scans</option>
+                </select>
+              </div>
+
+              <div>
+                <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-secondary); text-transform: uppercase;">Date Range</label>
+                <select id="report-range" class="form-select" style="padding: 7px 14px;">
+                  <option value="Last 30 Days">Last 30 Days</option>
+                  <option value="Last Quarter">Last Quarter (Q3 2026)</option>
+                  <option value="Year-to-Date">Year-to-Date (2026)</option>
+                </select>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-sm" onclick="handleGenerateReport()">Generate Report</button>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="dashboard-grid-main">
+          <!-- Throughput Bar Chart -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-card-title">Batch Throughput & QA Clearance</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Monthly production volume vs QA pass volume</p>
+              </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+              <canvas id="batchThroughputChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Network Security Asset Distribution -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div>
+                <h3 class="chart-card-title">Network Asset Health Census</h3>
+                <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Subnet device classification</p>
+              </div>
+            </div>
+            <div style="height: 240px; position: relative; margin-bottom: 12px;">
+              <canvas id="threatDistributionChart"></canvas>
+            </div>
+            <div style="text-align: center; font-size: 0.85rem; color: var(--text-secondary);">
+              <strong>14 Online Assets</strong> &bull; Zero Perimeter Breaches
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

@@ -1,0 +1,215 @@
+/* ===================================================================
+   SENTINEL-TRACE TABLES & DATA GRIDS
+   Visual Language: Clean Rounded Modern Table, Soft Highlights,
+                    Pill Status Badges, Action Icons, Pagination
+   =================================================================== */
+
+.table-container {
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.table-toolbar {
+  padding: 18px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.table-search-box {
+  position: relative;
+  min-width: 280px;
+}
+
+.table-search-input {
+  width: 100%;
+  padding: 8px 16px 8px 38px;
+  background: #f1f5f4;
+  border: 1px solid transparent;
+  border-radius: var(--radius-pill);
+  font-size: 0.88rem;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.table-search-input:focus {
+  background: #ffffff;
+  border-color: rgba(250, 123, 123, 0.45);
+  box-shadow: 0 2px 10px rgba(250, 123, 123, 0.12);
+}
+
+.table-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #7b8e89;
+  pointer-events: none;
+}
+
+.table-filters-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.table-filter-select {
+  padding: 8px 28px 8px 14px;
+  background: #f8faf9;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23586763' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 14px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.9rem;
+}
+
+.data-table thead tr {
+  background: #f8faf9;
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table th {
+  padding: 14px 20px;
+  font-weight: 700;
+  font-size: 0.78rem;
+  color: #556662;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid rgba(180, 70, 70, 0.05);
+  transition: background-color var(--transition-fast);
+}
+
+.data-table tbody tr:hover {
+  background-color: #fff9f9;
+}
+
+.data-table td {
+  padding: 16px 20px;
+  color: var(--text-primary);
+  vertical-align: middle;
+}
+
+.td-primary-text {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.td-secondary-text {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.td-code {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  background: #fff0f0;
+  padding: 2px 8px;
+  border-radius: var(--radius-xs);
+  color: #e05e5e;
+  font-weight: 600;
+}
+
+/* Table Actions */
+.table-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-table-action {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  background: transparent;
+  transition: all var(--transition-fast);
+}
+
+.btn-table-action:hover {
+  background: #fff0f0;
+  color: #e05e5e;
+}
+
+.btn-table-action.danger:hover {
+  background: var(--danger-bg);
+  color: var(--danger);
+}
+
+/* Table Pagination */
+.table-pagination {
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  background: #ffffff;
+}
+
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pagination-btn {
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: #ffffff;
+  color: var(--text-primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: #fff5f5;
+  border-color: rgba(250, 123, 123, 0.3);
+}
+
+.pagination-btn.active {
+  background: #fa7b7b;
+  color: #ffffff;
+  border-color: #fa7b7b;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

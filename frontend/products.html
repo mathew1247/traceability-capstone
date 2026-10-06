@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalog | Sentinel-Trace</title>
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/tables.css">
+  <link rel="stylesheet" href="css/forms.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <div class="app-layout">
+    <div id="sidebar-mount"></div>
+
+    <main class="app-main">
+      <div id="header-mount"></div>
+
+      <div class="app-content">
+        <div class="page-header-row">
+          <div>
+            <h1 class="page-title">Product Catalog</h1>
+            <p class="page-subtitle">Track industrial product specifications, certification states, and batch ties.</p>
+          </div>
+          <div class="page-actions-group">
+            <button class="btn btn-primary btn-sm" onclick="openModal('add-product-modal')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Product
+            </button>
+          </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="table-search-box">
+              <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+              <input type="text" class="table-search-input" id="product-search" placeholder="Search product name or code..." onkeyup="filterProducts()">
+            </div>
+            <div class="table-filters-group">
+              <select class="table-filter-select" id="product-status-filter" onchange="filterProducts()">
+                <option value="">All Statuses</option>
+                <option value="Certified">Certified</option>
+                <option value="In Production">In Production</option>
+                <option value="Quarantined">Quarantined</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="table-wrapper">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Product ID</th>
+                  <th>Product Name</th>
+                  <th>Product Code</th>
+                  <th>Status</th>
+                  <th>Created Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="products-table-body">
+                <!-- Loaded via products.js -->
+              </tbody>
+            </table>
+          </div>
+
+          <div class="table-pagination">
+            <span>Showing active industrial catalog profiles</span>
+            <div class="pagination-controls">
+              <button class="pagination-btn active">1</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Product Modal -->
+  <div class="modal-overlay" id="add-product-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Register New Product</h3>
+        <button class="modal-close" onclick="closeModal('add-product-modal')">&times;</button>
+      </div>
+      <form id="add-product-form">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group form-grid-full">
+              <label class="form-label">Product Name <span class="required">*</span></label>
+              <input type="text" id="prod-name" class="form-input" placeholder="e.g. Industrial Cryo-Cooling Valve" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Product Code (SKU) <span class="required">*</span></label>
+              <input type="text" id="prod-code" class="form-input" placeholder="e.g. CCV-500" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lifecycle Status</label>
+              <select id="prod-status" class="form-select">
+                <option value="In Production">In Production</option>
+                <option value="Certified">Certified</option>
+                <option value="Quarantined">Quarantined</option>
+              </select>
+            </div>
+            <div class="form-group form-grid-full">
+              <label class="form-label">Target Compliance Standard</label>
+              <input type="text" id="prod-compliance" class="form-input" placeholder="e.g. ISO 9001:2015 / RoHS">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('add-product-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Product</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="js/config.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/products.js"></script>
+</body>
+</html>

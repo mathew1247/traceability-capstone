@@ -1,0 +1,151 @@
+/* ===================================================================
+   SENTINEL-TRACE NETWORK SCANNER & SECURITY MONITOR STYLES
+   Visual Language: Industrial Cybersecurity, SOC Aesthetic,
+                    Clean Glassmorphic Cards, Port Badges, Threat Meter
+   =================================================================== */
+
+.scanner-control-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  padding: 28px;
+  margin-bottom: 24px;
+}
+
+.scanner-input-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.scanner-target-input {
+  flex-grow: 1;
+  min-width: 260px;
+  padding: 12px 20px;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--border);
+  background: #f8faf9;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.scanner-target-input:focus {
+  background: #ffffff;
+  border-color: #fa7b7b;
+  box-shadow: 0 0 0 3px rgba(250, 123, 123, 0.18);
+}
+
+/* Scan Progress & Console Simulation */
+.scan-status-container {
+  margin-top: 24px;
+  padding: 20px;
+  background: #181415;
+  border-radius: var(--radius-lg);
+  color: #eedada;
+  border: 1px solid rgba(250, 123, 123, 0.25);
+}
+
+.scan-progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-size: 0.88rem;
+}
+
+.scan-progress-bar-track {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.scan-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #fa7b7b, #f97316);
+  border-radius: var(--radius-pill);
+  width: 0%;
+  transition: width 0.3s ease;
+}
+
+.scan-terminal-logs {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.6;
+  max-height: 160px;
+  overflow-y: auto;
+  color: #d1b8b8;
+}
+
+.scan-terminal-logs .log-success { color: #fa7b7b; }
+.scan-terminal-logs .log-warning { color: #f59e0b; }
+.scan-terminal-logs .log-danger { color: #ef4444; }
+
+/* Port & Service Pills Grid */
+.ports-badge-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.port-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  background: #f1f5f4;
+  border: 1px solid var(--border);
+  color: #111a18;
+}
+
+.port-pill.port-open {
+  background: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.3);
+  color: #065f46;
+}
+
+.port-pill.port-critical {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+  color: #991b1b;
+}
+
+/* Security Threat Meter Card */
+.threat-meter-box {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+
+.threat-gauge-circle {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #e05e5e;
+  background: #fff0f0;
+  border: 4px solid #fa7b7b;
+}
+
+.threat-details h4 {
+  margin-bottom: 4px;
+}
