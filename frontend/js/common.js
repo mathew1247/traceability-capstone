@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", () => {
   injectSidebar();
   injectHeader();
   injectDock();
+  injectMobileDrawer();
   initToastContainer();
   initShortcutListeners();
 });
@@ -74,7 +75,16 @@ function injectHeader() {
 
   mount.innerHTML = `
     <header class="app-header">
-      <div style="display: flex; align-items: center; gap: 14px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <!-- Mobile Hamburger Menu Button (Shown on mobile & tablet) -->
+        <button class="mobile-hamburger-btn" onclick="toggleMobileNavDrawer(event)" aria-label="Open Navigation Menu" title="Open Navigation Menu">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6"></line>
+            <line x1="4" y1="12" x2="20" y2="12"></line>
+            <line x1="4" y1="18" x2="20" y2="18"></line>
+          </svg>
+        </button>
+
         <!-- Brand Logo Pill (Left Side) -->
         <a href="dashboard.html" class="header-brand-logo" title="Sentinel-Trace Intelligence">
           <div class="header-brand-icon">
@@ -516,11 +526,199 @@ function executeDockAction(action) {
   }
 }
 
+// Injects Mobile Navigation Drawer & Hamburger on Finexy Dashboard
+function injectMobileDrawer() {
+  const path = window.location.pathname;
+  const isAuthPage = path.endsWith("login.html") || path.endsWith("register.html") || path.endsWith("welcome.html");
+  if (isAuthPage) return;
+
+  // 1. If on dashboard.html, inject hamburger button in finexy-header
+  const finexyHeader = document.querySelector(".finexy-header");
+  if (finexyHeader && !finexyHeader.querySelector(".finexy-hamburger-btn")) {
+    const btn = document.createElement("button");
+    btn.className = "mobile-hamburger-btn finexy-hamburger-btn";
+    btn.setAttribute("aria-label", "Open Navigation Menu");
+    btn.setAttribute("title", "Open Navigation Menu");
+    btn.innerHTML = `
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"></line>
+        <line x1="4" y1="12" x2="20" y2="12"></line>
+        <line x1="4" y1="18" x2="20" y2="18"></line>
+      </svg>
+    `;
+    btn.onclick = (e) => toggleMobileNavDrawer(e);
+    finexyHeader.insertBefore(btn, finexyHeader.firstChild);
+  }
+
+  // 2. Ensure drawer container is injected
+  if (document.getElementById("mobile-nav-drawer")) return;
+
+  const user = getCurrentUser();
+  const isDash = path.endsWith("dashboard.html") || path.endsWith("/") || path.endsWith("index.html");
+
+  const backdrop = document.createElement("div");
+  backdrop.id = "mobile-nav-backdrop";
+  backdrop.className = "mobile-nav-backdrop";
+  backdrop.onclick = closeMobileNavDrawer;
+
+  const drawer = document.createElement("aside");
+  drawer.id = "mobile-nav-drawer";
+  drawer.className = "mobile-nav-drawer";
+  drawer.setAttribute("aria-label", "Mobile Navigation Menu");
+
+  drawer.innerHTML = `
+    <div class="mobile-drawer-header">
+      <div class="mobile-drawer-brand">
+        <div class="header-brand-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="m9 12 2 2 4-4"/>
+          </svg>
+        </div>
+        <div>
+          <div style="font-weight: 800; font-size: 0.92rem; color: var(--text-primary); letter-spacing: 0.5px;">SENTINEL-TRACE</div>
+          <div style="font-size: 0.62rem; color: #64748b; font-weight: 700;">INDUSTRIAL INTELLIGENCE</div>
+        </div>
+      </div>
+      <button class="mobile-drawer-close-btn" onclick="closeMobileNavDrawer()" aria-label="Close Navigation">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <div class="mobile-drawer-user-card">
+      <div class="user-avatar" style="width: 36px; height: 36px; font-size: 0.9rem; background: linear-gradient(135deg, #fa7b7b, #e05e5e); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">
+        ${user.name.charAt(0)}
+      </div>
+      <div style="flex: 1; min-width: 0;">
+        <div style="font-size: 0.86rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
+        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">${user.role} &bull; ${user.email}</div>
+      </div>
+    </div>
+
+    <nav class="mobile-drawer-nav">
+      <div class="mobile-nav-group-title">MAIN WORKSPACE</div>
+      <a href="dashboard.html" class="mobile-nav-item ${isDash ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('layout-dashboard')}
+        <span>Overview Dashboard</span>
+      </a>
+
+      <div class="mobile-nav-group-title">TRACEABILITY & SUPPLY CHAIN</div>
+      <a href="traceability.html" class="mobile-nav-item ${path.endsWith('traceability.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('git-fork')}
+        <span>Traceability Graph</span>
+      </a>
+      <a href="products.html" class="mobile-nav-item ${path.endsWith('products.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('box')}
+        <span>Products Catalog</span>
+      </a>
+      <a href="batches.html" class="mobile-nav-item ${path.endsWith('batches.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('layers')}
+        <span>Production Batches</span>
+      </a>
+      <a href="materials.html" class="mobile-nav-item ${path.endsWith('materials.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('cubes')}
+        <span>Raw Materials & Stock</span>
+      </a>
+      <a href="suppliers.html" class="mobile-nav-item ${path.endsWith('suppliers.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('truck')}
+        <span>Suppliers Directory</span>
+      </a>
+
+      <div class="mobile-nav-group-title">REGULATORY & COMPLIANCE</div>
+      <a href="compliance.html" class="mobile-nav-item ${path.endsWith('compliance.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('shield-check')}
+        <span>Compliance Standards</span>
+      </a>
+      <a href="reports.html" class="mobile-nav-item ${path.endsWith('reports.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('bar-chart-3')}
+        <span>Audit Reports & Analytics</span>
+      </a>
+      <a href="activity-logs.html" class="mobile-nav-item ${path.endsWith('activity-logs.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('file-text')}
+        <span>Activity Audit Trail</span>
+      </a>
+
+      <div class="mobile-nav-group-title">SECURITY & TELEMETRY</div>
+      <a href="alerts.html" class="mobile-nav-item ${path.endsWith('alerts.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('bell-ring')}
+        <span>Operational Alerts</span>
+      </a>
+      <a href="network-security.html" class="mobile-nav-item ${path.endsWith('network-security.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('shield-alert')}
+        <span>Security Monitor SOC</span>
+      </a>
+      <a href="network-scan.html" class="mobile-nav-item ${path.endsWith('network-scan.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('radar')}
+        <span>OT Subnet Scanner</span>
+      </a>
+
+      <div class="mobile-nav-group-title">ADMINISTRATION</div>
+      <a href="users.html" class="mobile-nav-item ${path.endsWith('users.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
+        ${getIconSvg('users')}
+        <span>User Administration</span>
+      </a>
+      <button class="mobile-nav-item danger" onclick="closeMobileNavDrawer(); handleLogout();">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        <span>Sign Out</span>
+      </button>
+    </nav>
+  `;
+
+  document.body.appendChild(backdrop);
+  document.body.appendChild(drawer);
+}
+
+function toggleMobileNavDrawer(e) {
+  if (e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+  const drawer = document.getElementById("mobile-nav-drawer");
+  if (!drawer) {
+    injectMobileDrawer();
+  }
+  const d = document.getElementById("mobile-nav-drawer");
+  if (!d) return;
+  if (d.classList.contains("open")) {
+    closeMobileNavDrawer();
+  } else {
+    openMobileNavDrawer();
+  }
+}
+
+function openMobileNavDrawer() {
+  const drawer = document.getElementById("mobile-nav-drawer");
+  const backdrop = document.getElementById("mobile-nav-backdrop");
+  if (drawer && backdrop) {
+    drawer.classList.add("open");
+    backdrop.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+}
+
+function closeMobileNavDrawer() {
+  const drawer = document.getElementById("mobile-nav-drawer");
+  const backdrop = document.getElementById("mobile-nav-backdrop");
+  if (drawer && backdrop) {
+    drawer.classList.remove("open");
+    backdrop.classList.remove("open");
+    document.body.style.overflow = "";
+  }
+}
+
+window.toggleMobileNavDrawer = toggleMobileNavDrawer;
+window.openMobileNavDrawer = openMobileNavDrawer;
+window.closeMobileNavDrawer = closeMobileNavDrawer;
+
 // Global Keyboard Shortcut Listener
 function initShortcutListeners() {
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
       closeAllCategoryPopovers();
+      closeMobileNavDrawer();
       return;
     }
 
