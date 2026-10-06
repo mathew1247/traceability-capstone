@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify
+from flask import Flask, jsonify, send_from_directory
 from flask_cors import CORS
 from config import Config
 from config.firebase import init_firebase, db
@@ -23,7 +23,8 @@ from routes.log_routes import log_bp
 
 def create_app():
     """Application factory for Sentinel-Trace Flask backend."""
-    app = Flask(__name__)
+    frontend_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'frontend'))
+    app = Flask(__name__, static_folder=frontend_dir, static_url_path='')
     app.config.from_object(Config)
 
     # Initialize CORS
@@ -83,13 +84,29 @@ def create_app():
             }
         }), (200 if is_healthy else 503)
 
+    # Serve Sentinel-Trace UI Frontend directly
     @app.route('/', methods=['GET'])
     def index_route():
+        if os.path.exists(os.path.join(frontend_dir, 'welcome.html')):
+            return send_from_directory(frontend_dir, 'welcome.html')
+        elif os.path.exists(os.path.join(frontend_dir, 'index.html')):
+            return send_from_directory(frontend_dir, 'index.html')
         return jsonify({
             "service": "SENTINEL-TRACE BACKEND API",
             "status": "ONLINE",
-            "documentation": "/api/health or view API_DOCUMENTATION.md"
+            "documentation": "/api/health"
         }), 200
+
+    @app.route('/<path:filename>', methods=['GET'])
+    def serve_frontend_files(filename):
+        if filename.startswith('api/'):
+            return jsonify({"success": False, "error": {"code": "NOT_FOUND", "message": "API endpoint not found"}}), 404
+        file_path = os.path.join(frontend_dir, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(frontend_dir, filename)
+        if os.path.exists(os.path.join(frontend_dir, 'welcome.html')):
+            return send_from_directory(frontend_dir, 'welcome.html')
+        return jsonify({"success": False, "error": {"code": "NOT_FOUND", "message": "Resource not found"}}), 404
 
     return app
 
