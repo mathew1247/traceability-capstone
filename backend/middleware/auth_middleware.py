@@ -55,7 +55,8 @@ def token_required(f):
 
             if user_doc and user_doc.exists:
                 user_data = user_doc.to_dict()
-                if user_data.get('status') == 'Inactive' or user_data.get('status') == 'Suspended':
+                user_status = str(user_data.get('status', 'Active')).strip()
+                if user_status.lower() != 'active':
                     return error_response(
                         code="ACCOUNT_DISABLED",
                         message="User account is deactivated. Contact an administrator.",

@@ -108,7 +108,11 @@ async function loadAlerts() {
 function setAlertFilter(filter) {
   currentFilter = filter;
   document.querySelectorAll(".alert-filter-pill").forEach(btn => {
-    btn.classList.toggle("active", btn.textContent.trim().toLowerCase() === filter.toLowerCase());
+    const text = btn.textContent.toLowerCase();
+    const isMatch = filter.toLowerCase() === 'all'
+      ? text.includes('all')
+      : text.includes(filter.toLowerCase());
+    btn.classList.toggle("active", isMatch);
   });
   loadAlerts();
 }

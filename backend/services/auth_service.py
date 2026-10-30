@@ -124,7 +124,8 @@ def login(email, password, ip_address=None):
 
         user_data = user_doc.to_dict()
 
-        if user_data.get('status') != 'Active':
+        user_status = str(user_data.get('status', 'Active')).strip()
+        if user_status.lower() != 'active':
             return None, "User account is suspended or inactive.", 403
 
         stored_hash = user_data.get('password_hash', '')
@@ -439,12 +440,17 @@ def request_password_reset(email, ip_address=None):
     else:
         user_msg = f"Password recovery instructions dispatched for {clean_email}."
 
-    return {
+    response_data = {
         "email": clean_email,
         "dispatched": True,
-        "token": reset_token,
         "message": user_msg
-    }, None, 200
+    }
+    # Security fix: Omit reset token in production to prevent account takeover risks over API responses.
+    # Expose token only in non-production environments for automated integration testing.
+    if not getattr(Config, 'is_prod', False) and getattr(Config, 'ENV', 'development') != 'production':
+        response_data["token"] = reset_token
+
+    return response_data, None, 200
 
 
 def reset_password_with_token(token, new_password, ip_address=None):

@@ -110,6 +110,14 @@ async function apiRequest(endpoint, options = {}) {
     const json = await res.json().catch(() => null);
 
     if (!res.ok) {
+      if (res.status === 403 && json?.error?.code === "ACCOUNT_DISABLED") {
+        console.warn(`[Sentinel API] Account disabled. Clearing session.`);
+        clearAuthSession();
+        if (!window.location.pathname.endsWith("login.html") && !window.location.pathname.endsWith("welcome.html")) {
+          window.location.href = "login.html";
+        }
+        throw new Error("Your account has been deactivated. Please contact an administrator.");
+      }
       const errMsg = json?.error?.message || json?.message || `HTTP ${res.status}: Operation failed`;
       const err = new Error(errMsg);
       err.status = res.status;
