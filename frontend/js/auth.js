@@ -79,10 +79,7 @@ function initAuth() {
     loginForm.addEventListener("submit", performLogin);
   }
   if (submitBtn) {
-    submitBtn.addEventListener("click", (e) => {
-      // If inside form, submit event handles it; but if form submission was prevented or detached, trigger performLogin
-      if (!loginForm) performLogin(e);
-    });
+    submitBtn.addEventListener("click", performLogin);
   }
 
   // Register Form Handler

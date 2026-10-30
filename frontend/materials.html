@@ -63,6 +63,25 @@
               </tbody>
             </table>
           </div>
+          <div class="table-pagination" id="materials-pagination">
+            <span id="materials-pagination-info">Showing active raw materials inventory</span>
+            <div class="table-pagination-group">
+              <div class="pagination-page-size">
+                <label for="materials-page-size">Rows per page:</label>
+                <select id="materials-page-size" class="pagination-size-select">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div class="pagination-controls">
+                <button type="button" class="pagination-btn" id="materials-prev-btn" disabled>&laquo; Prev</button>
+                <div class="pagination-pages" id="materials-page-numbers"></div>
+                <button type="button" class="pagination-btn" id="materials-next-btn" disabled>Next &raquo;</button>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -86,10 +105,7 @@
             <div class="form-group form-grid-full">
               <label class="form-label">Approved Sourcing Supplier <span class="required">*</span></label>
               <select id="mat-supplier" class="form-select" required>
-                <option value="Apex Precision Metallurgy">Apex Precision Metallurgy (Coimbatore)</option>
-                <option value="Coimbatore Industrial Components">Coimbatore Industrial Components</option>
-                <option value="SouthTech Materials">SouthTech Materials (Hosur)</option>
-                <option value="Vanguard Polymer Systems">Vanguard Polymer Systems</option>
+                <option value="" disabled selected>Select sourcing supplier...</option>
               </select>
             </div>
             <div class="form-group">
@@ -113,6 +129,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- Edit Material Modal -->
   <div class="modal-overlay" id="edit-material-modal">
     <div class="modal-box">
@@ -159,6 +177,7 @@
   <div id="toast-container"></div>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/pagination-component.js"></script>
   <script src="js/materials.js"></script>
 </body>
 </html>

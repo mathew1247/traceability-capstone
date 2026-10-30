@@ -4,10 +4,36 @@ from config.firebase import db
 from services.firestore_service import serialize_value
 from services.activity_log_service import log_activity
 from utils.validators import validate_required_fields, validate_product_status
+from utils.pagination import paginate_records
 
-def get_all_products():
-    docs = db.collection(Config.COLLECTION_PRODUCTS).get()
-    return [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+def get_all_products(page=1, page_size=10, sort_by='created_at', sort_order='desc', search=None, status=None, is_paginated=False):
+    col = db.collection(Config.COLLECTION_PRODUCTS)
+    if status:
+        docs = col.where('status', '==', status).get()
+    else:
+        docs = col.get()
+
+    items = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+
+    if search:
+        s = search.lower()
+        items = [
+            p for p in items
+            if s in (p.get('product_name') or '').lower() or
+               s in (p.get('product_code') or '').lower() or
+               s in (p.get('product_id') or '').lower() or
+               s in (p.get('description') or '').lower()
+        ]
+
+    return paginate_records(
+        items=items,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        tie_breaker_field='product_id',
+        is_paginated=is_paginated
+    )
 
 
 def get_product_by_id(product_id):

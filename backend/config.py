@@ -22,6 +22,7 @@ class Config:
         SECRET_KEY = os.getenv('SECRET_KEY', 'sentinel-trace-dev-secret-key-2026')
         JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'sentinel-trace-dev-jwt-key-2026-secure-fallback')
     JWT_EXPIRATION_HOURS = int(os.getenv('JWT_EXPIRATION_HOURS', 24))
+    COMPLIANCE_WARNING_DAYS = int(os.getenv('COMPLIANCE_WARNING_DAYS', 30))
     
     # Firebase
     FIREBASE_PROJECT_ID = os.getenv('FIREBASE_PROJECT_ID', 'capstone-8ee41')

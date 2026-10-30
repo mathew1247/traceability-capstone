@@ -24,7 +24,14 @@
             <h1 class="page-title">Compliance Tracker</h1>
             <p class="page-subtitle">Continuous regulatory audits, ISO / GMP / RoHS compliance certifications.</p>
           </div>
-          <div class="page-actions-group">
+          <div class="page-actions-group" style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary btn-sm" id="btn-scan-expiries" onclick="handleScanExpiries()" title="Scan for expiring compliance records and trigger system alerts">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              Scan Expiries
+            </button>
             <button class="btn btn-primary btn-sm" onclick="openModal('add-compliance-modal')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -46,7 +53,7 @@
             </div>
             <div class="kpi-card-value" style="color: #e05e5e;">98.4%</div>
             <div class="kpi-trend-row">
-              <span class="trend-badge trend-up">&uarr; +1.2%</span>
+              <span class="trend-badge trend-up">&#10003; Active</span>
               <span>All Standards Met</span>
             </div>
           </div>
@@ -79,30 +86,40 @@
             </div>
           </div>
 
-          <div class="kpi-card">
+          <div class="kpi-card" id="kpi-card-expiring">
             <div class="kpi-card-header">
-              <span class="kpi-card-title">Expiring in 90 Days</span>
+              <span class="kpi-card-title">Expiring Soon (30 Days)</span>
               <div class="kpi-icon-pill" style="background: rgba(6, 182, 212, 0.1); color: #0891b2;">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
               </div>
             </div>
-            <div class="kpi-card-value">1</div>
-            <div class="kpi-trend-row">
-              <span class="trend-badge trend-neutral">Scheduled</span>
-              <span>GMP Recertification</span>
+            <div class="kpi-card-value" id="kpi-val-expiring" style="color: #0891b2;">0</div>
+            <div class="kpi-trend-row" id="kpi-sub-expiring">
+              <span class="trend-badge trend-neutral" id="kpi-expired-badge">0 Expired</span>
+              <span>Scheduled Audits</span>
             </div>
           </div>
         </div>
 
         <!-- Compliance Table -->
         <div class="table-container">
-          <div class="table-toolbar">
+          <div class="table-toolbar" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
             <div class="table-search-box">
               <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
               <input type="text" class="table-search-input" id="compliance-search" placeholder="Search standard, product, or auditor..." onkeyup="filterCompliance()">
+            </div>
+            <div class="table-filter-group" style="display: flex; gap: 8px; align-items: center;">
+              <select id="compliance-expiry-filter" class="form-select" onchange="filterCompliance()" style="padding: 8px 12px; font-size: 13px; border-radius: 8px; background: var(--bg-card, #1e293b); color: var(--text-primary, #fff); border: 1px solid var(--border-color, #334155);">
+                <option value="all">All Expiry Statuses</option>
+                <option value="expiring_soon">Expiring Soon (≤ 30d)</option>
+                <option value="expiring_today">Expires Today</option>
+                <option value="expired">Expired Records</option>
+                <option value="valid">Valid Beyond 30d</option>
+                <option value="attention">Needs Attention (Expired/Missing)</option>
+              </select>
             </div>
           </div>
 
@@ -143,10 +160,7 @@
             <div class="form-group form-grid-full">
               <label class="form-label">Regulated Product <span class="required">*</span></label>
               <select id="comp-product" class="form-select" required>
-                <option value="Industrial Sentinel Flow Valve">Industrial Sentinel Flow Valve</option>
-                <option value="Hydraulic Control Unit HCU-4">Hydraulic Control Unit HCU-4</option>
-                <option value="Pressure Regulation Assembly">Pressure Regulation Assembly</option>
-                <option value="Turbine Sensor Gateway TSG-12">Turbine Sensor Gateway TSG-12</option>
+                <option value="" disabled selected>Select regulated product...</option>
               </select>
             </div>
             <div class="form-group">
@@ -177,6 +191,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- Edit Compliance Record Modal -->
   <div class="modal-overlay" id="edit-compliance-modal">
     <div class="modal-box">

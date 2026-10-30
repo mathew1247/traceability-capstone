@@ -5,10 +5,38 @@ from config.firebase import db
 from services.firestore_service import serialize_value
 from services.activity_log_service import log_activity
 from utils.validators import validate_email, validate_required_fields
+from utils.pagination import paginate_records
 
-def get_all_suppliers():
-    docs = db.collection(Config.COLLECTION_SUPPLIERS).get()
-    return [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+def get_all_suppliers(page=1, page_size=10, sort_by='created_at', sort_order='desc', search=None, status=None, is_paginated=False):
+    col = db.collection(Config.COLLECTION_SUPPLIERS)
+    if status:
+        docs = col.where('status', '==', status).get()
+    else:
+        docs = col.get()
+
+    items = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+
+    if search:
+        s = search.lower()
+        items = [
+            sup for sup in items
+            if s in (sup.get('supplier_name') or '').lower() or
+               s in (sup.get('supplier_id') or '').lower() or
+               s in (sup.get('contact') or '').lower() or
+               s in (sup.get('email') or '').lower() or
+               s in (sup.get('address') or '').lower() or
+               s in (sup.get('status') or '').lower()
+        ]
+
+    return paginate_records(
+        items=items,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        tie_breaker_field='supplier_id',
+        is_paginated=is_paginated
+    )
 
 
 def get_supplier_by_id(supplier_id):

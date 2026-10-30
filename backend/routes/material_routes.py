@@ -8,6 +8,9 @@ from services.material_service import (
 )
 from middleware.auth_middleware import token_required, role_required
 from utils.response import success_response, error_response
+from utils.pagination import parse_pagination_params
+
+ALLOWED_MATERIAL_SORT_FIELDS = {'material_id', 'material_name', 'supplier_id', 'quantity', 'unit', 'created_at'}
 
 material_bp = Blueprint('material_bp', __name__, url_prefix='/api/materials')
 
@@ -15,7 +18,26 @@ material_bp = Blueprint('material_bp', __name__, url_prefix='/api/materials')
 @token_required
 @role_required('Admin', 'Inspector', 'Auditor', 'Operator')
 def handle_get_all():
-    materials = get_all_materials()
+    page, page_size, sort_by, sort_order, is_paginated, err, status_code = parse_pagination_params(
+        request.args,
+        allowed_sort_fields=ALLOWED_MATERIAL_SORT_FIELDS,
+        default_sort_by='created_at',
+        default_sort_order='desc',
+        default_page_size=10
+    )
+    if err:
+        return error_response(code="INVALID_PAGINATION_PARAMS", message=err, status_code=status_code)
+
+    search = request.args.get('search') or request.args.get('q')
+
+    materials = get_all_materials(
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        search=search.strip() if search else None,
+        is_paginated=is_paginated
+    )
     return success_response(data=materials)
 
 

@@ -4,10 +4,32 @@ from config.firebase import db
 from services.firestore_service import serialize_value
 from services.activity_log_service import log_activity
 from utils.validators import validate_required_fields
+from utils.pagination import paginate_records
 
-def get_all_materials():
+def get_all_materials(page=1, page_size=10, sort_by='created_at', sort_order='desc', search=None, is_paginated=False):
     docs = db.collection(Config.COLLECTION_RAW_MATERIALS).get()
-    return [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+    items = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+
+    if search:
+        s = search.lower()
+        items = [
+            m for m in items
+            if s in (m.get('material_name') or '').lower() or
+               s in (m.get('material_id') or '').lower() or
+               s in (m.get('supplier_id') or '').lower() or
+               s in (m.get('unit') or '').lower() or
+               s in str(m.get('quantity') or '')
+        ]
+
+    return paginate_records(
+        items=items,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        tie_breaker_field='material_id',
+        is_paginated=is_paginated
+    )
 
 
 def get_material_by_id(material_id):

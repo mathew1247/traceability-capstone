@@ -144,7 +144,12 @@ async function loadDashboardMetrics() {
 
     const trendCompliance = document.getElementById("kpi-trend-compliance");
     if (trendCompliance) {
-      trendCompliance.innerHTML = `✓ ${compliantCount} Certified <span>ISO, RoHS, GMP</span>`;
+      const expiringSoon = stats.expiring_soon_compliance || 0;
+      if (expiringSoon > 0) {
+        trendCompliance.innerHTML = `⚠️ ${expiringSoon} Expiring Soon <span>ISO, RoHS, GMP</span>`;
+      } else {
+        trendCompliance.innerHTML = `✓ ${compliantCount} Certified <span>ISO, RoHS, GMP</span>`;
+      }
     }
 
     if (elMaterials) elMaterials.textContent = `${matCount} Lots`;

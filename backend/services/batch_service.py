@@ -53,9 +53,37 @@ def _get_material_ref_and_doc(material_id):
     return mat_ref, mat_doc
 
 
-def get_all_batches():
-    docs = db.collection(Config.COLLECTION_PRODUCTION_BATCHES).get()
-    return [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+from utils.pagination import paginate_records
+
+def get_all_batches(page=1, page_size=10, sort_by='created_at', sort_order='desc', search=None, status=None, is_paginated=False):
+    col = db.collection(Config.COLLECTION_PRODUCTION_BATCHES)
+    if status:
+        docs = col.where('status', '==', status).get()
+    else:
+        docs = col.get()
+
+    items = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+
+    if search:
+        s = search.lower()
+        items = [
+            b for b in items
+            if s in (b.get('batch_id') or '').lower() or
+               s in (b.get('product_id') or '').lower() or
+               s in (b.get('material_id') or '').lower() or
+               s in (b.get('status') or '').lower() or
+               s in str(b.get('quantity') or '')
+        ]
+
+    return paginate_records(
+        items=items,
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        tie_breaker_field='batch_id',
+        is_paginated=is_paginated
+    )
 
 
 def get_batch_by_id(batch_id):

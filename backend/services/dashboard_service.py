@@ -110,11 +110,14 @@ def get_dashboard_metrics():
         recent_batches.append(b_dict)
 
     # 5. Compliance calculation
+    from services.compliance_service import evaluate_compliance_expiry
     compliance_docs = db.collection(Config.COLLECTION_COMPLIANCE_RECORDS).get()
     total_compliance = len(compliance_docs)
     compliant_count = 0
     pending_count = 0
     expired_count = 0
+    expiring_soon_compliance = 0
+    expired_by_date_compliance = 0
 
     for c in compliance_docs:
         c_data = c.to_dict() or {}
@@ -126,7 +129,14 @@ def get_dashboard_metrics():
         elif st in ('Expired', 'Non-Compliant'):
             expired_count += 1
 
+        eval_res = evaluate_compliance_expiry(c_data)
+        if eval_res['is_expiring_soon']:
+            expiring_soon_compliance += 1
+        if eval_res['is_expired']:
+            expired_by_date_compliance += 1
+
     compliance_rate = round((compliant_count / total_compliance * 100), 1) if total_compliance > 0 else 100.0
+
 
     # 6. Alerts calculation
     all_alerts_docs = db.collection(Config.COLLECTION_ALERTS).get()
@@ -170,6 +180,8 @@ def get_dashboard_metrics():
         "compliant_records": compliant_count,
         "pending_compliance": pending_count,
         "expired_compliance": expired_count,
+        "expiring_soon_compliance": expiring_soon_compliance,
+        "expired_by_date_compliance": expired_by_date_compliance,
         "compliance_rate": compliance_rate,
         "total_alerts": total_alerts,
         "active_alerts": active_alerts,

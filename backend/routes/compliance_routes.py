@@ -4,18 +4,69 @@ from services.compliance_service import (
     get_compliance_by_id,
     create_compliance_record,
     update_compliance_record,
-    delete_compliance_record
+    delete_compliance_record,
+    get_compliance_expiry_status,
+    scan_and_alert_compliance_expiries
 )
 from middleware.auth_middleware import token_required, role_required
 from utils.response import success_response, error_response
 
 compliance_bp = Blueprint('compliance_bp', __name__, url_prefix='/api/compliance')
 
+@compliance_bp.route('/expiry-status', methods=['GET'])
+@token_required
+@role_required('Admin', 'Inspector', 'Auditor')
+def handle_get_expiry_status():
+    """
+    GET /api/compliance/expiry-status
+    Returns aggregate compliance certification expiry metrics and filtered records.
+    Query params:
+    - warning_days: int (default 30)
+    - status: expired | expiring_today | expiring_soon | valid | missing_date | invalid_date | expiring | attention
+    - standard: ISO 9001:2015 | RoHS | GMP | etc.
+    - product_id: product ID filter
+    """
+    warning_days = request.args.get('warning_days', type=int)
+    status_filter = request.args.get('status') or request.args.get('expiry_status')
+    standard_filter = request.args.get('standard')
+    product_id_filter = request.args.get('product_id')
+
+    result = get_compliance_expiry_status(
+        warning_days=warning_days,
+        status_filter=status_filter,
+        standard_filter=standard_filter,
+        product_id_filter=product_id_filter
+    )
+    return success_response(data=result, message="Compliance expiry status compiled successfully")
+
+
+@compliance_bp.route('/check-expiries', methods=['POST'])
+@token_required
+@role_required('Admin', 'Inspector')
+def handle_check_expiries():
+    """
+    POST /api/compliance/check-expiries
+    Scans compliance records for expired or expiring certifications and triggers alerts.
+    """
+    data = request.get_json(silent=True) or {}
+    warning_days = data.get('warning_days')
+    if warning_days is None:
+        warning_days = request.args.get('warning_days', type=int)
+
+    result = scan_and_alert_compliance_expiries(
+        warning_days=warning_days,
+        current_user=g.current_user
+    )
+    return success_response(data=result, message="Compliance expiry monitoring scan completed")
+
+
 @compliance_bp.route('', methods=['GET'])
 @token_required
 @role_required('Admin', 'Inspector', 'Auditor')
 def handle_get_all():
-    records = get_all_compliance()
+    expiry_status = request.args.get('expiry_status') or request.args.get('status')
+    warning_days = request.args.get('warning_days', type=int)
+    records = get_all_compliance(expiry_status=expiry_status, warning_days=warning_days)
     return success_response(data=records)
 
 
@@ -23,10 +74,12 @@ def handle_get_all():
 @token_required
 @role_required('Admin', 'Inspector', 'Auditor')
 def handle_get_one(compliance_id):
-    record = get_compliance_by_id(compliance_id)
+    warning_days = request.args.get('warning_days', type=int)
+    record = get_compliance_by_id(compliance_id, warning_days=warning_days)
     if not record:
         return error_response(code="COMPLIANCE_RECORD_NOT_FOUND", message="Compliance audit record not found", status_code=404)
     return success_response(data=record)
+
 
 
 @compliance_bp.route('', methods=['POST'])

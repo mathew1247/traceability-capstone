@@ -64,6 +64,25 @@
               </tbody>
             </table>
           </div>
+          <div class="table-pagination" id="suppliers-pagination">
+            <span id="suppliers-pagination-info">Showing active industrial supplier directory</span>
+            <div class="table-pagination-group">
+              <div class="pagination-page-size">
+                <label for="suppliers-page-size">Rows per page:</label>
+                <select id="suppliers-page-size" class="pagination-size-select">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div class="pagination-controls">
+                <button type="button" class="pagination-btn" id="suppliers-prev-btn" disabled>&laquo; Prev</button>
+                <div class="pagination-pages" id="suppliers-page-numbers"></div>
+                <button type="button" class="pagination-btn" id="suppliers-next-btn" disabled>Next &raquo;</button>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -112,6 +131,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- Edit Supplier Modal -->
   <div class="modal-overlay" id="edit-supplier-modal">
     <div class="modal-box">
@@ -161,6 +182,7 @@
   <div id="toast-container"></div>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/pagination-component.js"></script>
   <script src="js/suppliers.js"></script>
 </body>
 </html>

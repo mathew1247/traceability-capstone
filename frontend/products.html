@@ -73,10 +73,23 @@
             </table>
           </div>
 
-          <div class="table-pagination">
-            <span>Showing active industrial catalog profiles</span>
-            <div class="pagination-controls">
-              <button class="pagination-btn active">1</button>
+          <div class="table-pagination" id="products-pagination">
+            <span id="products-pagination-info">Showing active industrial catalog profiles</span>
+            <div class="table-pagination-group">
+              <div class="pagination-page-size">
+                <label for="products-page-size">Rows per page:</label>
+                <select id="products-page-size" class="pagination-size-select">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div class="pagination-controls">
+                <button type="button" class="pagination-btn" id="products-prev-btn" disabled>&laquo; Prev</button>
+                <div class="pagination-pages" id="products-page-numbers"></div>
+                <button type="button" class="pagination-btn" id="products-next-btn" disabled>Next &raquo;</button>
+              </div>
             </div>
           </div>
         </div>
@@ -123,6 +136,8 @@
         </div>
       </form>
     </div>
+  </div>
+
   <!-- Edit Product Modal -->
   <div class="modal-overlay" id="edit-product-modal">
     <div class="modal-box">
@@ -167,6 +182,7 @@
   <div id="toast-container"></div>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/pagination-component.js"></script>
   <script src="js/products.js"></script>
 </body>
 </html>

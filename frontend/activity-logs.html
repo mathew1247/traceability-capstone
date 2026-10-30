@@ -40,6 +40,8 @@
               <input type="text" class="table-search-input" id="logs-search" placeholder="Search user, action, or resource..." onkeyup="filterLogs()">
             </div>
             <div class="table-filters-group">
+              <input type="date" class="table-filter-select" id="logs-start-date" title="Start Date" onchange="filterLogs()">
+              <input type="date" class="table-filter-select" id="logs-end-date" title="End Date" onchange="filterLogs()">
               <select class="table-filter-select" id="logs-action-filter" onchange="filterLogs()">
                 <option value="">All Actions</option>
                 <option value="AUTH_LOGIN">AUTH_LOGIN</option>
@@ -68,6 +70,27 @@
               </tbody>
             </table>
           </div>
+
+          <!-- Pagination Toolbar -->
+          <div class="table-pagination" id="logs-pagination">
+            <span id="logs-pagination-info">Showing immutable activity audit trail</span>
+            <div class="table-pagination-group">
+              <div class="pagination-page-size">
+                <label for="logs-page-size">Per page:</label>
+                <select id="logs-page-size" class="pagination-size-select">
+                  <option value="5">5</option>
+                  <option value="10" selected>10</option>
+                  <option value="25">25</option>
+                  <option value="50">50</option>
+                </select>
+              </div>
+              <div class="pagination-controls">
+                <button type="button" class="pagination-btn" id="logs-prev-btn" disabled>&laquo; Prev</button>
+                <div class="pagination-pages" id="logs-page-numbers"></div>
+                <button type="button" class="pagination-btn" id="logs-next-btn" disabled>Next &raquo;</button>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>
@@ -77,6 +100,7 @@
   <div id="toast-container"></div>
   <script src="js/config.js"></script>
   <script src="js/common.js"></script>
+  <script src="js/pagination-component.js"></script>
   <script src="js/activity-logs.js"></script>
 </body>
 </html>

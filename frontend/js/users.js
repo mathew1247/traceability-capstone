@@ -76,12 +76,25 @@ function initUserModalForm() {
     const name = document.getElementById("usr-name").value.trim();
     const email = document.getElementById("usr-email").value.trim();
     const role = document.getElementById("usr-role").value;
+    const submitBtn = form.querySelector('button[type="submit"]');
 
-    await createUser({ name, email, role, status: "Active" });
-    closeModal("add-user-modal");
-    form.reset();
-    showToast(`User account created for ${name} (${role})!`, "success");
-    await loadUsersTable();
+    if (!name || !email) {
+      showToast("Name and email are required.", "danger");
+      return;
+    }
+
+    if (submitBtn) submitBtn.disabled = true;
+    try {
+      await createUser({ name, email, role, status: "Active" });
+      closeModal("add-user-modal");
+      form.reset();
+      showToast(`User account created for ${name} (${role})!`, "success");
+      await loadUsersTable();
+    } catch (err) {
+      showToast(`Failed to create user: ${err.message}`, "danger");
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
+    }
   });
 }
 
@@ -125,12 +138,14 @@ function initEditUserForm() {
     const email = document.getElementById("edit-usr-email").value.trim();
     const role = document.getElementById("edit-usr-role").value;
     const status = document.getElementById("edit-usr-status").value;
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     if (!name || !email) {
       showToast("Name and email are required.", "danger");
       return;
     }
 
+    if (submitBtn) submitBtn.disabled = true;
     try {
       await updateUser(id, { name, email, role, status });
       closeModal("edit-user-modal");
@@ -138,6 +153,8 @@ function initEditUserForm() {
       await loadUsersTable();
     } catch (err) {
       showToast(`Failed to update user: ${err.message}`, "danger");
+    } finally {
+      if (submitBtn) submitBtn.disabled = false;
     }
   });
 }

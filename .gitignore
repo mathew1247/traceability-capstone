@@ -9,6 +9,8 @@ firebase-credentials.json
 *.json
 !package*.json
 !vercel.json
+!firestore.indexes.json
+!firebase.json
 !frontend/**/*.json
 
 # Python

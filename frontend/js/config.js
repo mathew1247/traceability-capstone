@@ -186,21 +186,70 @@ async function getDashboardStats() {
   }
 }
 
+function buildQueryString(params = {}) {
+  const query = new URLSearchParams();
+  if (params.page !== undefined && params.page !== null) query.set("page", params.page);
+  if (params.pageSize !== undefined && params.pageSize !== null) query.set("page_size", params.pageSize);
+  if (params.page_size !== undefined && params.page_size !== null) query.set("page_size", params.page_size);
+  if (params.sortBy) query.set("sort_by", params.sortBy);
+  if (params.sort_by) query.set("sort_by", params.sort_by);
+  if (params.sortOrder) query.set("sort_order", params.sortOrder);
+  if (params.sort_order) query.set("sort_order", params.sort_order);
+  if (params.search) query.set("search", params.search);
+  if (params.q) query.set("q", params.q);
+  if (params.status) query.set("status", params.status);
+  if (params.user) query.set("user", params.user);
+  if (params.user_id) query.set("user_id", params.user_id);
+  if (params.username) query.set("username", params.username);
+  if (params.action) query.set("action", params.action);
+  if (params.resource) query.set("resource", params.resource);
+  if (params.resource_id) query.set("resource_id", params.resource_id);
+  if (params.startDate) query.set("start_date", params.startDate);
+  if (params.start_date) query.set("start_date", params.start_date);
+  if (params.endDate) query.set("end_date", params.endDate);
+  if (params.end_date) query.set("end_date", params.end_date);
+  if (params.limit !== undefined && params.limit !== null) query.set("limit", params.limit);
+  if (params.paginate) query.set("paginate", "true");
+  const qs = query.toString();
+  return qs ? `?${qs}` : "";
+}
+
+function attachPaginationMeta(mappedItems, rawResponse) {
+  if (rawResponse && typeof rawResponse === 'object' && !Array.isArray(rawResponse) && 'page' in rawResponse) {
+    mappedItems.page = rawResponse.page;
+    mappedItems.pageSize = rawResponse.page_size;
+    mappedItems.total = rawResponse.total;
+    mappedItems.totalPages = rawResponse.total_pages;
+    mappedItems.items = mappedItems;
+    return mappedItems;
+  }
+  mappedItems.page = 1;
+  mappedItems.pageSize = mappedItems.length;
+  mappedItems.total = mappedItems.length;
+  mappedItems.totalPages = mappedItems.length > 0 ? 1 : 0;
+  mappedItems.items = mappedItems;
+  return mappedItems;
+}
+
 // 3. Products
-async function getProducts() {
+async function getProducts(params = {}) {
   try {
-    const list = await apiRequest("/products");
-    return (list || []).map(p => ({
+    const qs = buildQueryString(params);
+    const res = await apiRequest(`/products${qs}`);
+    const rawItems = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    const mapped = rawItems.map(p => ({
       ...p,
       id: p.product_id || p.id,
       name: p.product_name || p.name,
       code: p.product_code || p.code,
-      compliance: p.compliance || "ISO 9001:2015",
+      compliance: p.compliance || p.description || "ISO 9001:2015",
       createdDate: p.created_at ? p.created_at.split("T")[0] : "2026-10-06"
     }));
+    return attachPaginationMeta(mapped, res);
   } catch (e) {
     console.error("Failed to fetch products:", e);
-    return [];
+    const empty = [];
+    return attachPaginationMeta(empty, { page: 1, page_size: 10, total: 0, total_pages: 0 });
   }
 }
 
@@ -245,10 +294,12 @@ async function deleteProduct(id) {
 }
 
 // 4. Production Batches
-async function getBatches() {
+async function getBatches(params = {}) {
   try {
-    const list = await apiRequest("/batches");
-    return (list || []).map(b => ({
+    const qs = buildQueryString(params);
+    const res = await apiRequest(`/batches${qs}`);
+    const rawItems = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    const mapped = rawItems.map(b => ({
       ...b,
       id: b.batch_id || b.id,
       product: b.product_name || b.product_id || b.product,
@@ -258,9 +309,11 @@ async function getBatches() {
       status: b.status || "Completed",
       operator: b.operator || "Jack Mathew"
     }));
+    return attachPaginationMeta(mapped, res);
   } catch (e) {
     console.error("Failed to fetch batches:", e);
-    return [];
+    const empty = [];
+    return attachPaginationMeta(empty, { page: 1, page_size: 10, total: 0, total_pages: 0 });
   }
 }
 
@@ -308,10 +361,12 @@ async function deleteBatch(id) {
 }
 
 // 5. Raw Materials
-async function getMaterials() {
+async function getMaterials(params = {}) {
   try {
-    const list = await apiRequest("/materials");
-    return (list || []).map(m => ({
+    const qs = buildQueryString(params);
+    const res = await apiRequest(`/materials${qs}`);
+    const rawItems = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    const mapped = rawItems.map(m => ({
       ...m,
       id: m.material_id || m.id,
       name: m.material_name || m.name,
@@ -321,9 +376,11 @@ async function getMaterials() {
       status: m.status || "Verified",
       createdDate: m.created_at ? m.created_at.split("T")[0] : "2026-10-06"
     }));
+    return attachPaginationMeta(mapped, res);
   } catch (e) {
     console.error("Failed to fetch materials:", e);
-    return [];
+    const empty = [];
+    return attachPaginationMeta(empty, { page: 1, page_size: 10, total: 0, total_pages: 0 });
   }
 }
 
@@ -368,10 +425,12 @@ async function deleteMaterial(id) {
 }
 
 // 6. Certified Industrial Suppliers
-async function getSuppliers() {
+async function getSuppliers(params = {}) {
   try {
-    const list = await apiRequest("/suppliers");
-    return (list || []).map(s => ({
+    const qs = buildQueryString(params);
+    const res = await apiRequest(`/suppliers${qs}`);
+    const rawItems = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    const mapped = rawItems.map(s => ({
       ...s,
       id: s.supplier_id || s.id,
       name: s.supplier_name || s.name,
@@ -381,9 +440,11 @@ async function getSuppliers() {
       status: s.status || "Active",
       rating: s.rating || "4.8"
     }));
+    return attachPaginationMeta(mapped, res);
   } catch (e) {
     console.error("Failed to fetch suppliers:", e);
-    return [];
+    const empty = [];
+    return attachPaginationMeta(empty, { page: 1, page_size: 10, total: 0, total_pages: 0 });
   }
 }
 
@@ -432,25 +493,156 @@ async function verifySupplierDocs(id) {
   return await apiRequest(`/suppliers/${encodeURIComponent(id)}/verify-documents`);
 }
 
-// 7. Compliance Records
-async function getCompliance() {
+// 7. Compliance Records & Expiry Monitoring
+function evaluateClientExpiry(expiryDateStr, storedStatus = "", warningDays = 30, refDate = new Date()) {
+  const statusStr = String(storedStatus || "").trim();
+  const rawDate = String(expiryDateStr || "").trim();
+
+  const ref = new Date(Date.UTC(refDate.getUTCFullYear(), refDate.getUTCMonth(), refDate.getUTCDate()));
+
+  if (!rawDate) {
+    const isExpired = statusStr === "Expired";
+    return {
+      status: isExpired ? "expired" : "missing_date",
+      label: isExpired ? "Expired" : "Missing Expiry Date",
+      days_remaining: null,
+      is_expired: isExpired,
+      is_expiring_soon: false,
+      is_valid: false,
+      severity: isExpired ? "Critical" : "Warning",
+      requires_attention: true
+    };
+  }
+
+  let expDate = null;
   try {
-    const list = await apiRequest("/compliance");
-    return (list || []).map(c => ({
-      ...c,
-      id: c.compliance_id || c.id,
-      product: c.product_id || c.product,
-      standard: c.standard,
-      status: c.status,
-      auditor: c.auditing_body || c.audited_by || c.auditor || "Authorized Auditor",
-      expiryDate: c.expiry_date || c.expiryDate,
-      score: c.score || "98.5%"
-    }));
+    const parts = rawDate.split("T")[0].split("-");
+    if (parts.length === 3 && parts[0].length === 4) {
+      expDate = new Date(Date.UTC(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10)));
+      if (isNaN(expDate.getTime())) expDate = null;
+    }
+  } catch (e) {
+    expDate = null;
+  }
+
+  if (!expDate) {
+    const isExpired = statusStr === "Expired";
+    return {
+      status: isExpired ? "expired" : "invalid_date",
+      label: isExpired ? "Expired" : "Invalid Expiry Date",
+      days_remaining: null,
+      is_expired: isExpired,
+      is_expiring_soon: false,
+      is_valid: false,
+      severity: isExpired ? "Critical" : "Warning",
+      requires_attention: true
+    };
+  }
+
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const daysLeft = Math.round((expDate.getTime() - ref.getTime()) / msPerDay);
+
+  if (daysLeft < 0 || statusStr === "Expired") {
+    return {
+      status: "expired",
+      label: "Expired",
+      days_remaining: daysLeft,
+      is_expired: true,
+      is_expiring_soon: false,
+      is_valid: false,
+      severity: "Critical",
+      requires_attention: true
+    };
+  } else if (daysLeft === 0) {
+    return {
+      status: "expiring_today",
+      label: "Expires Today",
+      days_remaining: 0,
+      is_expired: false,
+      is_expiring_soon: true,
+      is_valid: true,
+      severity: "Critical",
+      requires_attention: true
+    };
+  } else if (daysLeft <= warningDays) {
+    return {
+      status: "expiring_soon",
+      label: "Expiring Soon",
+      days_remaining: daysLeft,
+      is_expired: false,
+      is_expiring_soon: true,
+      is_valid: true,
+      severity: "Warning",
+      requires_attention: true
+    };
+  }
+
+  return {
+    status: "valid",
+    label: "Valid",
+    days_remaining: daysLeft,
+    is_expired: false,
+    is_expiring_soon: false,
+    is_valid: true,
+    severity: "Normal",
+    requires_attention: false
+  };
+}
+
+async function getCompliance(filters = {}) {
+  try {
+    const params = new URLSearchParams();
+    if (filters.expiry_status) params.append("expiry_status", filters.expiry_status);
+    if (filters.status) params.append("status", filters.status);
+    if (filters.warning_days) params.append("warning_days", filters.warning_days);
+    const qs = params.toString() ? `?${params.toString()}` : "";
+    const list = await apiRequest(`/compliance${qs}`);
+
+    return (list || []).map(c => {
+      const expDate = c.expiry_date || c.expiryDate;
+      const clientEval = evaluateClientExpiry(expDate, c.status);
+      return {
+        ...c,
+        id: c.compliance_id || c.id,
+        product: c.product_id || c.product,
+        standard: c.standard,
+        status: c.status,
+        auditor: c.auditing_body || c.audited_by || c.auditor || "Authorized Auditor",
+        expiryDate: expDate,
+        score: c.score || "98.5%",
+        expiry_status: c.expiry_status || clientEval.status,
+        expiry_status_label: c.expiry_status_label || clientEval.label,
+        days_remaining: c.days_remaining !== undefined ? c.days_remaining : clientEval.days_remaining,
+        is_expired: c.is_expired !== undefined ? c.is_expired : clientEval.is_expired,
+        is_expiring_soon: c.is_expiring_soon !== undefined ? c.is_expiring_soon : clientEval.is_expiring_soon,
+        is_valid: c.is_valid !== undefined ? c.is_valid : clientEval.is_valid,
+        expiry_severity: c.expiry_severity || clientEval.severity,
+        requires_attention: c.requires_attention !== undefined ? c.requires_attention : clientEval.requires_attention
+      };
+    });
   } catch (e) {
     console.error("Failed to fetch compliance records:", e);
     return [];
   }
 }
+
+async function getComplianceExpiryStatus(filters = {}) {
+  const params = new URLSearchParams();
+  if (filters.warning_days) params.append("warning_days", filters.warning_days);
+  if (filters.status) params.append("status", filters.status);
+  if (filters.standard) params.append("standard", filters.standard);
+  if (filters.product_id) params.append("product_id", filters.product_id);
+  const qs = params.toString() ? `?${params.toString()}` : "";
+  return await apiRequest(`/compliance/expiry-status${qs}`);
+}
+
+async function checkComplianceExpiries(payload = {}) {
+  return await apiRequest("/compliance/check-expiries", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  });
+}
+
 
 async function createCompliance(comp) {
   const payload = {
@@ -611,10 +803,12 @@ async function sendTestEmail(recipientEmail, appPassword) {
 window.sendTestEmail = sendTestEmail;
 
 // 11. Immutable Activity & Audit Logs
-async function getActivityLogs() {
+async function getActivityLogs(params = {}) {
   try {
-    const logs = await apiRequest("/logs");
-    return (list = logs || []).map(l => ({
+    const qs = buildQueryString(params);
+    const res = await apiRequest(`/logs${qs}`);
+    const rawItems = Array.isArray(res) ? res : (res && Array.isArray(res.items) ? res.items : []);
+    const mapped = rawItems.map(l => ({
       ...l,
       id: l.log_id || l.id,
       timestamp: l.timestamp ? l.timestamp.replace("T", " ").substring(0, 19) : "2026-10-06 12:00:00",
@@ -625,9 +819,11 @@ async function getActivityLogs() {
       ip: l.ip_address || "127.0.0.1",
       status: "Success"
     }));
+    return attachPaginationMeta(mapped, res);
   } catch (e) {
     console.error("Failed to fetch activity logs:", e);
-    return [];
+    const empty = [];
+    return attachPaginationMeta(empty, { page: 1, page_size: 10, total: 0, total_pages: 0 });
   }
 }
 

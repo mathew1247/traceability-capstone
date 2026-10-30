@@ -8,6 +8,9 @@ from services.product_service import (
 )
 from middleware.auth_middleware import token_required, role_required
 from utils.response import success_response, error_response
+from utils.pagination import parse_pagination_params
+
+ALLOWED_PRODUCT_SORT_FIELDS = {'product_id', 'product_name', 'product_code', 'status', 'created_at', 'description'}
 
 product_bp = Blueprint('product_bp', __name__, url_prefix='/api/products')
 
@@ -15,7 +18,30 @@ product_bp = Blueprint('product_bp', __name__, url_prefix='/api/products')
 @token_required
 @role_required('Admin', 'Inspector', 'Auditor', 'Operator')
 def handle_get_all():
-    products = get_all_products()
+    page, page_size, sort_by, sort_order, is_paginated, err, status_code = parse_pagination_params(
+        request.args,
+        allowed_sort_fields=ALLOWED_PRODUCT_SORT_FIELDS,
+        default_sort_by='created_at',
+        default_sort_order='desc',
+        default_page_size=10
+    )
+    if err:
+        return error_response(code="INVALID_PAGINATION_PARAMS", message=err, status_code=status_code)
+
+    search = request.args.get('search') or request.args.get('q')
+    status = request.args.get('status')
+    if status and not status.strip():
+        status = None
+
+    products = get_all_products(
+        page=page,
+        page_size=page_size,
+        sort_by=sort_by,
+        sort_order=sort_order,
+        search=search.strip() if search else None,
+        status=status.strip() if status else None,
+        is_paginated=is_paginated
+    )
     return success_response(data=products)
 
 

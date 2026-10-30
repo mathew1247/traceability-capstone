@@ -10,64 +10,371 @@ from utils.validators import (
     validate_compliance_status
 )
 
-def check_and_trigger_compliance_alert(compliance_record):
+def parse_date_to_utc_date(date_val):
     """
-    Requirement 16:
-    Inspects compliance certification expiry date.
-    Triggers Warning alert if expiring within 30 days, or Critical alert if already expired.
+    Parses a string, date, or datetime into a date object.
+    Supports YYYY-MM-DD or ISO 8601 strings.
+    Returns (date_obj, is_valid)
     """
-    expiry_str = compliance_record.get('expiry_date')
-    if not expiry_str:
-        return
+    if date_val is None:
+        return None, False
+    if isinstance(date_val, datetime):
+        return date_val.date(), True
+    if hasattr(date_val, 'year') and hasattr(date_val, 'month') and hasattr(date_val, 'day') and not hasattr(date_val, 'hour'):
+        return date_val, True
+
+    val_str = str(date_val).strip()
+    if not val_str:
+        return None, False
 
     try:
-        # Support YYYY-MM-DD or ISO formats
-        if 'T' in expiry_str:
-            expiry_dt = datetime.fromisoformat(expiry_str)
+        if 'T' in val_str:
+            clean_str = val_str.replace('Z', '+00:00')
+            dt = datetime.fromisoformat(clean_str)
+            return dt.date(), True
         else:
-            expiry_dt = datetime.strptime(expiry_str, '%Y-%m-%d')
-            expiry_dt = expiry_dt.replace(tzinfo=timezone.utc)
-
-        now = datetime.now(timezone.utc)
-        days_left = (expiry_dt - now).days
-
-        product_id = compliance_record.get('product_id', '')
-        standard = compliance_record.get('standard', '')
-        record_id = compliance_record.get('compliance_id', '')
-
-        if days_left < 0 or compliance_record.get('status') == 'Expired':
-            create_alert(
-                severity="Critical",
-                source="Compliance",
-                message=f"Compliance certification for {standard} on Product {product_id} expired {abs(days_left) if days_left < 0 else 0} days ago.",
-                resource_id=record_id
-            )
-        elif days_left <= 30:
-            create_alert(
-                severity="Warning",
-                source="Compliance",
-                message=f"Compliance certification for {standard} on Product {product_id} expires in {days_left} days.",
-                resource_id=record_id
-            )
-
-    except Exception:
-        pass
+            dt = datetime.strptime(val_str, '%Y-%m-%d')
+            return dt.date(), True
+    except (ValueError, TypeError):
+        return None, False
 
 
-def get_all_compliance():
+def evaluate_compliance_expiry(compliance_record, warning_days=None, reference_date=None):
+    """
+    Phase 2 Task 4: Compliance Expiry Monitoring Status Evaluator.
+    Evaluates compliance certification expiration using calendar-date based comparison.
+
+    Cases evaluated:
+    1. Expired: Expiry date was in the past (days_left < 0) or stored status == 'Expired'.
+    2. Expiring Today: Expiry date is today (days_left == 0).
+    3. Expiring Soon: Expiry date is within the configured warning period (0 < days_left <= warning_days).
+    4. Valid: Expiry date is beyond the warning period (days_left > warning_days).
+    5. Missing Date: No expiry date provided (None or empty).
+    6. Invalid Date: Expiry date cannot be parsed as a valid calendar date.
+
+    Missing or invalid dates are NEVER silently treated as valid.
+    """
+    if warning_days is None:
+        warning_days = getattr(Config, 'COMPLIANCE_WARNING_DAYS', 30)
+    try:
+        warning_days = int(warning_days)
+    except (ValueError, TypeError):
+        warning_days = 30
+    if warning_days < 0:
+        warning_days = 30
+
+    if reference_date is None:
+        ref_date = datetime.now(timezone.utc).date()
+    else:
+        ref_parsed, _ = parse_date_to_utc_date(reference_date)
+        ref_date = ref_parsed if ref_parsed else datetime.now(timezone.utc).date()
+
+    stored_status = str(compliance_record.get('status', '')).strip()
+    raw_expiry = compliance_record.get('expiry_date')
+
+    # Case 5: Missing expiry date
+    if raw_expiry is None or (isinstance(raw_expiry, str) and not raw_expiry.strip()):
+        is_expired = (stored_status == 'Expired')
+        return {
+            "status": "expired" if is_expired else "missing_date",
+            "label": "Expired" if is_expired else "Missing Expiry Date",
+            "days_remaining": None,
+            "is_expired": is_expired,
+            "is_expiring_soon": False,
+            "is_valid": False,
+            "severity": "Critical" if is_expired else "Warning",
+            "warning_days": warning_days,
+            "reference_date": ref_date.isoformat(),
+            "parsed_expiry_date": None,
+            "raw_expiry_date": raw_expiry,
+            "requires_attention": True
+        }
+
+    exp_date, is_valid_date = parse_date_to_utc_date(raw_expiry)
+
+    # Case 6: Invalid expiry date format
+    if not is_valid_date or exp_date is None:
+        is_expired = (stored_status == 'Expired')
+        return {
+            "status": "expired" if is_expired else "invalid_date",
+            "label": "Expired" if is_expired else "Invalid Expiry Date",
+            "days_remaining": None,
+            "is_expired": is_expired,
+            "is_expiring_soon": False,
+            "is_valid": False,
+            "severity": "Critical" if is_expired else "Warning",
+            "warning_days": warning_days,
+            "reference_date": ref_date.isoformat(),
+            "parsed_expiry_date": None,
+            "raw_expiry_date": str(raw_expiry),
+            "requires_attention": True
+        }
+
+    # Date-based calendar comparison
+    days_left = (exp_date - ref_date).days
+
+    # Case 1: Already expired
+    if days_left < 0 or stored_status == 'Expired':
+        return {
+            "status": "expired",
+            "label": "Expired",
+            "days_remaining": days_left,
+            "is_expired": True,
+            "is_expiring_soon": False,
+            "is_valid": False,
+            "severity": "Critical",
+            "warning_days": warning_days,
+            "reference_date": ref_date.isoformat(),
+            "parsed_expiry_date": exp_date.isoformat(),
+            "raw_expiry_date": str(raw_expiry),
+            "requires_attention": True
+        }
+
+    # Case 2: Expires today
+    if days_left == 0:
+        return {
+            "status": "expiring_today",
+            "label": "Expires Today",
+            "days_remaining": 0,
+            "is_expired": False,
+            "is_expiring_soon": True,
+            "is_valid": True,
+            "severity": "Critical",
+            "warning_days": warning_days,
+            "reference_date": ref_date.isoformat(),
+            "parsed_expiry_date": exp_date.isoformat(),
+            "raw_expiry_date": str(raw_expiry),
+            "requires_attention": True
+        }
+
+    # Case 3: Expires within warning period
+    if 0 < days_left <= warning_days:
+        return {
+            "status": "expiring_soon",
+            "label": "Expiring Soon",
+            "days_remaining": days_left,
+            "is_expired": False,
+            "is_expiring_soon": True,
+            "is_valid": True,
+            "severity": "Warning",
+            "warning_days": warning_days,
+            "reference_date": ref_date.isoformat(),
+            "parsed_expiry_date": exp_date.isoformat(),
+            "raw_expiry_date": str(raw_expiry),
+            "requires_attention": True
+        }
+
+    # Case 4: Valid beyond warning period
+    return {
+        "status": "valid",
+        "label": "Valid",
+        "days_remaining": days_left,
+        "is_expired": False,
+        "is_expiring_soon": False,
+        "is_valid": True,
+        "severity": "Normal",
+        "warning_days": warning_days,
+        "reference_date": ref_date.isoformat(),
+        "parsed_expiry_date": exp_date.isoformat(),
+        "raw_expiry_date": str(raw_expiry),
+        "requires_attention": False
+    }
+
+
+def enrich_compliance_with_expiry(compliance_record, warning_days=None, reference_date=None):
+    """
+    Enriches a compliance dictionary with derived expiry fields without mutating Firestore.
+    """
+    rec = dict(compliance_record)
+    eval_res = evaluate_compliance_expiry(rec, warning_days=warning_days, reference_date=reference_date)
+    rec['expiry_status'] = eval_res['status']
+    rec['expiry_status_label'] = eval_res['label']
+    rec['days_remaining'] = eval_res['days_remaining']
+    rec['is_expired'] = eval_res['is_expired']
+    rec['is_expiring_soon'] = eval_res['is_expiring_soon']
+    rec['is_valid'] = eval_res['is_valid']
+    rec['expiry_severity'] = eval_res['severity']
+    rec['requires_attention'] = eval_res['requires_attention']
+    rec['expiry_evaluation'] = eval_res
+    return rec
+
+
+def check_and_trigger_compliance_alert(compliance_record, reference_date=None, warning_days=None):
+    """
+    Requirement 16 / Phase 2 Task 4:
+    Inspects compliance certification expiry date using calendar-date comparison.
+    Triggers Warning alert if expiring within warning_days (default 30),
+    or Critical alert if expiring today or already expired.
+    """
+    eval_res = evaluate_compliance_expiry(compliance_record, warning_days=warning_days, reference_date=reference_date)
+    product_id = compliance_record.get('product_id', '')
+    standard = compliance_record.get('standard', '')
+    record_id = compliance_record.get('compliance_id', '')
+    days_left = eval_res['days_remaining']
+    status = eval_res['status']
+
+    if status == 'expired':
+        days_ago = abs(days_left) if (days_left is not None and days_left < 0) else 0
+        return create_alert(
+            severity="Critical",
+            source="Compliance",
+            message=f"Compliance certification for {standard} on Product {product_id} expired {days_ago} days ago.",
+            resource_id=record_id
+        )
+    elif status == 'expiring_today':
+        return create_alert(
+            severity="Critical",
+            source="Compliance",
+            message=f"Compliance certification for {standard} on Product {product_id} expires today ({eval_res['parsed_expiry_date']}).",
+            resource_id=record_id
+        )
+    elif status == 'expiring_soon':
+        return create_alert(
+            severity="Warning",
+            source="Compliance",
+            message=f"Compliance certification for {standard} on Product {product_id} expires in {days_left} days.",
+            resource_id=record_id
+        )
+    elif status in ('missing_date', 'invalid_date'):
+        return create_alert(
+            severity="Warning",
+            source="Compliance",
+            message=f"Compliance certification for {standard} on Product {product_id} has invalid or missing expiry date.",
+            resource_id=record_id
+        )
+    return None
+
+
+def get_compliance_expiry_status(warning_days=None, reference_date=None, status_filter=None, standard_filter=None, product_id_filter=None):
+    """
+    Computes overall compliance expiry monitoring metrics and returns filtered records.
+    """
+    if warning_days is None:
+        warning_days = getattr(Config, 'COMPLIANCE_WARNING_DAYS', 30)
+    try:
+        warning_days = int(warning_days)
+    except (ValueError, TypeError):
+        warning_days = 30
+    if warning_days < 0:
+        warning_days = 30
+
+    if reference_date is None:
+        ref_date = datetime.now(timezone.utc).date()
+    else:
+        ref_parsed, _ = parse_date_to_utc_date(reference_date)
+        ref_date = ref_parsed if ref_parsed else datetime.now(timezone.utc).date()
+
     docs = db.collection(Config.COLLECTION_COMPLIANCE_RECORDS).get()
-    return [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+    all_raw = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+
+    enriched = [enrich_compliance_with_expiry(r, warning_days=warning_days, reference_date=ref_date) for r in all_raw]
+
+    # Summary metrics
+    total_count = len(enriched)
+    valid_count = sum(1 for r in enriched if r['expiry_status'] == 'valid')
+    expiring_soon_count = sum(1 for r in enriched if r['expiry_status'] == 'expiring_soon')
+    expiring_today_count = sum(1 for r in enriched if r['expiry_status'] == 'expiring_today')
+    expired_count = sum(1 for r in enriched if r['expiry_status'] == 'expired')
+    missing_date_count = sum(1 for r in enriched if r['expiry_status'] == 'missing_date')
+    invalid_date_count = sum(1 for r in enriched if r['expiry_status'] == 'invalid_date')
+    attention_required_count = sum(1 for r in enriched if r['requires_attention'])
+
+    summary = {
+        "total_records": total_count,
+        "valid_count": valid_count,
+        "expiring_soon_count": expiring_soon_count,
+        "expiring_today_count": expiring_today_count,
+        "expired_count": expired_count,
+        "missing_date_count": missing_date_count,
+        "invalid_date_count": invalid_date_count,
+        "attention_required_count": attention_required_count,
+        "warning_days": warning_days,
+        "reference_date": ref_date.isoformat()
+    }
+
+    # Filtering
+    filtered = enriched
+    if status_filter:
+        s_filter = str(status_filter).strip().lower()
+        if s_filter in ('expiring', 'expiring_all'):
+            filtered = [r for r in filtered if r['expiry_status'] in ('expiring_soon', 'expiring_today')]
+        elif s_filter in ('attention', 'requires_attention'):
+            filtered = [r for r in filtered if r['requires_attention']]
+        else:
+            filtered = [r for r in filtered if r['expiry_status'].lower() == s_filter]
+
+    if standard_filter:
+        std_val = str(standard_filter).strip().lower()
+        filtered = [r for r in filtered if str(r.get('standard', '')).strip().lower() == std_val]
+
+    if product_id_filter:
+        prod_val = str(product_id_filter).strip().lower()
+        filtered = [r for r in filtered if str(r.get('product_id', '')).strip().lower() == prod_val]
+
+    return {
+        "summary": summary,
+        "records": filtered,
+        "warning_days": warning_days,
+        "reference_date": ref_date.isoformat()
+    }
 
 
-def get_compliance_by_id(compliance_id):
+def scan_and_alert_compliance_expiries(warning_days=None, reference_date=None, current_user=None):
+    """
+    Scans all compliance records and triggers alerts for any expired, expiring, or invalid records.
+    Does not duplicate existing active alerts.
+    """
+    result = get_compliance_expiry_status(warning_days=warning_days, reference_date=reference_date)
+    records = result['records']
+    alerts_triggered = 0
+
+    for r in records:
+        if r['requires_attention']:
+            alert = check_and_trigger_compliance_alert(r, reference_date=reference_date, warning_days=warning_days)
+            if alert:
+                alerts_triggered += 1
+
+    if current_user:
+        log_activity(
+            user_id=current_user.get('user_id'),
+            username=current_user.get('username'),
+            action='SCAN',
+            resource='ComplianceExpiry',
+            resource_id='ALL',
+            details=f"Compliance expiry scan triggered: {result['summary']['expired_count']} expired, {result['summary']['expiring_soon_count']} expiring soon"
+        )
+
+    return {
+        "summary": result['summary'],
+        "alerts_triggered": alerts_triggered
+    }
+
+
+def get_all_compliance(expiry_status=None, warning_days=None, reference_date=None):
+    docs = db.collection(Config.COLLECTION_COMPLIANCE_RECORDS).get()
+    records = [serialize_value(doc.to_dict()) for doc in docs if doc.to_dict()]
+    enriched = [enrich_compliance_with_expiry(r, warning_days=warning_days, reference_date=reference_date) for r in records]
+    if expiry_status:
+        st_clean = str(expiry_status).strip().lower()
+        if st_clean in ('expiring', 'expiring_all'):
+            enriched = [r for r in enriched if r['expiry_status'] in ('expiring_soon', 'expiring_today')]
+        elif st_clean in ('attention', 'requires_attention'):
+            enriched = [r for r in enriched if r['requires_attention']]
+        else:
+            enriched = [r for r in enriched if r['expiry_status'].lower() == st_clean]
+    return enriched
+
+
+def get_compliance_by_id(compliance_id, warning_days=None, reference_date=None):
     doc = db.collection(Config.COLLECTION_COMPLIANCE_RECORDS).document(compliance_id).get()
     if doc.exists:
-        return serialize_value(doc.to_dict())
+        return enrich_compliance_with_expiry(serialize_value(doc.to_dict()), warning_days=warning_days, reference_date=reference_date)
     matched = db.collection(Config.COLLECTION_COMPLIANCE_RECORDS).where('compliance_id', '==', compliance_id).get()
     for d in matched:
         if d.exists or d.to_dict():
-            return serialize_value(d.to_dict())
+            return enrich_compliance_with_expiry(serialize_value(d.to_dict()), warning_days=warning_days, reference_date=reference_date)
     return None
+
 
 
 def create_compliance_record(data, current_user):
