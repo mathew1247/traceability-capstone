@@ -62,16 +62,20 @@ def probe_host_ports(ip_str, timeout=0.15):
             s.close()
     return open_ports
 
-def scan_network(target):
+def scan_network(target, require_nmap=False, timeout_seconds=30):
     """
     Executes network scan against the validated target.
     Uses nmap.PortScanner if Nmap binary is installed.
+    Enforces safe timeout and process termination.
     Provides truthful socket TCP fallback when binary is absent.
     Never returns fabricated hosts.
     Returns (result_dict, error_message)
     """
     clean_target = target.strip()
     nmap_executable = shutil.which('nmap')
+
+    if require_nmap and not nmap_executable:
+        return None, "Nmap binary is not installed on this system. Please ensure Nmap is installed and available in PATH."
 
     if nmap_executable:
         try:
@@ -80,7 +84,8 @@ def scan_network(target):
             app_logger.info(f"Executing Nmap scan against target: {clean_target}")
 
             # Safe, fast ping & top ports scan (-F fast mode, -T4 timing)
-            nm.scan(hosts=clean_target, arguments='-sT -F -T4 --host-timeout 30s')
+            # timeout parameter passed to nm.scan enforces Python process termination
+            nm.scan(hosts=clean_target, arguments=f'-sT -F -T4 --host-timeout {timeout_seconds}s', timeout=timeout_seconds + 5)
 
             hosts_list = []
             for host in nm.all_hosts():
@@ -115,7 +120,18 @@ def scan_network(target):
             }, None
 
         except Exception as e:
-            app_logger.warning(f"Nmap execution encountered error: {str(e)}. Utilizing fallback socket scanner.")
+            err_str = str(e)
+            is_timeout = "PortScannerTimeout" in type(e).__name__ or "timed out" in err_str.lower()
+            if is_timeout:
+                app_logger.error(f"Nmap scan timed out against target {clean_target}: {err_str}")
+                return None, f"Network scan timed out after {timeout_seconds} seconds."
+
+            # If nmap was explicitly required, or if it failed with PortScannerError
+            if require_nmap or "PortScannerError" in type(e).__name__:
+                app_logger.error(f"Nmap execution error against target {clean_target}: {err_str}")
+                return None, f"Nmap execution error: {err_str}"
+
+            app_logger.warning(f"Nmap execution encountered error: {err_str}. Utilizing fallback socket scanner.")
 
     # Truthful Socket TCP Fallback
     # Runs when Nmap is not installed or unavailable
@@ -124,13 +140,12 @@ def scan_network(target):
 
     if clean_target in ('127.0.0.1', 'localhost', '127.0.0.1/32'):
         open_ports = probe_host_ports('127.0.0.1', timeout=0.1)
-        if open_ports:
-            hosts_list.append({
-                "ip": "127.0.0.1",
-                "status": "up",
-                "hostname": "localhost",
-                "ports": open_ports
-            })
+        hosts_list.append({
+            "ip": "127.0.0.1",
+            "status": "up",
+            "hostname": "localhost",
+            "ports": open_ports
+        })
     elif '/' in clean_target:
         # For CIDR subnets, probe standard gateway addresses (.1, .254)
         subnet_prefix = clean_target.rsplit('.', 1)[0]

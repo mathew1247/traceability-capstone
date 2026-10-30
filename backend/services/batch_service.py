@@ -145,7 +145,18 @@ def create_batch(data, current_user):
     batch_ref = db.collection(Config.COLLECTION_PRODUCTION_BATCHES).document(batch_id)
 
     def _create_tx(tx):
-        # Reads
+        # 1. Atomic idempotency check inside transaction
+        if idempotency_key:
+            idem_ref = db.collection('_idempotency_keys').document(str(idempotency_key))
+            idem_snap = idem_ref.get(transaction=tx)
+            if idem_snap and idem_snap.exists:
+                prev_id = (idem_snap.to_dict() or {}).get('batch_id')
+                if prev_id:
+                    existing_snap = db.collection(Config.COLLECTION_PRODUCTION_BATCHES).document(prev_id).get(transaction=tx)
+                    if existing_snap and existing_snap.exists:
+                        return existing_snap.to_dict(), None, None
+
+        # 2. Verify material reference inside transaction
         mat_snap = mat_ref.get(transaction=tx)
         if not mat_snap or not mat_snap.exists:
             raise InventoryTransactionError(f"Raw material '{material_id}' does not exist.", 404)
@@ -169,6 +180,8 @@ def create_batch(data, current_user):
             )
 
         new_mat_qty = round(available_qty - qty, 4)
+        if new_mat_qty < 0:
+            raise InventoryTransactionError("Operation would result in negative inventory.", 400)
 
         batch_record = {
             "batch_id": batch_id,
@@ -183,6 +196,8 @@ def create_batch(data, current_user):
         }
         if idempotency_key:
             batch_record["idempotency_key"] = str(idempotency_key)
+            idem_ref = db.collection('_idempotency_keys').document(str(idempotency_key))
+            tx.set(idem_ref, {"batch_id": batch_id, "idempotency_key": str(idempotency_key), "created_at": now_iso})
 
         # Writes
         tx.update(mat_ref, {"quantity": new_mat_qty})
@@ -191,6 +206,9 @@ def create_batch(data, current_user):
 
     try:
         batch_record, new_mat_qty, mat_unit = _run_inventory_transaction(_create_tx)
+        if new_mat_qty is None and mat_unit is None:
+            # Idempotent replay detected inside transaction
+            return serialize_value(batch_record), None, 200
     except InventoryTransactionError as ite:
         return None, ite.message, ite.status_code
     except Exception as e:
@@ -220,12 +238,8 @@ def update_batch(batch_id, data, current_user):
     if not doc.exists:
         return None, "Production batch not found", 404
 
-    current_batch = doc.to_dict() or {}
-    old_qty = int(current_batch.get('quantity', 0))
-    old_mat_id = current_batch.get('material_id')
-
-    updates = {}
-
+    # Validate parameters provided
+    new_product_id = None
     if 'product_id' in data:
         p_id = str(data['product_id']).strip()
         if not p_id:
@@ -235,63 +249,72 @@ def update_batch(batch_id, data, current_user):
             matched_prod = db.collection(Config.COLLECTION_PRODUCTS).where('product_id', '==', p_id).get()
             if not matched_prod:
                 return None, f"Product '{p_id}' does not exist", 404
-        updates['product_id'] = p_id
+        new_product_id = p_id
 
-    target_mat_id = old_mat_id
-    target_qty = old_qty
-
+    req_qty = None
     if 'quantity' in data:
         try:
             q_val = int(data['quantity'])
             if q_val <= 0:
                 return None, "Quantity must be greater than 0", 400
-            target_qty = q_val
+            req_qty = q_val
         except (ValueError, TypeError):
             return None, "Quantity must be an integer", 400
 
+    new_material_id = None
     if 'material_id' in data:
         m_id = str(data['material_id']).strip()
         if not m_id:
             return None, "Material reference cannot be empty", 400
-        target_mat_id = m_id
+        _, target_mat_doc = _get_material_ref_and_doc(m_id)
+        if not target_mat_doc or not target_mat_doc.exists:
+            return None, f"Raw material '{m_id}' does not exist", 404
+        new_material_id = m_id
 
+    new_prod_date = None
     if 'production_date' in data:
-        updates['production_date'] = str(data['production_date']).strip() if data['production_date'] is not None else ""
+        new_prod_date = str(data['production_date']).strip() if data['production_date'] is not None else ""
 
+    new_status = None
     if 'status' in data:
         st_val = str(data['status']).strip() if data['status'] is not None else ""
         if not validate_batch_status(st_val):
             return None, f"Invalid batch status '{st_val}'. Valid: {', '.join(sorted(VALID_BATCH_STATUSES))}", 400
-        updates['status'] = st_val
+        new_status = st_val
 
-    mat_changed = target_mat_id != old_mat_id
-    qty_changed = target_qty != old_qty
-
-    if mat_changed:
-        new_mat_ref, new_mat_doc = _get_material_ref_and_doc(target_mat_id)
-        if not new_mat_doc or not new_mat_doc.exists:
-            return None, f"Raw material '{target_mat_id}' does not exist", 404
-        old_mat_ref, _ = _get_material_ref_and_doc(old_mat_id)
-        updates['material_id'] = target_mat_id
-        updates['quantity'] = target_qty
-        updates['allocated_material_qty'] = target_qty
-    elif qty_changed:
-        mat_ref, _ = _get_material_ref_and_doc(old_mat_id)
-        updates['quantity'] = target_qty
-        updates['allocated_material_qty'] = target_qty
-
-    if not updates:
+    if not any(k in data for k in ('product_id', 'quantity', 'material_id', 'production_date', 'status')):
         return None, "No valid update fields provided", 400
 
     def _update_tx(tx):
-        # Reads
+        # Reads - Always inspect current state inside the transaction to avoid race conditions
         b_snap = doc_ref.get(transaction=tx)
         if not b_snap.exists:
             raise InventoryTransactionError("Production batch not found", 404)
 
+        curr_batch = b_snap.to_dict() or {}
+        curr_qty = int(curr_batch.get('quantity', 0))
+        curr_mat_id = curr_batch.get('material_id')
+
+        target_qty = req_qty if req_qty is not None else curr_qty
+        target_mat_id = new_material_id if new_material_id is not None else curr_mat_id
+
+        mat_changed = target_mat_id != curr_mat_id
+        qty_changed = target_qty != curr_qty
+
+        tx_updates = {}
+        if new_product_id is not None:
+            tx_updates['product_id'] = new_product_id
+        if new_prod_date is not None:
+            tx_updates['production_date'] = new_prod_date
+        if new_status is not None:
+            tx_updates['status'] = new_status
+
         if mat_changed:
+            new_mat_ref, _ = _get_material_ref_and_doc(target_mat_id)
+            old_mat_ref, _ = _get_material_ref_and_doc(curr_mat_id)
+
             new_snap = new_mat_ref.get(transaction=tx)
-            old_snap = old_mat_ref.get(transaction=tx)
+            old_snap = old_mat_ref.get(transaction=tx) if old_mat_ref else None
             if not new_snap.exists:
                 raise InventoryTransactionError(f"Raw material '{target_mat_id}' does not exist", 404)
 
@@ -304,29 +327,40 @@ def update_batch(batch_id, data, current_user):
 
             # Writes
             tx.update(new_mat_ref, {"quantity": round(new_avail - target_qty, 4)})
-            if old_snap.exists:
+            if old_snap and old_snap.exists:
                 old_avail = float((old_snap.to_dict() or {}).get('quantity', 0.0))
-                tx.update(old_mat_ref, {"quantity": round(old_avail + old_qty, 4)})
+                tx.update(old_mat_ref, {"quantity": round(old_avail + curr_qty, 4)})
+
+            tx_updates['material_id'] = target_mat_id
+            tx_updates['quantity'] = target_qty
+            tx_updates['allocated_material_qty'] = target_qty
 
         elif qty_changed:
-            mat_snap = mat_ref.get(transaction=tx)
-            if mat_snap.exists:
-                delta = target_qty - old_qty
+            mat_ref, _ = _get_material_ref_and_doc(curr_mat_id)
+            mat_snap = mat_ref.get(transaction=tx) if mat_ref else None
+            if mat_snap and mat_snap.exists:
+                delta = target_qty - curr_qty
                 avail = float((mat_snap.to_dict() or {}).get('quantity', 0.0))
                 if delta > 0:
                     if delta > avail:
                         raise InventoryTransactionError(
-                            f"Insufficient inventory for raw material '{old_mat_id}'. Available: {avail}, additional needed: {delta}.",
+                            f"Insufficient inventory for raw material '{curr_mat_id}'. Available: {avail}, additional needed: {delta}.",
                             400
                         )
                     tx.update(mat_ref, {"quantity": round(avail - delta, 4)})
                 else:
                     tx.update(mat_ref, {"quantity": round(avail + abs(delta), 4)})
 
-        tx.update(doc_ref, updates)
+            tx_updates['quantity'] = target_qty
+            tx_updates['allocated_material_qty'] = target_qty
+
+        if tx_updates:
+            tx.update(doc_ref, tx_updates)
+
+        return tx_updates
 
     try:
-        _run_inventory_transaction(_update_tx)
+        applied_updates = _run_inventory_transaction(_update_tx)
     except InventoryTransactionError as ite:
         return None, ite.message, ite.status_code
     except Exception as e:
@@ -340,7 +374,7 @@ def update_batch(batch_id, data, current_user):
         action='UPDATE',
         resource='ProductionBatch',
         resource_id=batch_id,
-        details=f"Updated batch {batch_id} fields: {list(updates.keys())}"
+        details=f"Updated batch {batch_id} fields: {list(applied_updates.keys())}"
     )
 
     return updated, None, 200
@@ -358,29 +392,25 @@ def delete_batch(batch_id, current_user):
     if not doc.exists:
         return False, "Batch not found", 404
 
-    batch_data = doc.to_dict() or {}
-    status = batch_data.get('status')
-    mat_id = batch_data.get('material_id')
-    allocated_qty = batch_data.get('allocated_material_qty', batch_data.get('quantity', 0))
-
-    mat_ref = None
-    if status != 'Completed' and mat_id and allocated_qty > 0:
-        mat_ref, _ = _get_material_ref_and_doc(mat_id)
-
     def _delete_tx(tx):
-        # Reads
+        # Reads - Inspect batch atomically inside the transaction to avoid race conditions
         b_snap = doc_ref.get(transaction=tx)
         if not b_snap.exists:
             raise InventoryTransactionError("Batch not found", 404)
 
-        mat_snap = None
-        if mat_ref:
-            mat_snap = mat_ref.get(transaction=tx)
+        batch_data = b_snap.to_dict() or {}
+        status = batch_data.get('status')
+        mat_id = batch_data.get('material_id')
+        allocated_qty = float(batch_data.get('allocated_material_qty', batch_data.get('quantity', 0)))
 
-        # Writes
-        if mat_snap and mat_snap.exists:
-            curr_stock = float((mat_snap.to_dict() or {}).get('quantity', 0.0))
-            tx.update(mat_ref, {"quantity": round(curr_stock + allocated_qty, 4)})
+        # Writes - Restore stock only if batch is not Completed
+        if status != 'Completed' and mat_id and allocated_qty > 0:
+            mat_ref, _ = _get_material_ref_and_doc(mat_id)
+            if mat_ref:
+                mat_snap = mat_ref.get(transaction=tx)
+                if mat_snap and mat_snap.exists:
+                    curr_stock = float((mat_snap.to_dict() or {}).get('quantity', 0.0))
+                    tx.update(mat_ref, {"quantity": round(curr_stock + allocated_qty, 4)})
 
         tx.delete(doc_ref)
 

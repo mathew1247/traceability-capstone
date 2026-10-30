@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
   <link rel="stylesheet" href="css/tables.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
 
   <div class="app-layout">
@@ -21,7 +23,8 @@
         <div class="page-header-row">
           <div>
             <h1 class="page-title">Activity Logs</h1>
-            <p class="page-subtitle">Immutable audit trail tracking operator logins, record mutations, and scan events.</p>
+            <p class="page-subtitle">Immutable audit trail tracking operator logins, record mutations, and scan events.
+            </p>
           </div>
           <div class="page-actions-group">
             <button class="btn btn-secondary btn-sm" onclick="exportAuditTrail()">
@@ -33,15 +36,19 @@
         <div class="table-container">
           <div class="table-toolbar">
             <div class="table-search-box">
-              <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="table-search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
-              <input type="text" class="table-search-input" id="logs-search" placeholder="Search user, action, or resource..." onkeyup="filterLogs()">
+              <input type="text" class="table-search-input" id="logs-search"
+                placeholder="Search user, action, or resource..." onkeyup="filterLogs()">
             </div>
             <div class="table-filters-group">
-              <input type="date" class="table-filter-select" id="logs-start-date" title="Start Date" onchange="filterLogs()">
-              <input type="date" class="table-filter-select" id="logs-end-date" title="End Date" onchange="filterLogs()">
+              <input type="date" class="table-filter-select" id="logs-start-date" title="Start Date"
+                onchange="filterLogs()">
+              <input type="date" class="table-filter-select" id="logs-end-date" title="End Date"
+                onchange="filterLogs()">
               <select class="table-filter-select" id="logs-action-filter" onchange="filterLogs()">
                 <option value="">All Actions</option>
                 <option value="AUTH_LOGIN">AUTH_LOGIN</option>
@@ -86,7 +93,7 @@
               </div>
               <div class="pagination-controls">
                 <button type="button" class="pagination-btn" id="logs-prev-btn" disabled>&laquo; Prev</button>
-                <div class="pagination-pages" id="logs-page-numbers"></div>
+                <div class="pagination-pages" id="logs-page-password123numbers"></div>
                 <button type="button" class="pagination-btn" id="logs-next-btn" disabled>Next &raquo;</button>
               </div>
             </div>
@@ -103,4 +110,5 @@
   <script src="js/pagination-component.js"></script>
   <script src="js/activity-logs.js"></script>
 </body>
+
 </html>

@@ -4,6 +4,9 @@
    =================================================================== */
 
 function initAuth() {
+  // Clear any stale previous session on login page load, preserving remembered email
+  clearAuthSession();
+
   // Remember Me Auto-fill
   const remembered = localStorage.getItem("sentinel_remembered_email");
   const emailInput = document.getElementById("login-email");
@@ -56,6 +59,7 @@ function initAuth() {
           window.location.href = "dashboard.html";
         }, 500);
       } else {
+        clearAuthSession();
         const errorMsg = (res && (res.message || res.error)) ? (res.message || res.error) : "Authentication failed. Check credentials.";
         showToast(errorMsg, "danger");
         if (submitBtn) {
@@ -65,6 +69,7 @@ function initAuth() {
         isLoggingIn = false;
       }
     } catch (err) {
+      clearAuthSession();
       const msg = err.message || "Operation failed";
       showToast("Authentication error: " + msg, "danger");
       if (submitBtn) {

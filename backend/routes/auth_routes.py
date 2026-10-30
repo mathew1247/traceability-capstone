@@ -56,10 +56,16 @@ def handle_register():
             status_code=400
         )
 
+    requested_role = data.get('role', 'Operator')
+    if requested_role == 'Admin':
+        return error_response(
+            code="ADMIN_REGISTRATION_RESTRICTED",
+            message="Administrative accounts cannot be created via public self-registration. An authenticated Administrator must create Admin accounts via User Management.",
+            status_code=400
+        )
+
     # Public signups default to Operator role; Admins can promote via /api/users
-    role = data.get('role', 'Operator')
-    if role not in ('Operator', 'Auditor', 'Inspector'):
-        role = 'Operator'
+    role = requested_role if requested_role in ('Operator', 'Auditor', 'Inspector') else 'Operator'
 
     new_user, error_msg, status_code = create_user(
         username=data['username'],

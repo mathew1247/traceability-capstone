@@ -27,7 +27,8 @@ def handle_run_scan():
     scan_data, err, status_code = execute_network_scan(data['target'], g.current_user, ip_address=client_ip)
 
     if err:
-        return error_response(code="SCAN_EXECUTION_FAILED", message=err, status_code=status_code)
+        code = "INVALID_TARGET" if status_code == 400 else "SCAN_EXECUTION_FAILED"
+        return error_response(code=code, message=err, status_code=status_code)
 
     return success_response(data=scan_data, message="Network scan completed successfully", status_code=201)
 

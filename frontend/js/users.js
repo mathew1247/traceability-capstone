@@ -71,11 +71,16 @@ function initUserModalForm() {
   const form = document.getElementById("add-user-form");
   if (!form) return;
 
+  let isSubmitting = false;
+
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
     const name = document.getElementById("usr-name").value.trim();
     const email = document.getElementById("usr-email").value.trim();
     const role = document.getElementById("usr-role").value;
+    const password = (document.getElementById("usr-password")?.value || "").trim();
     const submitBtn = form.querySelector('button[type="submit"]');
 
     if (!name || !email) {
@@ -83,17 +88,30 @@ function initUserModalForm() {
       return;
     }
 
-    if (submitBtn) submitBtn.disabled = true;
+    isSubmitting = true;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Creating User...";
+    }
     try {
-      await createUser({ name, email, role, status: "Active" });
+      const userPayload = { name, email, role, status: "Active" };
+      if (password) {
+        userPayload.password = password;
+      }
+      await createUser(userPayload);
       closeModal("add-user-modal");
       form.reset();
-      showToast(`User account created for ${name} (${role})!`, "success");
+      const initialPw = password || "ChangeMe123!";
+      showToast(`User account created for ${name} (${role})! Initial password: ${initialPw}`, "success");
       await loadUsersTable();
     } catch (err) {
       showToast(`Failed to create user: ${err.message}`, "danger");
     } finally {
-      if (submitBtn) submitBtn.disabled = false;
+      isSubmitting = false;
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Create User";
+      }
     }
   });
 }

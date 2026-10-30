@@ -329,6 +329,9 @@ async function createBatch(batch) {
     production_date: batch.production_date || batch.date || new Date().toISOString().split("T")[0],
     status: batch.status || "Running"
   };
+  if (batch.idempotency_key) {
+    payload.idempotency_key = batch.idempotency_key;
+  }
   const created = await apiRequest("/batches", {
     method: "POST",
     body: JSON.stringify(payload)
@@ -710,7 +713,7 @@ function normalizeScanObject(s) {
     ...s,
     id: s.scan_id || s.id,
     target: s.target,
-    duration: s.duration || "1.42s",
+    duration: s.duration || (s.duration_seconds !== undefined ? `${s.duration_seconds}s` : "N/A"),
     devicesFound: s.devices_found ?? s.devicesFound ?? 0,
     status: s.status || "Completed",
     scannerEngine: s.scanner_engine || s.scannerEngine || (s.nmap_available ? "Nmap Native Engine" : "Python Socket Fallback"),

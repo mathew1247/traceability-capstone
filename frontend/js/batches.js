@@ -147,11 +147,13 @@ function initBatchForm() {
 
     if (submitBtn) submitBtn.disabled = true;
     try {
+      const idempotencyKey = "IDEM-" + Date.now() + "-" + Math.random().toString(36).substring(2, 9);
       await createBatch({
         product,
         material,
         quantity,
         status,
+        idempotency_key: idempotencyKey,
         operator: "Jack Mathew",
         qaLead: "Pending Inspection"
       });

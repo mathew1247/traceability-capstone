@@ -139,7 +139,21 @@ def update_material(material_id, data, current_user):
     if not updates:
         return None, "No valid update fields provided", 400
 
-    doc_ref.update(updates)
+    from services.batch_service import _run_inventory_transaction, InventoryTransactionError
+
+    def _update_mat_tx(tx):
+        snap = doc_ref.get(transaction=tx)
+        if not snap.exists:
+            raise InventoryTransactionError("Raw material not found", 404)
+        tx.update(doc_ref, updates)
+
+    try:
+        _run_inventory_transaction(_update_mat_tx)
+    except InventoryTransactionError as ite:
+        return None, ite.message, ite.status_code
+    except Exception as e:
+        return None, f"Failed to update raw material: {str(e)}", 500
+
     updated = serialize_value(doc_ref.get().to_dict())
 
     log_activity(
@@ -165,7 +179,20 @@ def delete_material(material_id, current_user):
     if len(batches) > 0:
         return False, f"Cannot delete material {material_id}: Linked production batches exist.", 409
 
-    doc_ref.delete()
+    from services.batch_service import _run_inventory_transaction, InventoryTransactionError
+
+    def _delete_mat_tx(tx):
+        snap = doc_ref.get(transaction=tx)
+        if not snap.exists:
+            raise InventoryTransactionError("Raw material not found", 404)
+        tx.delete(doc_ref)
+
+    try:
+        _run_inventory_transaction(_delete_mat_tx)
+    except InventoryTransactionError as ite:
+        return False, ite.message, ite.status_code
+    except Exception as e:
+        return False, f"Failed to delete raw material: {str(e)}", 500
 
     log_activity(
         user_id=current_user.get('user_id'),

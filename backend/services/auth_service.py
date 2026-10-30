@@ -172,10 +172,14 @@ def create_user(username, email, password, role='Operator', status='Active', cre
     clean_email = email.strip().lower()
     users_ref = db.collection(Config.COLLECTION_USERS)
 
-    # Check for email uniqueness
-    existing = users_ref.where('email', '==', clean_email).get()
-    for _ in existing:
-        return None, "A user with this email address already exists.", 409
+    try:
+        # Check for email uniqueness
+        existing = users_ref.where('email', '==', clean_email).get()
+        for _ in existing:
+            return None, "A user with this email address already exists.", 409
+    except Exception as e:
+        app_logger.error(f"Error querying existing users in Firestore: {str(e)}")
+        return None, f"Database error during user check: {str(e)}", 500
 
     # Generate readable ID
     user_id = f"USR-{uuid.uuid4().hex[:6].upper()}"
@@ -191,19 +195,26 @@ def create_user(username, email, password, role='Operator', status='Active', cre
         "created_at": now_iso
     }
 
-    users_ref.document(user_id).set(new_user)
+    try:
+        users_ref.document(user_id).set(new_user)
+    except Exception as e:
+        app_logger.error(f"Failed to persist user {user_id} to Firestore: {str(e)}")
+        return None, f"Database error: Unable to store user record. {str(e)}", 500
 
     creator_name = creator_user.get('username') if creator_user else "System"
     creator_id = creator_user.get('user_id') if creator_user else "SYSTEM"
 
-    log_activity(
-        user_id=creator_id,
-        username=creator_name,
-        action='CREATE',
-        resource='User',
-        resource_id=user_id,
-        details=f"Created user {username} with role {role}"
-    )
+    try:
+        log_activity(
+            user_id=creator_id,
+            username=creator_name,
+            action='CREATE',
+            resource='User',
+            resource_id=user_id,
+            details=f"Created user {username} with role {role}"
+        )
+    except Exception as log_err:
+        app_logger.warning(f"Activity logging failed for user creation: {log_err}")
 
     safe_data = new_user.copy()
     del safe_data['password_hash']

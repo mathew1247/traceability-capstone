@@ -15,19 +15,45 @@ def execute_network_scan(target, current_user, ip_address=None):
     2. Runs Nmap / safe discovery engine.
     3. Detects newly observed hosts vs previous scan baseline (Unknown Host Detection).
     4. Detects exposed critical/industrial ports.
-    5. Stores scan in network_scans collection.
+    5. Stores scan in network_scans collection (both successful and failed scans).
     6. Returns structured results.
     """
+    start_time = datetime.now(timezone.utc)
+    now_iso = start_time.isoformat()
+    scan_id = f"SCAN-{uuid.uuid4().hex[:6].upper()}"
+
     is_valid, err_msg = validate_network_target(target)
     if not is_valid:
         return None, err_msg, 400
 
     scan_result, scan_err = scan_network(target)
-    if scan_err:
-        return None, f"Network scan failure: {scan_err}", 500
+    duration_seconds = round((datetime.now(timezone.utc) - start_time).total_seconds(), 2)
 
-    now_iso = datetime.now(timezone.utc).isoformat()
-    scan_id = f"SCAN-{uuid.uuid4().hex[:6].upper()}"
+    if scan_err:
+        # Record failed scan record in Firestore for auditability
+        failed_record = {
+            "scan_id": scan_id,
+            "target": target.strip(),
+            "devices_found": 0,
+            "open_ports": [],
+            "status": "Failed",
+            "error_message": str(scan_err),
+            "created_by": current_user.get('user_id'),
+            "scan_date": now_iso,
+            "duration": f"{duration_seconds}s",
+            "duration_seconds": duration_seconds,
+            "hosts": [],
+            "scanner_engine": "Nmap Scanner",
+            "nmap_available": False,
+            "limitations": str(scan_err),
+            "new_hosts_detected": []
+        }
+        try:
+            db.collection(Config.COLLECTION_NETWORK_SCANS).document(scan_id).set(failed_record)
+        except Exception as db_err:
+            app_logger.error(f"Failed to record failed scan entry in Firestore: {db_err}")
+
+        return None, f"Network scan failure: {scan_err}", 500
 
     # Extract all discovered open ports
     all_open_ports = []
@@ -52,28 +78,31 @@ def execute_network_scan(target, current_user, ip_address=None):
                 critical_ports_found.append((ip, p.get('port'), p.get('service')))
 
     # Requirement 21: Unknown Host Detection by comparing with latest previous scan
-    previous_scans = db.collection(Config.COLLECTION_NETWORK_SCANS)\
-                       .order_by('scan_date', direction='DESCENDING')\
-                       .limit(1)\
-                       .get()
-
-    prev_ips = set()
-    for doc in previous_scans:
-        prev_data = doc.to_dict()
-        for h in prev_data.get('hosts', []):
-            if h.get('ip'):
-                prev_ips.add(h['ip'])
-
     newly_observed_hosts = []
-    if prev_ips:  # Only if a previous baseline exists
-        newly_observed_hosts = list(current_ips - prev_ips)
-        for new_ip in newly_observed_hosts:
-            create_alert(
-                severity="Warning",
-                source="Nmap Scanner",
-                message=f"Previously unseen host detected: {new_ip} on subnet {target}.",
-                resource_id=scan_id
-            )
+    try:
+        previous_scans = db.collection(Config.COLLECTION_NETWORK_SCANS)\
+                           .order_by('scan_date', direction='DESCENDING')\
+                           .limit(1)\
+                           .get()
+
+        prev_ips = set()
+        for doc in previous_scans:
+            prev_data = doc.to_dict()
+            for h in prev_data.get('hosts', []):
+                if h.get('ip'):
+                    prev_ips.add(h['ip'])
+
+        if prev_ips:  # Only if a previous baseline exists
+            newly_observed_hosts = list(current_ips - prev_ips)
+            for new_ip in newly_observed_hosts:
+                create_alert(
+                    severity="Warning",
+                    source="Nmap Scanner",
+                    message=f"Previously unseen host detected: {new_ip} on subnet {target}.",
+                    resource_id=scan_id
+                )
+    except Exception as base_err:
+        app_logger.warning(f"Baseline comparison failed: {base_err}")
 
     # Trigger alerts for exposed critical ports
     for ip, port, service in critical_ports_found:
@@ -92,6 +121,8 @@ def execute_network_scan(target, current_user, ip_address=None):
         "status": "Completed",
         "created_by": current_user.get('user_id'),
         "scan_date": now_iso,
+        "duration": f"{duration_seconds}s",
+        "duration_seconds": duration_seconds,
         "hosts": scan_result.get('hosts', []),
         "scanner_engine": scan_result.get('scanner_engine', 'Nmap Native Engine'),
         "nmap_available": scan_result.get('nmap_available', False),
@@ -99,28 +130,39 @@ def execute_network_scan(target, current_user, ip_address=None):
         "new_hosts_detected": newly_observed_hosts
     }
 
-    db.collection(Config.COLLECTION_NETWORK_SCANS).document(scan_id).set(scan_record)
+    try:
+        db.collection(Config.COLLECTION_NETWORK_SCANS).document(scan_id).set(scan_record)
+    except Exception as e:
+        app_logger.error(f"Failed to persist scan record {scan_id} to Firestore: {str(e)}")
+        return None, f"Database error: Unable to record network scan. {str(e)}", 500
 
-    log_activity(
-        user_id=current_user.get('user_id'),
-        username=current_user.get('username'),
-        action='SCAN_TRIGGER',
-        resource='NetworkScan',
-        resource_id=scan_id,
-        details=f"Executed network scan on {target}. Found {scan_record['devices_found']} devices.",
-        ip_address=ip_address
-    )
+    try:
+        log_activity(
+            user_id=current_user.get('user_id'),
+            username=current_user.get('username'),
+            action='SCAN_TRIGGER',
+            resource='NetworkScan',
+            resource_id=scan_id,
+            details=f"Executed network scan on {target}. Found {scan_record['devices_found']} devices.",
+            ip_address=ip_address
+        )
+    except Exception as log_err:
+        app_logger.warning(f"Activity log failed for network scan: {log_err}")
 
     return scan_record, None, 201
 
 
 def get_scan_history(limit=20):
     """Fetches past network scan records."""
-    docs = db.collection(Config.COLLECTION_NETWORK_SCANS)\
-             .order_by('scan_date', direction='DESCENDING')\
-             .limit(limit)\
-             .get()
-    return [doc.to_dict() for doc in docs if doc.to_dict()]
+    try:
+        docs = db.collection(Config.COLLECTION_NETWORK_SCANS)\
+                 .order_by('scan_date', direction='DESCENDING')\
+                 .limit(limit)\
+                 .get()
+        return [doc.to_dict() for doc in docs if doc.to_dict()]
+    except Exception as e:
+        app_logger.error(f"Failed to fetch network scan history: {str(e)}")
+        return []
 
 
 def get_security_monitor_summary():
