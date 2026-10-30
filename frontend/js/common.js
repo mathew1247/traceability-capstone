@@ -3,7 +3,7 @@
    Injects Sidebar, Header, Handles Auth Guards, Toasts, Modals, Responsive Drawer
    =================================================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
+function initCommon() {
   initAuthGuard();
   injectSidebar();
   injectHeader();
@@ -11,20 +11,48 @@ document.addEventListener("DOMContentLoaded", () => {
   injectMobileDrawer();
   initToastContainer();
   initShortcutListeners();
-});
+}
+
+function onReady(fn) {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", fn);
+  } else {
+    fn();
+  }
+}
+window.onReady = onReady;
+
+onReady(initCommon);
 
 // Current User State
 function getCurrentUser() {
   try {
-    const raw = localStorage.getItem("sentinelUser");
-    if (raw) return JSON.parse(raw);
+    const raw = localStorage.getItem("sentinelUser") || localStorage.getItem("user");
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') {
+        const displayName = parsed.username || parsed.name || "Operator";
+        return {
+          id: parsed.user_id || parsed.id || "",
+          user_id: parsed.user_id || parsed.id || "",
+          email: parsed.email || "",
+          role: parsed.role || "Guest",
+          status: parsed.status || "Active",
+          ...parsed,
+          name: displayName,
+          username: parsed.username || displayName
+        };
+      }
+    }
   } catch (e) {}
   return {
-    id: "USR-001",
-    name: "Jack Mathew",
-    email: "jack@sentineltrace.io",
-    role: "Admin",
-    status: "Active"
+    id: "",
+    user_id: "",
+    name: "Guest User",
+    username: "Guest User",
+    email: "",
+    role: "Guest",
+    status: "Inactive"
   };
 }
 
@@ -35,14 +63,14 @@ function initAuthGuard() {
   const token = localStorage.getItem("token") || localStorage.getItem("sentinelToken");
 
   if (!isAuthPage && !token) {
-    window.location.href = "welcome.html";
+    window.location.href = "login.html";
     return;
   }
 
   // Admin Route Guard
   if (path.endsWith("users.html")) {
     const user = getCurrentUser();
-    if (user.role !== "Admin") {
+    if (!user || user.role !== "Admin") {
       alert("Access Denied: Administration section requires Administrator credentials.");
       window.location.href = "dashboard.html";
     }
@@ -214,10 +242,10 @@ function injectHeader() {
           </a>
 
           <div class="header-user-pill">
-            <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.82rem; background: linear-gradient(135deg, #fa7b7b, #e05e5e); color: #fff;">${user.name.charAt(0)}</div>
+            <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.82rem; background: linear-gradient(135deg, #fa7b7b, #e05e5e); color: #fff;">${(user.name || user.username || 'U').charAt(0).toUpperCase()}</div>
             <div style="display: flex; flex-direction: column; text-align: left;">
-              <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">${user.name}</span>
-              <span style="font-size: 0.68rem; color: #64748b; font-weight: 600;">${user.role}</span>
+              <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary);">${user.name || user.username || 'User'}</span>
+              <span style="font-size: 0.68rem; color: #64748b; font-weight: 600;">${user.role || 'Guest'}</span>
             </div>
           </div>
         </div>
@@ -590,11 +618,11 @@ function injectMobileDrawer() {
 
     <div class="mobile-drawer-user-card">
       <div class="user-avatar" style="width: 36px; height: 36px; font-size: 0.9rem; background: linear-gradient(135deg, #fa7b7b, #e05e5e); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;">
-        ${user.name.charAt(0)}
+        ${(user.name || user.username || 'U').charAt(0).toUpperCase()}
       </div>
       <div style="flex: 1; min-width: 0;">
-        <div style="font-size: 0.86rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
-        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">${user.role} &bull; ${user.email}</div>
+        <div style="font-size: 0.86rem; font-weight: 700; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name || user.username || 'User'}</div>
+        <div style="font-size: 0.72rem; color: #64748b; font-weight: 600;">${user.role || 'Guest'} &bull; ${user.email || 'No email'}</div>
       </div>
     </div>
 
@@ -770,7 +798,18 @@ function toggleMobileSidebar() {
 // User Sign Out
 function handleLogout() {
   if (confirm("Are you sure you want to sign out of Sentinel-Trace?")) {
-    localStorage.removeItem("sentinelToken");
+    if (typeof clearAuthSession === "function") {
+      clearAuthSession();
+    } else {
+      localStorage.removeItem("token");
+      localStorage.removeItem("sentinelToken");
+      localStorage.removeItem("user");
+      localStorage.removeItem("sentinelUser");
+      sessionStorage.removeItem("token");
+      sessionStorage.removeItem("sentinelToken");
+      sessionStorage.removeItem("user");
+      sessionStorage.removeItem("sentinelUser");
+    }
     window.location.href = "login.html";
   }
 }

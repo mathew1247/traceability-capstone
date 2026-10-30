@@ -7,22 +7,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   await populateComplianceProducts();
   await loadComplianceTable();
   initComplianceForm();
+  initEditComplianceForm();
 });
 
 async function populateComplianceProducts() {
   const prodSelect = document.getElementById("comp-product");
-  if (!prodSelect) return;
+  const editProdSelect = document.getElementById("edit-comp-product");
 
   try {
     const products = await getProducts();
     if (products && products.length > 0) {
-      prodSelect.innerHTML = "";
-      products.forEach(p => {
-        const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = `${p.name} (${p.id})`;
-        prodSelect.appendChild(opt);
-      });
+      const fill = (el) => {
+        if (!el) return;
+        el.innerHTML = "";
+        products.forEach(p => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = `${p.name} (${p.id})`;
+          el.appendChild(opt);
+        });
+      };
+      fill(prodSelect);
+      fill(editProdSelect);
     }
   } catch (err) {
     console.warn("Could not populate compliance products:", err);
@@ -82,6 +88,12 @@ async function loadComplianceTable() {
                 <line x1="12" y1="15" x2="12" y2="3"></line>
               </svg>
             </button>
+            <button class="btn-table-action" title="Edit Compliance Record" onclick="handleEditCompliance('${c.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
             <button class="btn-table-action danger" title="Delete Compliance Record" onclick="handleDeleteCompliance('${c.id}')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -112,13 +124,64 @@ function initComplianceForm() {
     const expiryDate = document.getElementById("comp-expiry").value;
 
     try {
-      await createCompliance({ product, standard, status, auditor, expiryDate, score: "99.0%" });
+      await createCompliance({ product, standard, status, auditor, auditing_body: auditor, expiryDate, score: "99.0%" });
       closeModal("add-compliance-modal");
       form.reset();
       showToast(`Compliance audit record registered!`, "success");
       await loadComplianceTable();
     } catch (err) {
       showToast(`Failed to record compliance certification: ${err.message}`, "danger");
+    }
+  });
+}
+
+async function handleEditCompliance(id) {
+  try {
+    const records = await getCompliance();
+    const c = records.find(r => r.id === id);
+    if (!c) {
+      showToast("Compliance record not found.", "danger");
+      return;
+    }
+    document.getElementById("edit-comp-id").value = c.id;
+    if (c.product_id) {
+      document.getElementById("edit-comp-product").value = c.product_id;
+    }
+    document.getElementById("edit-comp-standard").value = c.standard || "ISO 9001:2015";
+    document.getElementById("edit-comp-status").value = c.status || "Compliant";
+    document.getElementById("edit-comp-auditor").value = c.auditor || c.auditing_body || "";
+    document.getElementById("edit-comp-expiry").value = c.expiryDate || c.expiry_date || "";
+    openModal("edit-compliance-modal");
+  } catch (err) {
+    showToast(`Failed to load compliance details: ${err.message}`, "danger");
+  }
+}
+
+function initEditComplianceForm() {
+  const form = document.getElementById("edit-compliance-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-comp-id").value;
+    const product = document.getElementById("edit-comp-product").value;
+    const standard = document.getElementById("edit-comp-standard").value;
+    const status = document.getElementById("edit-comp-status").value;
+    const auditor = document.getElementById("edit-comp-auditor").value.trim();
+    const expiryDate = document.getElementById("edit-comp-expiry").value;
+
+    if (!standard || !expiryDate) {
+      showToast("Standard and expiration date are required.", "danger");
+      return;
+    }
+
+    try {
+      await updateCompliance(id, { product, standard, status, auditor, auditing_body: auditor, expiryDate });
+      closeModal("edit-compliance-modal");
+      showToast(`Compliance record ${id} updated successfully!`, "success");
+      await loadComplianceTable();
+    } catch (err) {
+      showToast(`Failed to update compliance record: ${err.message}`, "danger");
     }
   });
 }

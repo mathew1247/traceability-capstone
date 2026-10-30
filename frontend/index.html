@@ -4,9 +4,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome | Sentinel-Trace</title>
-  <meta http-equiv="refresh" content="0; url=welcome.html">
+  <meta http-equiv="refresh" content="0; url=login.html">
   <script>
-    window.location.replace("welcome.html");
+    const token = localStorage.getItem("token") || localStorage.getItem("sentinelToken");
+    if (token) {
+      window.location.replace("dashboard.html");
+    } else {
+      window.location.replace("login.html");
+    }
   </script>
 </head>
 <body style="background: #fa7b7b; color: #ffffff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; margin: 0;">

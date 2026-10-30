@@ -6,6 +6,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   await loadSuppliersTable();
   initSupplierForm();
+  initEditSupplierForm();
 });
 
 async function loadSuppliersTable() {
@@ -44,10 +45,16 @@ async function loadSuppliersTable() {
             <span class="badge ${badgeClass}"><span class="badge-dot"></span>${s.status}</span>
           </td>
           <td class="table-actions-cell">
-            <button class="btn-table-action" title="Verify Vendor Documents" onclick="showToast('Vendor compliance certifications valid through 2027.', 'success')">
+            <button class="btn-table-action" title="Verify Vendor Documents" onclick="handleVerifySupplierDocs('${s.id}')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
                 <polyline points="9 12 11 14 15 10"></polyline>
+              </svg>
+            </button>
+            <button class="btn-table-action" title="Edit Supplier" onclick="handleEditSupplier('${s.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
             </button>
             <button class="btn-table-action danger" title="Delete Supplier" onclick="handleDeleteSupplier('${s.id}')">
@@ -91,6 +98,55 @@ function initSupplierForm() {
   });
 }
 
+async function handleEditSupplier(id) {
+  try {
+    const suppliers = await getSuppliers();
+    const sup = suppliers.find(s => s.id === id);
+    if (!sup) {
+      showToast("Supplier not found.", "danger");
+      return;
+    }
+    document.getElementById("edit-sup-id").value = sup.id;
+    document.getElementById("edit-sup-name").value = sup.name || sup.supplier_name || "";
+    document.getElementById("edit-sup-contact").value = sup.contact || "";
+    document.getElementById("edit-sup-email").value = sup.email || "";
+    document.getElementById("edit-sup-address").value = sup.address || "";
+    document.getElementById("edit-sup-status").value = sup.status || "Active";
+    openModal("edit-supplier-modal");
+  } catch (err) {
+    showToast(`Failed to load supplier details: ${err.message}`, "danger");
+  }
+}
+
+function initEditSupplierForm() {
+  const form = document.getElementById("edit-supplier-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-sup-id").value;
+    const name = document.getElementById("edit-sup-name").value.trim();
+    const contact = document.getElementById("edit-sup-contact").value.trim();
+    const email = document.getElementById("edit-sup-email").value.trim();
+    const address = document.getElementById("edit-sup-address").value.trim();
+    const status = document.getElementById("edit-sup-status").value;
+
+    if (!name || !contact || !email) {
+      showToast("Name, contact person, and email are required.", "danger");
+      return;
+    }
+
+    try {
+      await updateSupplier(id, { name, contact, email, address, status });
+      closeModal("edit-supplier-modal");
+      showToast(`Supplier ${id} updated successfully!`, "success");
+      await loadSuppliersTable();
+    } catch (err) {
+      showToast(`Failed to update supplier: ${err.message}`, "danger");
+    }
+  });
+}
+
 function filterSuppliers() {
   const query = document.getElementById("supplier-search").value.toLowerCase();
   const rows = document.querySelectorAll("#suppliers-table-body tr");
@@ -112,3 +168,19 @@ async function handleDeleteSupplier(id) {
     }
   }
 }
+
+async function handleVerifySupplierDocs(id) {
+  try {
+    showToast(`Verifying documentation & certifications for vendor ${id}...`, "info");
+    const res = await (window.verifySupplierDocs ? window.verifySupplierDocs(id) : apiRequest(`/suppliers/${encodeURIComponent(id)}/verify-documents`));
+    if (res && res.verified) {
+      showToast(res.message || `Vendor ${id} documentation verified.`, "success");
+    } else {
+      showToast(res?.message || `Vendor ${id} documents could not be verified.`, "warning");
+    }
+  } catch (err) {
+    showToast(`Document verification failed: ${err.message}`, "danger");
+  }
+}
+
+window.handleVerifySupplierDocs = handleVerifySupplierDocs;

@@ -4,10 +4,23 @@
    =================================================================== */
 
 // Global API Base Configuration - Production Safe Dynamic Host Resolution
+const normalizeApiBase = (url) => {
+  if (!url || typeof url !== 'string') return "";
+  const trimmed = url.trim().replace(/\/+$/, '');
+  return trimmed.endsWith('/api') ? trimmed : `${trimmed}/api`;
+};
+
 const getProductionApiUrl = () => {
-  if (window.APP_CONFIG?.API_BASE_URL) return window.APP_CONFIG.API_BASE_URL;
-  if (window.API_BASE_URL) return window.API_BASE_URL;
-  const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:' || !window.location.hostname;
+  if (window.APP_CONFIG?.API_BASE_URL) return normalizeApiBase(window.APP_CONFIG.API_BASE_URL);
+  const storedApi = localStorage.getItem("sentinel_api_base") || localStorage.getItem("API_BASE_URL");
+  if (storedApi && !storedApi.includes("undefined") && !storedApi.includes("null")) {
+    return normalizeApiBase(storedApi);
+  }
+  const hostname = window.location.hostname || '';
+  if (hostname.endsWith('onrender.com')) {
+    return `${window.location.origin}/api`;
+  }
+  const isLocalHost = hostname === 'localhost' || hostname === '127.0.0.1' || window.location.protocol === 'file:' || !hostname;
   return isLocalHost ? "http://127.0.0.1:5000/api" : "https://traceability-capstone.onrender.com/api";
 };
 
@@ -15,17 +28,34 @@ const API_BASE_URL = getProductionApiUrl();
 
 // Helpers for Auth token & User state
 function getAuthToken() {
-  return localStorage.getItem("token") || localStorage.getItem("sentinelToken") || "";
+  return localStorage.getItem("token") || localStorage.getItem("sentinelToken") || sessionStorage.getItem("token") || sessionStorage.getItem("sentinelToken") || "";
 }
 
 function setAuthSession(token, user) {
   if (token) {
     localStorage.setItem("token", token);
     localStorage.setItem("sentinelToken", token);
+    sessionStorage.setItem("token", token);
+    sessionStorage.setItem("sentinelToken", token);
   }
   if (user) {
-    localStorage.setItem("user", JSON.stringify(user));
-    localStorage.setItem("sentinelUser", JSON.stringify(user));
+    let normalizedUser = user;
+    if (typeof user === 'string') {
+      try { normalizedUser = JSON.parse(user); } catch (e) { normalizedUser = { username: user }; }
+    }
+    if (normalizedUser && typeof normalizedUser === 'object') {
+      const displayName = normalizedUser.username || normalizedUser.name || "Operator";
+      const uId = normalizedUser.user_id || normalizedUser.id || "";
+      normalizedUser.name = displayName;
+      normalizedUser.username = displayName;
+      normalizedUser.id = uId;
+      normalizedUser.user_id = uId;
+    }
+    const userStr = JSON.stringify(normalizedUser);
+    localStorage.setItem("user", userStr);
+    localStorage.setItem("sentinelUser", userStr);
+    sessionStorage.setItem("user", userStr);
+    sessionStorage.setItem("sentinelUser", userStr);
   }
 }
 
@@ -34,11 +64,22 @@ function clearAuthSession() {
   localStorage.removeItem("sentinelToken");
   localStorage.removeItem("user");
   localStorage.removeItem("sentinelUser");
+  sessionStorage.removeItem("token");
+  sessionStorage.removeItem("sentinelToken");
+  sessionStorage.removeItem("user");
+  sessionStorage.removeItem("sentinelUser");
+}
+
+function apiLogout() {
+  clearAuthSession();
+  window.location.href = "login.html";
 }
 
 // Universal API Request Dispatcher with Error, Status, and Auth Handling
 async function apiRequest(endpoint, options = {}) {
-  const cleanEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  const rawEndpoint = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
+  // Strip leading '/api' if caller already provided it to prevent '/api/api/...'
+  const cleanEndpoint = rawEndpoint.startsWith("/api/") ? rawEndpoint.substring(4) : (rawEndpoint === "/api" ? "" : rawEndpoint);
   const url = `${API_BASE_URL}${cleanEndpoint}`;
   const token = getAuthToken();
 
@@ -79,6 +120,12 @@ async function apiRequest(endpoint, options = {}) {
     // Return unpacked payload if wrapped in standard { success: true, data: ... }
     return json && json.data !== undefined ? json.data : json;
   } catch (err) {
+    if (err.name === "TypeError" && (err.message.includes("fetch") || err.message.includes("NetworkError") || err.message.includes("Failed to fetch") || err.message.includes("Network request failed") || err.message.includes("Load failed"))) {
+      console.error(`[Sentinel API Network Error] ${url}:`, err);
+      const networkErr = new Error(`Unable to connect to Sentinel-Trace server (${url}). Please ensure backend is running.`);
+      networkErr.isNetworkError = true;
+      throw networkErr;
+    }
     console.error(`[Sentinel API Error] ${url}:`, err.message);
     throw err;
   }
@@ -88,12 +135,14 @@ async function apiRequest(endpoint, options = {}) {
 async function apiLogin(email, password) {
   const data = await apiRequest("/auth/login", {
     method: "POST",
-    body: JSON.stringify({ email, password })
+    body: JSON.stringify({ email: (email || "").trim(), password: password || "" })
   });
 
-  if (data && data.token) {
-    setAuthSession(data.token, data.user);
-    return { success: true, token: data.token, user: data.user };
+  if (data && (data.token || (data.data && data.data.token))) {
+    const token = data.token || data.data.token;
+    const user = data.user || data.data.user || {};
+    setAuthSession(token, user);
+    return { success: true, token, user };
   }
   return data;
 }
@@ -104,6 +153,13 @@ async function apiRegister(username, email, password, role = "Operator") {
     body: JSON.stringify({ username, email, password, role })
   });
   return data;
+}
+
+async function apiForgotPassword(email) {
+  return await apiRequest("/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify({ email })
+  });
 }
 
 // 2. Executive Dashboard Metrics (Calculated from Firestore)
@@ -171,6 +227,19 @@ async function createProduct(product) {
   };
 }
 
+async function updateProduct(id, product) {
+  const payload = {
+    product_name: product.product_name || product.name,
+    product_code: product.product_code || product.code,
+    description: product.description || product.compliance,
+    status: product.status
+  };
+  return await apiRequest(`/products/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
 async function deleteProduct(id) {
   return await apiRequest(`/products/${id}`, { method: "DELETE" });
 }
@@ -220,6 +289,20 @@ async function createBatch(batch) {
   };
 }
 
+async function updateBatch(id, batch) {
+  const payload = {
+    product_id: batch.product_id || batch.product,
+    material_id: batch.material_id || batch.material,
+    quantity: parseInt(batch.quantity, 10),
+    production_date: batch.production_date || batch.date || new Date().toISOString().split("T")[0],
+    status: batch.status || "Running"
+  };
+  return await apiRequest(`/batches/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
 async function deleteBatch(id) {
   return await apiRequest(`/batches/${id}`, { method: "DELETE" });
 }
@@ -265,6 +348,19 @@ async function createMaterial(mat) {
     name: created.material_name || created.name,
     supplier: created.supplier_id
   };
+}
+
+async function updateMaterial(id, mat) {
+  const payload = {
+    material_name: mat.material_name || mat.name,
+    supplier_id: mat.supplier_id || mat.supplier,
+    quantity: parseFloat(mat.quantity),
+    unit: mat.unit || "kg"
+  };
+  return await apiRequest(`/materials/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
 }
 
 async function deleteMaterial(id) {
@@ -314,8 +410,26 @@ async function createSupplier(sup) {
   };
 }
 
+async function updateSupplier(id, sup) {
+  const payload = {
+    supplier_name: sup.supplier_name || sup.name,
+    contact: sup.contact,
+    email: sup.email,
+    address: sup.address,
+    status: sup.status || "Active"
+  };
+  return await apiRequest(`/suppliers/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
 async function deleteSupplier(id) {
   return await apiRequest(`/suppliers/${id}`, { method: "DELETE" });
+}
+
+async function verifySupplierDocs(id) {
+  return await apiRequest(`/suppliers/${encodeURIComponent(id)}/verify-documents`);
 }
 
 // 7. Compliance Records
@@ -328,7 +442,7 @@ async function getCompliance() {
       product: c.product_id || c.product,
       standard: c.standard,
       status: c.status,
-      auditor: c.audited_by || c.auditor || "Authorized Auditor",
+      auditor: c.auditing_body || c.audited_by || c.auditor || "Authorized Auditor",
       expiryDate: c.expiry_date || c.expiryDate,
       score: c.score || "98.5%"
     }));
@@ -343,10 +457,13 @@ async function createCompliance(comp) {
     product_id: comp.product_id || comp.product,
     standard: comp.standard,
     status: comp.status || "Compliant",
-    audited_by: comp.audited_by || comp.auditor || "USR-ADMIN01",
+    auditing_body: comp.auditing_body || comp.auditor || "",
     expiry_date: comp.expiry_date || comp.expiryDate,
     remarks: comp.remarks || "Compliance audit verified against specifications."
   };
+  if (comp.audited_by) {
+    payload.audited_by = comp.audited_by;
+  }
   const created = await apiRequest("/compliance", {
     method: "POST",
     body: JSON.stringify(payload)
@@ -355,8 +472,27 @@ async function createCompliance(comp) {
     ...created,
     id: created.compliance_id || created.id,
     product: created.product_id,
+    auditor: created.auditing_body || created.audited_by || "Authorized Auditor",
     expiryDate: created.expiry_date
   };
+}
+
+async function updateCompliance(id, comp) {
+  const payload = {
+    product_id: comp.product_id || comp.product,
+    standard: comp.standard,
+    status: comp.status || "Compliant",
+    auditing_body: comp.auditing_body || comp.auditor || "",
+    expiry_date: comp.expiry_date || comp.expiryDate,
+    remarks: comp.remarks || "Compliance audit verified against specifications."
+  };
+  if (comp.audited_by) {
+    payload.audited_by = comp.audited_by;
+  }
+  return await apiRequest(`/compliance/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
 }
 
 async function deleteCompliance(id) {
@@ -364,8 +500,15 @@ async function deleteCompliance(id) {
 }
 
 // 8. Traceability Lineage Graph
-async function getTraceability(id) {
-  return await apiRequest(`/traceability/${id}`);
+async function getTraceability(id, direction = "forward") {
+  if (!id) throw new Error("Identifier is required for traceability lookup");
+  const dir = encodeURIComponent(direction || "forward");
+  return await apiRequest(`/traceability/${encodeURIComponent(id)}?direction=${dir}`);
+}
+
+async function auditLineage(id) {
+  if (!id) throw new Error("Identifier is required for lineage audit");
+  return await apiRequest(`/traceability/${encodeURIComponent(id)}/audit`, { method: "POST" });
 }
 
 // 9. Network Scanner (Flask -> Authorized Nmap execution -> Firestore)
@@ -378,6 +521,10 @@ function normalizeScanObject(s) {
     duration: s.duration || "1.42s",
     devicesFound: s.devices_found ?? s.devicesFound ?? 0,
     status: s.status || "Completed",
+    scannerEngine: s.scanner_engine || s.scannerEngine || (s.nmap_available ? "Nmap Native Engine" : "Python Socket Fallback"),
+    nmapAvailable: s.nmap_available ?? false,
+    limitations: s.limitations || null,
+    newHostsDetected: s.new_hosts_detected || s.newHostsDetected || [],
     timestamp: s.scan_date ? s.scan_date.replace("T", " ").substring(0, 19) : (s.timestamp || "Recent"),
     openPorts: (s.open_ports || s.openPorts || []).map(p => ({
       port: p.port,
@@ -445,6 +592,10 @@ async function updateAlert(id, action, recipientEmail) {
     method: "PUT",
     body: JSON.stringify({ action: action.toLowerCase(), recipient_email: email })
   });
+}
+
+async function clearAllNoticesApi() {
+  return await apiRequest("/alerts/clear-notices", { method: "POST" });
 }
 
 async function sendTestEmail(recipientEmail, appPassword) {
@@ -518,6 +669,26 @@ async function createUser(user) {
   };
 }
 
+async function updateUser(id, user) {
+  const payload = {
+    username: user.username || user.name,
+    email: user.email,
+    role: user.role,
+    status: user.status
+  };
+  if (user.password) {
+    payload.password = user.password;
+  }
+  return await apiRequest(`/admin/users/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  });
+}
+
+async function deleteUser(id) {
+  return await apiRequest(`/admin/users/${id}`, { method: "DELETE" });
+}
+
 async function toggleUserStatus(id) {
   const users = await getUsers();
   const current = users.find(u => u.id === id);
@@ -544,34 +715,45 @@ window.API_BASE_URL = API_BASE_URL;
 window.apiRequest = apiRequest;
 window.apiLogin = apiLogin;
 window.apiRegister = apiRegister;
+window.apiForgotPassword = apiForgotPassword;
 window.getDashboardStats = getDashboardStats;
 window.getProducts = getProducts;
 window.getProductById = getProductById;
 window.createProduct = createProduct;
+window.updateProduct = updateProduct;
 window.deleteProduct = deleteProduct;
 window.getBatches = getBatches;
 window.getBatchById = getBatchById;
 window.createBatch = createBatch;
+window.updateBatch = updateBatch;
 window.deleteBatch = deleteBatch;
 window.getMaterials = getMaterials;
 window.getMaterialById = getMaterialById;
 window.createMaterial = createMaterial;
+window.updateMaterial = updateMaterial;
 window.deleteMaterial = deleteMaterial;
 window.getSuppliers = getSuppliers;
 window.getSupplierById = getSupplierById;
 window.createSupplier = createSupplier;
+window.updateSupplier = updateSupplier;
 window.deleteSupplier = deleteSupplier;
+window.verifySupplierDocs = verifySupplierDocs;
 window.getCompliance = getCompliance;
 window.createCompliance = createCompliance;
+window.updateCompliance = updateCompliance;
 window.deleteCompliance = deleteCompliance;
 window.getTraceability = getTraceability;
+window.auditLineage = auditLineage;
 window.startNetworkScan = startNetworkScan;
 window.getNetworkHistory = getNetworkHistory;
 window.getNetworkSecurity = getNetworkSecurity;
 window.getAlerts = getAlerts;
 window.updateAlert = updateAlert;
+window.clearAllNoticesApi = clearAllNoticesApi;
 window.getActivityLogs = getActivityLogs;
 window.getUsers = getUsers;
 window.createUser = createUser;
+window.updateUser = updateUser;
+window.deleteUser = deleteUser;
 window.toggleUserStatus = toggleUserStatus;
 window.getReportsSummary = getReportsSummary;

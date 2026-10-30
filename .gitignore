@@ -8,6 +8,7 @@ serviceAccountKey.json
 firebase-credentials.json
 *.json
 !package*.json
+!vercel.json
 !frontend/**/*.json
 
 # Python

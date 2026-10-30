@@ -127,6 +127,50 @@
         </div>
       </form>
     </div>
+  <!-- Edit Batch Modal -->
+  <div class="modal-overlay" id="edit-batch-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Production Batch</h3>
+        <button class="modal-close" onclick="closeModal('edit-batch-modal')">&times;</button>
+      </div>
+      <form id="edit-batch-form">
+        <input type="hidden" id="edit-batch-id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group form-grid-full">
+              <label class="form-label">Target Product <span class="required">*</span></label>
+              <select id="edit-batch-product" class="form-select" required>
+              </select>
+            </div>
+            <div class="form-group form-grid-full">
+              <label class="form-label">Allocated Raw Material <span class="required">*</span></label>
+              <select id="edit-batch-material" class="form-select" required>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lot Quantity (Units) <span class="required">*</span></label>
+              <input type="number" id="edit-batch-qty" class="form-input" required min="1">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Production Status</label>
+              <select id="edit-batch-status" class="form-select">
+                <option value="Running">Running</option>
+                <option value="Pending">Pending</option>
+                <option value="In QA Inspection">In QA Inspection</option>
+                <option value="Completed">Completed</option>
+                <option value="Passed">Passed</option>
+                <option value="Quarantined">Quarantined</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('edit-batch-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div id="toast-container"></div>

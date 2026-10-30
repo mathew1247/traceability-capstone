@@ -17,12 +17,20 @@ let cachedSuppliersList = [];
 let cachedComplianceList = [];
 let finexyChartInstance = null;
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initDashboard() {
   initUserProfile();
   initDashboardTheme();
   await loadDashboardMetrics();
   await loadRecentActivities();
-});
+}
+
+if (typeof onReady === "function") {
+  onReady(initDashboard);
+} else if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initDashboard);
+} else {
+  initDashboard();
+}
 
 // 1. User Meta in Header & Greeting
 function initUserProfile() {
@@ -42,26 +50,20 @@ function initUserProfile() {
 // 2. Metrics Integration across all project modules
 async function loadDashboardMetrics() {
   try {
-    const [stats, batchesList, materialsList, productsList, suppliersList, complianceList] = await Promise.all([
-      getDashboardStats().catch(() => null),
-      getBatches().catch(() => []),
-      getMaterials().catch(() => []),
-      getProducts().catch(() => []),
-      getSuppliers().catch(() => []),
-      getCompliance().catch(() => [])
-    ]);
+    const stats = await getDashboardStats().catch(() => null);
+    if (!stats) return;
 
     cachedStats = stats;
-    cachedBatchesList = batchesList || [];
-    cachedMaterialsList = materialsList || [];
-    cachedProductsList = productsList || [];
-    cachedSuppliersList = suppliersList || [];
-    cachedComplianceList = complianceList || [];
+    cachedBatchesList = stats.recent_batches || [];
 
-    const totalUnits = cachedBatchesList.reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
-    const totalKg = cachedMaterialsList.reduce((sum, m) => sum + (Number(m.quantity) || 0), 0);
-    const bCount = cachedBatchesList.length || (stats?.total_batches ?? 0);
-    const matCount = cachedMaterialsList.length || (stats?.total_materials ?? 0);
+    const totalUnits = stats.total_units_produced ?? stats.total_units_manufactured ?? 0;
+    const totalKg = stats.total_material_quantity ?? 0;
+    const bCount = stats.total_batches ?? 0;
+    const matCount = stats.total_materials ?? 0;
+    const supCount = stats.total_suppliers ?? 0;
+    const compRate = stats.compliance_rate ?? 100.0;
+    const compliantCount = stats.compliant_records ?? 0;
+    const totalCompliance = stats.total_compliance_records ?? 0;
 
     // 1. Total Batch Volume (Batches module from Firestore)
     const mainBalanceEl = document.getElementById("kpi-main-balance");
@@ -73,7 +75,7 @@ async function loadDashboardMetrics() {
     if (balanceTrend) balanceTrend.textContent = `↑ ${bCount} Batches`;
     if (balanceTrendSub) balanceTrendSub.textContent = `live production in progress`;
 
-    // 2. Production Nodes | Active Facilities Grid (Populated from live Batches/Suppliers)
+    // 2. Production Nodes | Active Facilities Grid (Populated from recent batches)
     const facilitiesGrid = document.getElementById("dash-facilities-grid");
     const facilitiesSubtitle = document.getElementById("dash-facilities-subtitle");
     if (facilitiesSubtitle) {
@@ -84,8 +86,7 @@ async function loadDashboardMetrics() {
       const topBatches = cachedBatchesList.slice(0, 3);
       let facHtml = "";
       topBatches.forEach((b, idx) => {
-        const prod = cachedProductsList.find(p => p.id === b.product_id || p.id === b.product);
-        const prodName = prod ? prod.name : (b.product || b.id);
+        const prodName = b.product_name || b.product || b.id;
         const icon = idx === 0 ? "🏭" : idx === 1 ? "🔬" : "📦";
         const statusClass = (b.status === "Completed" || b.status === "Passed") ? "status-active" : "status-active";
 
@@ -106,20 +107,15 @@ async function loadDashboardMetrics() {
     }
 
     // 3. Compliance Quota & Rate
-    const compliantCount = cachedComplianceList.filter(c => c.status === "Compliant" || c.status === "Certified").length;
-    const compRate = cachedComplianceList.length > 0
-      ? Math.round((compliantCount / cachedComplianceList.length) * 100)
-      : (stats?.compliance_rate ?? 80);
-
     const elCompliance = document.getElementById("kpi-val-compliance");
     if (elCompliance) elCompliance.textContent = `${compRate}%`;
 
     const barFill = document.getElementById("compliance-bar-fill");
     const targetTxt = document.getElementById("compliance-target-txt");
     if (barFill) barFill.style.width = `${Math.min(compRate, 100)}%`;
-    if (targetTxt) targetTxt.textContent = `${compRate}.0% achieved (${compliantCount}/${cachedComplianceList.length} Audited)`;
+    if (targetTxt) targetTxt.textContent = `${compRate}.0% achieved (${compliantCount}/${totalCompliance} Audited)`;
 
-    // 4. Operator Facility Passes & Proof Hash (Dynamic based on session and Firestore records)
+    // 4. Operator Facility Passes & Proof Hash
     const user = getCurrentUser();
     const tokenValEl = document.getElementById("operator-token-val");
     const roleNameEl = document.getElementById("operator-role-name");
@@ -133,7 +129,7 @@ async function loadDashboardMetrics() {
     if (roleNameEl) roleNameEl.textContent = `${(user.role || 'Admin').toUpperCase()} Operator`;
     if (statusNameEl) statusNameEl.textContent = "Verified";
     if (ledgerProofEl) {
-      const latestBatchId = cachedBatchesList[0]?.id || "BAT201";
+      const latestBatchId = cachedBatchesList[0]?.id || "SEC-VERIFIED";
       ledgerProofEl.textContent = `${latestBatchId} •••• AUDIT-PASS`;
     }
 
@@ -148,13 +144,12 @@ async function loadDashboardMetrics() {
 
     const trendCompliance = document.getElementById("kpi-trend-compliance");
     if (trendCompliance) {
-      const standardsStr = cachedComplianceList.slice(0, 2).map(c => c.standard).join(", ");
-      trendCompliance.innerHTML = `✓ ${compliantCount} Certified <span>${standardsStr || 'ISO, RoHS'}</span>`;
+      trendCompliance.innerHTML = `✓ ${compliantCount} Certified <span>ISO, RoHS, GMP</span>`;
     }
 
     if (elMaterials) elMaterials.textContent = `${matCount} Lots`;
     const trendMaterials = document.getElementById("kpi-trend-materials");
-    if (trendMaterials) trendMaterials.innerHTML = `↑ ${totalKg.toLocaleString()} Kg <span>Across ${cachedSuppliersList.length} Suppliers</span>`;
+    if (trendMaterials) trendMaterials.innerHTML = `↑ ${totalKg.toLocaleString()} Kg <span>Across ${supCount} Suppliers</span>`;
 
     if (elNetwork) {
       const netStatus = stats?.network_status || stats?.networkStatus || "Secure";
@@ -163,22 +158,23 @@ async function loadDashboardMetrics() {
     }
     const trendNetwork = document.getElementById("kpi-trend-network");
     if (trendNetwork) {
-      const crit = stats?.critical_alerts ?? 1;
-      const tot = stats?.total_alerts ?? 32;
+      const crit = stats?.critical_alerts ?? 0;
+      const tot = stats?.total_alerts ?? 0;
       trendNetwork.innerHTML = `! ${crit} Critical <span>${tot} Total Alerts</span>`;
     }
 
-    // 6. Initialize Stacked Chart with real batch quantities
-    initFinexyChart(cachedBatchesList);
+    // 6. Initialize Stacked Chart with real batch throughput (no synthetic multipliers)
+    initFinexyChart(cachedBatchesList, stats);
 
   } catch (err) {
     console.warn("Dashboard metrics compilation notice:", err);
-    initFinexyChart([]);
+    initFinexyChart([], null);
   }
 }
 
 // 3. Stacked Dual-Bar Chart (Completed Batches coral + Pending Inspections charcoal)
-function initFinexyChart(batchesList) {
+// Real ledger metrics grouped chronologically (no synthetic multipliers)
+function initFinexyChart(batchesList, stats) {
   const ctx = document.getElementById("finexyIncomeChart");
   if (!ctx || !window.Chart) return;
 
@@ -186,20 +182,34 @@ function initFinexyChart(batchesList) {
     finexyChartInstance.destroy();
   }
 
-  // Calculate real units from batches
-  const completedTotal = (batchesList || [])
-    .filter(b => b.status === "Completed" || b.status === "Passed")
-    .reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
+  const monthly = stats?.monthly_throughput || [];
+  let labels = [];
+  let qaData = [];
+  let completedData = [];
 
-  const qaTotal = (batchesList || [])
-    .filter(b => b.status !== "Completed" && b.status !== "Passed")
-    .reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
+  if (monthly && monthly.length > 0) {
+    labels = monthly.map(m => m.month_label);
+    qaData = monthly.map(m => m.pending_qa_units);
+    completedData = monthly.map(m => m.completed_units);
+  } else {
+    const completedTotal = (batchesList || [])
+      .filter(b => b.status === "Completed" || b.status === "Passed")
+      .reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
 
-  // If no batches, use baseline units
-  const baseCompleted = completedTotal > 0 ? completedTotal : 420;
-  const baseQA = qaTotal > 0 ? qaTotal : 1300;
+    const qaTotal = (batchesList || [])
+      .filter(b => b.status !== "Completed" && b.status !== "Passed")
+      .reduce((sum, b) => sum + (Number(b.quantity) || 0), 0);
 
-  const labels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct (Current)'];
+    if (completedTotal > 0 || qaTotal > 0) {
+      labels = ['Current Period'];
+      qaData = [qaTotal];
+      completedData = [completedTotal];
+    } else {
+      labels = ['No Batches Recorded'];
+      qaData = [0];
+      completedData = [0];
+    }
+  }
 
   finexyChartInstance = new Chart(ctx, {
     type: 'bar',
@@ -208,14 +218,7 @@ function initFinexyChart(batchesList) {
       datasets: [
         {
           label: 'Pending QA Checks',
-          data: [
-            Math.round(baseQA * 0.4),
-            Math.round(baseQA * 0.6),
-            Math.round(baseQA * 0.75),
-            Math.round(baseQA * 0.9),
-            Math.round(baseQA * 0.85),
-            baseQA
-          ],
+          data: qaData,
           backgroundColor: '#1e293b',
           borderRadius: 0,
           borderSkipped: false,
@@ -224,14 +227,7 @@ function initFinexyChart(batchesList) {
         },
         {
           label: 'Completed Batches',
-          data: [
-            Math.round(baseCompleted * 0.35),
-            Math.round(baseCompleted * 0.5),
-            Math.round(baseCompleted * 0.7),
-            Math.round(baseCompleted * 0.8),
-            Math.round(baseCompleted * 0.95),
-            baseCompleted
-          ],
+          data: completedData,
           backgroundColor: '#fa7b7b',
           borderRadius: { topLeft: 6, topRight: 6 },
           borderSkipped: false,
@@ -292,32 +288,27 @@ function initFinexyChart(batchesList) {
   });
 }
 
-// 4. Recent Industrial Activities Table Data & Rendering (100% from Firestore)
+// 4. Recent Industrial Activities Table Data & Rendering (Reuses aggregated stats payload)
 async function loadRecentActivities() {
   const tbody = document.getElementById("activities-table-body");
   if (!tbody) return;
 
   try {
-    const batches = cachedBatchesList.length > 0 ? cachedBatchesList : await getBatches();
-    const products = cachedProductsList.length > 0 ? cachedProductsList : await getProducts().catch(() => []);
-    const materials = cachedMaterialsList.length > 0 ? cachedMaterialsList : await getMaterials().catch(() => []);
+    const batches = cachedBatchesList.length > 0 ? cachedBatchesList : await getBatches().catch(() => []);
 
     if (batches && batches.length > 0) {
       allActivitiesData = batches.map((b, idx) => {
-        const prod = products.find(p => p.id === b.product_id || p.id === b.product);
-        const mat = materials.find(m => m.id === b.material_id || m.id === b.material);
-
-        const prodTitle = prod ? prod.name : (b.product || `Product ${b.product_id || b.id}`);
-        const matSubtitle = mat ? `Material: ${mat.name} (${mat.id})` : (b.material_id ? `Material Lot: ${b.material_id}` : "Verified Industrial Lot");
+        const prodTitle = b.product_name || b.product || `Product ${b.product_id || b.id || ''}`;
+        const matSubtitle = b.material_name ? `Material: ${b.material_name}` : (b.material_id ? `Material Lot: ${b.material_id}` : "Verified Industrial Lot");
 
         return {
-          id: b.id,
+          id: b.id || b.batch_id,
           activity: prodTitle,
           sub: matSubtitle,
           category: idx % 2 === 0 ? "auto" : "aero",
-          quantity: b.quantity ? `${Number(b.quantity).toLocaleString()} Units` : "100 Units",
+          quantity: b.quantity ? `${Number(b.quantity).toLocaleString()} Units` : "0 Units",
           status: b.status || "Completed",
-          date: b.production_date ? `${b.production_date} 12:00 PM` : (b.date || "2026-10-06 12:00 PM"),
+          date: b.production_date ? `${b.production_date} 12:00 PM` : (b.created_at || "Recent"),
           checked: idx === 0
         };
       });

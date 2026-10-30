@@ -113,6 +113,47 @@
         </div>
       </form>
     </div>
+  <!-- Edit Material Modal -->
+  <div class="modal-overlay" id="edit-material-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Edit Raw Material</h3>
+        <button class="modal-close" onclick="closeModal('edit-material-modal')">&times;</button>
+      </div>
+      <form id="edit-material-form">
+        <input type="hidden" id="edit-mat-id">
+        <div class="modal-body">
+          <div class="form-grid">
+            <div class="form-group form-grid-full">
+              <label class="form-label">Material Name <span class="required">*</span></label>
+              <input type="text" id="edit-mat-name" class="form-input" required>
+            </div>
+            <div class="form-group form-grid-full">
+              <label class="form-label">Approved Sourcing Supplier <span class="required">*</span></label>
+              <select id="edit-mat-supplier" class="form-select" required>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Quantity <span class="required">*</span></label>
+              <input type="number" id="edit-mat-qty" class="form-input" required min="0" step="any">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Unit of Measure</label>
+              <select id="edit-mat-unit" class="form-select">
+                <option value="kg">Kilograms (kg)</option>
+                <option value="pcs">Pieces (pcs)</option>
+                <option value="units">Units</option>
+                <option value="liters">Liters</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="closeModal('edit-material-modal')">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+        </div>
+      </form>
+    </div>
   </div>
 
   <div id="toast-container"></div>

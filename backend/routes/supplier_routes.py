@@ -4,7 +4,8 @@ from services.supplier_service import (
     get_supplier_by_id,
     create_supplier,
     update_supplier,
-    delete_supplier
+    delete_supplier,
+    verify_supplier_documents
 )
 from middleware.auth_middleware import token_required, role_required
 from utils.response import success_response, error_response
@@ -59,3 +60,17 @@ def handle_delete(supplier_id):
     if err:
         return error_response(code="DELETE_SUPPLIER_FAILED", message=err, status_code=status_code)
     return success_response(data={"supplier_id": supplier_id}, message="Supplier deleted successfully")
+
+
+@supplier_bp.route('/<supplier_id>/verify-documents', methods=['GET', 'POST'])
+@token_required
+@role_required('Admin', 'Inspector', 'Auditor')
+def handle_verify_supplier_documents(supplier_id):
+    """
+    GET/POST /api/suppliers/<supplier_id>/verify-documents
+    Verifies actual compliance records and material links for the vendor.
+    """
+    result, err, status_code = verify_supplier_documents(supplier_id, g.current_user)
+    if err:
+        return error_response(code="VERIFY_SUPPLIER_FAILED", message=err, status_code=status_code)
+    return success_response(data=result, message=result.get("message", "Supplier documentation verified successfully."))

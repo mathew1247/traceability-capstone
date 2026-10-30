@@ -11,7 +11,7 @@ def create_alert(severity, source, message, resource_id=None):
     """
     try:
         alerts_ref = db.collection(Config.COLLECTION_ALERTS)
-        
+
         # Check for existing active identical alert to avoid spam
         existing_query = alerts_ref.where('resource_id', '==', resource_id or '').where('status', '==', 'Active')
         existing = existing_query.get()
@@ -123,3 +123,50 @@ def update_alert_action(alert_id, action, user_id, username, user_email=None, ip
     )
 
     return updated_data, None
+
+
+def clear_all_notices(current_user=None, ip_address=None):
+    """
+    Dismisses all active Notice-severity alerts, preserving Critical and Warning alerts
+    and maintaining complete immutable audit history.
+    """
+    try:
+        alerts_ref = db.collection(Config.COLLECTION_ALERTS)
+        docs = alerts_ref.where('severity', '==', 'Notice').where('status', '==', 'Active').get()
+        now_iso = datetime.now(timezone.utc).isoformat()
+        cleared_count = 0
+        u_id = current_user.get('user_id', 'SYSTEM') if current_user else 'SYSTEM'
+        u_name = current_user.get('username', 'System') if current_user else 'System'
+
+        for doc in docs:
+            doc_id = getattr(doc, 'id', None)
+            if not doc_id and hasattr(doc, 'to_dict'):
+                d = doc.to_dict() or {}
+                doc_id = d.get('alert_id')
+            if doc_id:
+                alerts_ref.document(doc_id).update({
+                    "status": "Dismissed",
+                    "resolved_at": now_iso,
+                    "dismissed_by": u_id,
+                    "dismissed_at": now_iso
+                })
+                cleared_count += 1
+
+        log_activity(
+            user_id=u_id,
+            username=u_name,
+            action="UPDATE",
+            resource="Alerts",
+            resource_id="BULK-NOTICES",
+            details=f"Cleared {cleared_count} Notice alerts (status set to Dismissed)",
+            ip_address=ip_address
+        )
+
+        return {
+            "cleared_count": cleared_count,
+            "message": f"Successfully cleared {cleared_count} active Notice alert(s)."
+        }, None, 200
+
+    except Exception as e:
+        app_logger.error(f"Error clearing notices: {str(e)}")
+        return None, f"Failed to clear notices: {str(e)}", 500

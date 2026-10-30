@@ -93,7 +93,9 @@ def execute_network_scan(target, current_user, ip_address=None):
         "created_by": current_user.get('user_id'),
         "scan_date": now_iso,
         "hosts": scan_result.get('hosts', []),
-        "scanner_engine": scan_result.get('scanner_engine', 'Nmap Engine'),
+        "scanner_engine": scan_result.get('scanner_engine', 'Nmap Native Engine'),
+        "nmap_available": scan_result.get('nmap_available', False),
+        "limitations": scan_result.get('limitations'),
         "new_hosts_detected": newly_observed_hosts
     }
 
@@ -131,9 +133,10 @@ def get_security_monitor_summary():
     latest_scan = scans[0] if scans else None
 
     devices_count = latest_scan.get('devices_found', 0) if latest_scan else 0
-    open_ports = latest_scan.get('open_ports', []) if latest_scan else []
+    all_open_ports = latest_scan.get('open_ports', []) if latest_scan else []
 
-    critical_ports_count = sum(1 for p in open_ports if p.get('is_critical'))
+    critical_ports_list = [p for p in all_open_ports if p.get('is_critical')]
+    critical_ports_count = len(critical_ports_list)
 
     # Active security alerts count
     active_alerts = db.collection(Config.COLLECTION_ALERTS)\
@@ -142,13 +145,41 @@ def get_security_monitor_summary():
                       .get()
     active_alert_count = len(active_alerts)
 
+    # Resolve suspicious / newly detected hosts from latest scan
+    new_host_ips = set(latest_scan.get('new_hosts_detected', [])) if latest_scan else set()
+    suspicious_hosts_list = []
+
+    if latest_scan:
+        for h in latest_scan.get('hosts', []):
+            ip = h.get('ip')
+            if ip in new_host_ips or h.get('status') == 'unverified':
+                suspicious_hosts_list.append({
+                    "ip": ip,
+                    "risk": "Unverified Host",
+                    "hostname": h.get('hostname', ''),
+                    "mac": h.get('mac', 'N/A'),
+                    "vendor": h.get('vendor', 'Unregistered Host')
+                })
+        found_ips = {h.get('ip') for h in suspicious_hosts_list}
+        for ip in new_host_ips:
+            if ip not in found_ips:
+                suspicious_hosts_list.append({
+                    "ip": ip,
+                    "risk": "Unverified Host",
+                    "hostname": "",
+                    "mac": "N/A",
+                    "vendor": "Unregistered Host"
+                })
+
+    suspicious_count = len(suspicious_hosts_list)
+
     threat_level = "Low"
     network_status = "Secure"
 
-    if active_alert_count >= 3 or critical_ports_count >= 3:
+    if active_alert_count >= 3 or critical_ports_count >= 3 or suspicious_count >= 3:
         threat_level = "High"
         network_status = "Critical"
-    elif active_alert_count >= 1 or critical_ports_count >= 1:
+    elif active_alert_count >= 1 or critical_ports_count >= 1 or suspicious_count >= 1:
         threat_level = "Medium"
         network_status = "Warning"
 
@@ -159,14 +190,18 @@ def get_security_monitor_summary():
         recent_events.append({
             "event": d.get('message'),
             "severity": d.get('severity'),
-            "timestamp": d.get('created_at')
+            "timestamp": d.get('created_at'),
+            "status": d.get('status', 'Active'),
+            "ip": d.get('resource_id', 'Subnet')
         })
 
     return {
         "network_status": network_status,
         "active_devices": devices_count,
-        "suspicious_hosts": len(latest_scan.get('new_hosts_detected', [])) if latest_scan else 0,
-        "open_critical_ports": critical_ports_count,
+        "suspicious_hosts": suspicious_hosts_list,
+        "suspicious_hosts_count": suspicious_count,
+        "open_critical_ports": critical_ports_list,
+        "open_critical_ports_count": critical_ports_count,
         "threat_level": threat_level,
         "recent_events": recent_events,
         "last_scan_date": latest_scan.get('scan_date') if latest_scan else None

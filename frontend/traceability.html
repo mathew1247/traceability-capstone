@@ -46,17 +46,17 @@
 
           <div style="display: flex; align-items: center; gap: 12px;">
             <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Batch Profile:</span>
-            <select class="form-control" style="width: auto; padding: 6px 30px 6px 14px;" onchange="handleBatchSelectionChange(this.value)">
+            <select id="trace-batch-select" class="form-control" style="width: auto; padding: 6px 30px 6px 14px;" onchange="handleBatchSelectionChange(this.value)">
               <option value="BATCH-101">BATCH-101 (Flow Valve)</option>
               <option value="BATCH-102">BATCH-102 (Hydraulic Unit)</option>
             </select>
           </div>
 
           <div class="trace-direction-toggle">
-            <button class="direction-btn active" onclick="this.classList.add('active'); this.nextElementSibling.classList.remove('active'); showToast('Mode: Forward Trace (Source to Distribution)', 'info')">
+            <button id="btn-forward-trace" class="direction-btn active" onclick="window.setTraceDirection('forward')">
               Forward Trace &rarr;
             </button>
-            <button class="direction-btn" onclick="this.classList.add('active'); this.previousElementSibling.classList.remove('active'); showToast('Mode: Backward Trace (Field to Supplier)', 'info')">
+            <button id="btn-backward-trace" class="direction-btn" onclick="window.setTraceDirection('backward')">
               &larr; Backward Trace
             </button>
           </div>

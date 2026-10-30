@@ -14,6 +14,10 @@ def get_material_by_id(material_id):
     doc = db.collection(Config.COLLECTION_RAW_MATERIALS).document(material_id).get()
     if doc.exists:
         return serialize_value(doc.to_dict())
+    matched = db.collection(Config.COLLECTION_RAW_MATERIALS).where('material_id', '==', material_id).get()
+    for d in matched:
+        if d.exists or d.to_dict():
+            return serialize_value(d.to_dict())
     return None
 
 
@@ -27,13 +31,17 @@ def create_material(data, current_user):
     # Requirement 11: Verify supplier_id exists
     supplier_doc = db.collection(Config.COLLECTION_SUPPLIERS).document(supplier_id).get()
     if not supplier_doc.exists:
-        return None, f"Supplier with ID '{supplier_id}' does not exist.", 404
+        matched = db.collection(Config.COLLECTION_SUPPLIERS).where('supplier_id', '==', supplier_id).get()
+        if not matched:
+            return None, f"Supplier with ID '{supplier_id}' does not exist.", 404
 
-    existing_count = len(get_all_materials())
-    material_id = f"RM{301 + existing_count}"
+    from services.id_service import allocate_sequential_id
+    material_id = allocate_sequential_id('materials')
 
     try:
         qty = float(data['quantity'])
+        if qty < 0:
+            return None, "Quantity cannot be negative.", 400
     except (ValueError, TypeError):
         return None, "Quantity must be a valid number.", 400
 
@@ -65,30 +73,52 @@ def update_material(material_id, data, current_user):
     doc_ref = db.collection(Config.COLLECTION_RAW_MATERIALS).document(material_id)
     doc = doc_ref.get()
     if not doc.exists:
+        matched = db.collection(Config.COLLECTION_RAW_MATERIALS).where('material_id', '==', material_id).get()
+        for d in matched:
+            doc_ref = d.reference
+            doc = d
+            break
+    if not doc.exists:
         return None, "Raw material not found", 404
 
     updates = {}
-    if 'material_name' in data and data['material_name']:
-        updates['material_name'] = data['material_name'].strip()
-    if 'supplier_id' in data and data['supplier_id']:
-        supplier_id = data['supplier_id'].strip()
+    if 'material_name' in data:
+        name_val = str(data['material_name']).strip() if data['material_name'] is not None else ""
+        if not name_val:
+            return None, "Material name cannot be empty", 400
+        updates['material_name'] = name_val
+
+    if 'supplier_id' in data:
+        supplier_id = str(data['supplier_id']).strip()
+        if not supplier_id:
+            return None, "Supplier reference cannot be empty", 400
         sup_doc = db.collection(Config.COLLECTION_SUPPLIERS).document(supplier_id).get()
-        if not sup_doc.exists:
-            return None, f"Supplier '{supplier_id}' does not exist", 404
+        if not sup_doc or not sup_doc.exists:
+            matched_sup = db.collection(Config.COLLECTION_SUPPLIERS).where('supplier_id', '==', supplier_id).get()
+            if not matched_sup:
+                return None, f"Supplier '{supplier_id}' does not exist", 404
         updates['supplier_id'] = supplier_id
+
     if 'quantity' in data:
         try:
-            updates['quantity'] = float(data['quantity'])
+            qty = float(data['quantity'])
+            if qty < 0:
+                return None, "Quantity cannot be negative", 400
+            updates['quantity'] = qty
         except (ValueError, TypeError):
             return None, "Quantity must be a valid number", 400
-    if 'unit' in data and data['unit']:
-        updates['unit'] = data['unit'].strip()
+
+    if 'unit' in data:
+        unit_val = str(data['unit']).strip() if data['unit'] is not None else ""
+        if not unit_val:
+            return None, "Unit cannot be empty", 400
+        updates['unit'] = unit_val
 
     if not updates:
         return None, "No valid update fields provided", 400
 
     doc_ref.update(updates)
-    updated = doc_ref.get().to_dict()
+    updated = serialize_value(doc_ref.get().to_dict())
 
     log_activity(
         user_id=current_user.get('user_id'),
@@ -96,7 +126,7 @@ def update_material(material_id, data, current_user):
         action='UPDATE',
         resource='RawMaterial',
         resource_id=material_id,
-        details=f"Updated raw material {material_id}"
+        details=f"Updated raw material {material_id} fields: {list(updates.keys())}"
     )
 
     return updated, None, 200

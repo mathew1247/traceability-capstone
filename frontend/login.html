@@ -51,7 +51,7 @@
         <h1 class="auth-form-title">Sign in</h1>
         <div class="auth-title-bar"></div>
 
-        <form id="login-form">
+        <form id="login-form" onsubmit="return false;">
           <!-- Email Field -->
           <div class="auth-form-group">
             <label class="auth-input-label" for="login-email">Email</label>
@@ -86,7 +86,7 @@
               <input type="checkbox" checked>
               <span>Remember Me</span>
             </label>
-            <a href="#" class="auth-link-coral" onclick="showToast('Password reset link sent to your registered email.', 'info'); return false;">Forgot Password?</a>
+            <a href="#" class="auth-link-coral" onclick="handleForgotPassword(event); return false;">Forgot Password?</a>
           </div>
 
           <!-- Submit Button -->

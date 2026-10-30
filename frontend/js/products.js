@@ -6,6 +6,7 @@
 document.addEventListener("DOMContentLoaded", async () => {
   await loadProductsTable();
   initProductForm();
+  initEditProductForm();
 });
 
 async function loadProductsTable() {
@@ -42,6 +43,12 @@ async function loadProductsTable() {
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              </svg>
+            </button>
+            <button class="btn-table-action" title="Edit Product" onclick="handleEditProduct('${p.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
             </button>
             <button class="btn-table-action danger" title="Delete Product" onclick="handleDeleteProduct('${p.id}')">
@@ -89,6 +96,53 @@ function initProductForm() {
   });
 }
 
+async function handleEditProduct(id) {
+  try {
+    const products = await getProducts();
+    const prod = products.find(p => p.id === id);
+    if (!prod) {
+      showToast("Product not found.", "danger");
+      return;
+    }
+    document.getElementById("edit-prod-id").value = prod.id;
+    document.getElementById("edit-prod-name").value = prod.name || prod.product_name || "";
+    document.getElementById("edit-prod-code").value = prod.code || prod.product_code || "";
+    document.getElementById("edit-prod-status").value = prod.status || "In Production";
+    document.getElementById("edit-prod-compliance").value = prod.compliance || prod.description || "";
+    openModal("edit-product-modal");
+  } catch (err) {
+    showToast(`Failed to load product details: ${err.message}`, "danger");
+  }
+}
+
+function initEditProductForm() {
+  const form = document.getElementById("edit-product-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-prod-id").value;
+    const name = document.getElementById("edit-prod-name").value.trim();
+    const code = document.getElementById("edit-prod-code").value.trim();
+    const status = document.getElementById("edit-prod-status").value;
+    const compliance = document.getElementById("edit-prod-compliance").value.trim();
+
+    if (!name || !code) {
+      showToast("Please provide product name and code.", "danger");
+      return;
+    }
+
+    try {
+      await updateProduct(id, { name, code, status, compliance });
+      closeModal("edit-product-modal");
+      showToast(`Product ${id} updated successfully!`, "success");
+      await loadProductsTable();
+    } catch (err) {
+      showToast(`Failed to update product: ${err.message}`, "danger");
+    }
+  });
+}
+
 function filterProducts() {
   const query = document.getElementById("product-search").value.toLowerCase();
   const statusFilter = document.getElementById("product-status-filter").value;
@@ -104,7 +158,7 @@ function filterProducts() {
 
 function viewProductTrace(id) {
   showToast(`Loading lineage trace for product ${id}...`, "info");
-  window.location.href = `traceability.html`;
+  window.location.href = `traceability.html?id=${encodeURIComponent(id)}`;
 }
 
 async function handleDeleteProduct(id) {

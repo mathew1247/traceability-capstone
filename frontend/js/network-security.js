@@ -11,14 +11,32 @@ async function loadSecurityOverview() {
   try {
     const secData = await getNetworkSecurity();
 
+    // Safely extract counts and lists
+    const suspiciousHostsList = Array.isArray(secData.suspicious_hosts)
+      ? secData.suspicious_hosts
+      : [];
+    const suspiciousCount = secData.suspicious_hosts_count !== undefined
+      ? secData.suspicious_hosts_count
+      : (Array.isArray(secData.suspicious_hosts) ? secData.suspicious_hosts.length : (typeof secData.suspicious_hosts === 'number' ? secData.suspicious_hosts : 0));
+
+    const criticalPortsList = Array.isArray(secData.open_critical_ports)
+      ? secData.open_critical_ports
+      : [];
+    const criticalPortsCount = secData.open_critical_ports_count !== undefined
+      ? secData.open_critical_ports_count
+      : (Array.isArray(secData.open_critical_ports) ? secData.open_critical_ports.length : (typeof secData.open_critical_ports === 'number' ? secData.open_critical_ports : 0));
+
+    const activeDevices = secData.active_devices ?? 0;
+    const networkStatus = secData.network_status || "Secure";
+
     // Update KPI values
     const kpiCards = document.querySelectorAll(".kpi-grid-4 .kpi-card-value");
     if (kpiCards && kpiCards.length >= 4) {
-      kpiCards[0].textContent = secData.network_status || "Secure";
-      kpiCards[0].style.color = (secData.network_status === "Critical") ? "#ef4444" : "#10b981";
-      kpiCards[1].textContent = secData.active_devices ?? 14;
-      kpiCards[2].textContent = (secData.suspicious_hosts && secData.suspicious_hosts.length) ?? 0;
-      kpiCards[3].textContent = (secData.open_critical_ports && secData.open_critical_ports.length) ?? 0;
+      kpiCards[0].textContent = networkStatus;
+      kpiCards[0].style.color = (networkStatus === "Critical") ? "#ef4444" : (networkStatus === "Warning" ? "#f59e0b" : "#10b981");
+      kpiCards[1].textContent = activeDevices;
+      kpiCards[2].textContent = suspiciousCount;
+      kpiCards[3].textContent = criticalPortsCount;
     }
 
     // Update Threat Meter Gauge
@@ -36,22 +54,26 @@ async function loadSecurityOverview() {
       threatTitle.textContent = `OT Industrial Threat Condition: ${level}`;
     }
     if (threatDesc) {
-      threatDesc.textContent = `${secData.active_devices ?? 14} industrial devices scanned across subnet. ${(secData.open_critical_ports && secData.open_critical_ports.length) ?? 0} critical OT ports monitored.`;
+      threatDesc.textContent = `${activeDevices} industrial devices scanned across subnet. ${criticalPortsCount} critical OT ports monitored.`;
     }
 
     // Update Active Industrial Ports & Protocols Grid
     const portsGrid = document.querySelector(".ports-badge-grid");
-    if (portsGrid && secData.open_critical_ports && secData.open_critical_ports.length > 0) {
-      let portsHtml = "";
-      secData.open_critical_ports.forEach(p => {
-        const isCrit = p.is_critical || p.port === 502 || p.service === 'modbus';
-        const cls = isCrit ? 'port-critical' : 'port-open';
-        portsHtml += `<span class="port-pill ${cls}">Port ${p.port} &bull; ${(p.service || 'TCP').toUpperCase()} (${isCrit ? 'Critical' : 'Open'})</span>`;
-      });
-      portsGrid.innerHTML = portsHtml;
+    if (portsGrid) {
+      if (criticalPortsList.length > 0) {
+        let portsHtml = "";
+        criticalPortsList.forEach(p => {
+          const isCrit = p.is_critical || p.port === 502 || p.service === 'modbus';
+          const cls = isCrit ? 'port-critical' : 'port-open';
+          portsHtml += `<span class="port-pill ${cls}">Port ${p.port} &bull; ${(p.service || 'TCP').toUpperCase()} (${isCrit ? 'Critical' : 'Open'})</span>`;
+        });
+        portsGrid.innerHTML = portsHtml;
+      } else {
+        portsGrid.innerHTML = `<span style="font-size: 0.85rem; color: var(--text-secondary);">No open critical industrial ports detected in latest scan.</span>`;
+      }
     }
 
-    renderSuspiciousHosts(secData.suspicious_hosts || []);
+    renderSuspiciousHosts(suspiciousHostsList);
     renderSecurityEvents(secData.recent_events || []);
   } catch (err) {
     console.error("Failed to load network security metrics:", err);
@@ -62,21 +84,23 @@ function renderSecurityEvents(events) {
   const tbody = document.getElementById("sec-events-tbody");
   if (!tbody) return;
 
-  if (!events || events.length === 0) {
+  const eventsList = Array.isArray(events) ? events : [];
+
+  if (eventsList.length === 0) {
     tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-secondary);">No security incidents recorded. Subnet operating within expected baseline.</td></tr>`;
     return;
   }
 
   let html = "";
-  events.forEach(ev => {
-    const sev = ev.type || ev.severity || "NOTICE";
-    const badge = sev === "CRITICAL" ? "badge-danger" : sev === "WARNING" ? "badge-warning" : "badge-info";
+  eventsList.forEach(ev => {
+    const sev = (ev.severity || ev.type || "NOTICE").toUpperCase();
+    const badge = (sev === "CRITICAL" || sev === "HIGH") ? "badge-danger" : (sev === "WARNING" || sev === "MEDIUM") ? "badge-warning" : "badge-info";
     html += `
       <tr>
-        <td style="font-family: var(--font-mono); font-size: 0.82rem;">${ev.time || ev.timestamp || 'Recent'}</td>
+        <td style="font-family: var(--font-mono); font-size: 0.82rem;">${ev.timestamp || ev.time || 'Recent'}</td>
         <td><span class="badge ${badge}"><span class="badge-dot"></span>${sev}</span></td>
-        <td class="td-code">${ev.ip || '192.168.1.1'}</td>
-        <td>${ev.event || ev.message}</td>
+        <td class="td-code">${ev.ip || 'Subnet'}</td>
+        <td>${ev.event || ev.message || 'Security telemetry event'}</td>
         <td><strong>${ev.status || 'Audited'}</strong></td>
       </tr>
     `;
@@ -88,7 +112,9 @@ function renderSuspiciousHosts(hosts) {
   const container = document.getElementById("suspicious-hosts-container");
   if (!container) return;
 
-  if (!hosts || hosts.length === 0) {
+  const hostsList = Array.isArray(hosts) ? hosts : [];
+
+  if (hostsList.length === 0) {
     container.innerHTML = `
       <div style="padding: 16px 20px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.2); border-radius: var(--radius-md); color: #047857; font-size: 0.9rem;">
         &#10003; Zero unrecognized or rogue hosts active on the monitored industrial subnets.
@@ -98,7 +124,7 @@ function renderSuspiciousHosts(hosts) {
   }
 
   let html = "";
-  hosts.forEach(h => {
+  hostsList.forEach(h => {
     html += `
       <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; background: #fdf6f6; border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-md); margin-bottom: 10px;">
         <div>
@@ -106,9 +132,9 @@ function renderSuspiciousHosts(hosts) {
             <span class="td-code" style="color: #991b1b; font-weight: 700;">${h.ip}</span>
             <span class="badge badge-danger">${h.risk || 'Unverified'}</span>
           </div>
-          <div style="font-size: 0.82rem; color: #7f1d1d; margin-top: 4px;">MAC: ${h.mac || 'N/A'} &bull; ${h.vendor || 'Unregistered Host'}</div>
+          <div style="font-size: 0.82rem; color: #7f1d1d; margin-top: 4px;">MAC: ${h.mac || 'N/A'} &bull; ${h.vendor || h.hostname || 'Unregistered Host'}</div>
         </div>
-        <button class="btn btn-danger btn-sm" onclick="isolateHost('${h.ip}', this)">${h.action || 'Isolate'}</button>
+        <button class="btn btn-secondary btn-sm" disabled style="opacity: 0.65; cursor: not-allowed;" title="Host isolation is disabled: Requires network firewall/SDN enforcement infrastructure not configured in this deployment" onclick="isolateHost('${h.ip}', this)">${h.action ? h.action + ' (Disabled)' : 'Isolate (Disabled)'}</button>
       </div>
     `;
   });
@@ -116,24 +142,10 @@ function renderSuspiciousHosts(hosts) {
 }
 
 function isolateHost(ip, btnEl) {
-  if (btnEl) {
-    btnEl.textContent = "Quarantined";
-    btnEl.classList.remove("btn-danger");
-    btnEl.classList.add("btn-secondary");
-    btnEl.disabled = true;
-
-    const parent = btnEl.closest("div[style*='display: flex']");
-    if (parent) {
-      const badge = parent.querySelector(".badge-danger");
-      if (badge) {
-        badge.textContent = "Isolated";
-        badge.classList.remove("badge-danger");
-        badge.classList.add("badge-neutral");
-      }
-    }
-  }
-
-  showToast(`Host ${ip} has been isolated by Sentinel firewall rule!`, "success");
+  // Host isolation is intentionally disabled in this phase.
+  // Secure implementation requires dedicated firewall/SDN (iptables/802.1X) infrastructure
+  // which is not configured in this environment. We do not alter firewall rules or simulate quarantine.
+  showToast(`Host isolation unavailable: Dedicated firewall/SDN enforcement is not configured. Host ${ip} was not modified.`, "warning");
 }
 
 window.isolateHost = isolateHost;

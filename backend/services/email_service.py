@@ -17,7 +17,7 @@ class EmailService:
         Connects via Gmail SMTP (or configured SMTP host).
         """
         env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.env'))
-        load_dotenv(dotenv_path=env_path, override=True)
+        load_dotenv(dotenv_path=env_path, override=False)
 
         smtp_host = os.environ.get("SMTP_HOST", "smtp.gmail.com")
         smtp_port = int(os.environ.get("SMTP_PORT", 587))

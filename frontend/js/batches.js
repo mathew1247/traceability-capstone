@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   await populateBatchDropdowns();
   await loadBatchesTable();
   initBatchForm();
+  initEditBatchForm();
 
   const params = new URLSearchParams(window.location.search);
   if (params.get("action") === "new") {
@@ -17,6 +18,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 async function populateBatchDropdowns() {
   const prodSelect = document.getElementById("batch-product");
   const matSelect = document.getElementById("batch-material");
+  const editProdSelect = document.getElementById("edit-batch-product");
+  const editMatSelect = document.getElementById("edit-batch-material");
 
   try {
     const [products, materials] = await Promise.all([
@@ -24,25 +27,21 @@ async function populateBatchDropdowns() {
       getMaterials().catch(() => [])
     ]);
 
-    if (prodSelect && products && products.length > 0) {
-      prodSelect.innerHTML = "";
-      products.forEach(p => {
+    const fillSelect = (selectEl, items) => {
+      if (!selectEl || !items || items.length === 0) return;
+      selectEl.innerHTML = "";
+      items.forEach(item => {
         const opt = document.createElement("option");
-        opt.value = p.id;
-        opt.textContent = `${p.name} (${p.id})`;
-        prodSelect.appendChild(opt);
+        opt.value = item.id;
+        opt.textContent = `${item.name} (${item.id})`;
+        selectEl.appendChild(opt);
       });
-    }
+    };
 
-    if (matSelect && materials && materials.length > 0) {
-      matSelect.innerHTML = "";
-      materials.forEach(m => {
-        const opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = `${m.name} (${m.id})`;
-        matSelect.appendChild(opt);
-      });
-    }
+    fillSelect(prodSelect, products);
+    fillSelect(editProdSelect, products);
+    fillSelect(matSelect, materials);
+    fillSelect(editMatSelect, materials);
   } catch (err) {
     console.warn("Could not populate batch dropdowns:", err);
   }
@@ -90,6 +89,12 @@ async function loadBatchesTable() {
                 <circle cx="18" cy="6" r="3"></circle>
                 <path d="M18 9v1a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V9"></path>
                 <path d="M12 12v3"></path>
+              </svg>
+            </button>
+            <button class="btn-table-action" title="Edit Batch" onclick="handleEditBatch('${b.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
               </svg>
             </button>
             <button class="btn-table-action danger" title="Delete Batch" onclick="handleDeleteBatch('${b.id}')">
@@ -140,6 +145,57 @@ function initBatchForm() {
   });
 }
 
+async function handleEditBatch(id) {
+  try {
+    const batches = await getBatches();
+    const batch = batches.find(b => b.id === id);
+    if (!batch) {
+      showToast("Batch not found.", "danger");
+      return;
+    }
+    document.getElementById("edit-batch-id").value = batch.id;
+    if (batch.product_id) {
+      document.getElementById("edit-batch-product").value = batch.product_id;
+    }
+    if (batch.material_id) {
+      document.getElementById("edit-batch-material").value = batch.material_id;
+    }
+    document.getElementById("edit-batch-qty").value = batch.quantity || 1;
+    document.getElementById("edit-batch-status").value = batch.status || "Running";
+    openModal("edit-batch-modal");
+  } catch (err) {
+    showToast(`Failed to load batch details: ${err.message}`, "danger");
+  }
+}
+
+function initEditBatchForm() {
+  const form = document.getElementById("edit-batch-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-batch-id").value;
+    const product = document.getElementById("edit-batch-product").value;
+    const material = document.getElementById("edit-batch-material").value;
+    const quantity = parseInt(document.getElementById("edit-batch-qty").value, 10);
+    const status = document.getElementById("edit-batch-status").value;
+
+    if (!quantity || quantity <= 0) {
+      showToast("Quantity must be a positive integer.", "danger");
+      return;
+    }
+
+    try {
+      await updateBatch(id, { product, material, quantity, status });
+      closeModal("edit-batch-modal");
+      showToast(`Batch ${id} updated successfully!`, "success");
+      await loadBatchesTable();
+    } catch (err) {
+      showToast(`Failed to update batch: ${err.message}`, "danger");
+    }
+  });
+}
+
 function filterBatches() {
   const query = document.getElementById("batch-search").value.toLowerCase();
   const statusFilter = document.getElementById("batch-status-filter").value;
@@ -155,7 +211,7 @@ function filterBatches() {
 
 function viewBatchGenealogy(id) {
   showToast(`Tracing batch genealogy for ${id}...`, "info");
-  window.location.href = `traceability.html`;
+  window.location.href = `traceability.html?id=${encodeURIComponent(id)}`;
 }
 
 async function handleDeleteBatch(id) {

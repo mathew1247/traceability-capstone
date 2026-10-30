@@ -15,11 +15,59 @@ CRITICAL_PORTS = {
     3389: "ms-wbt-server"    # RDP
 }
 
+COMMON_PROBE_PORTS = [
+    (21, "ftp"),
+    (22, "ssh"),
+    (23, "telnet"),
+    (53, "dns"),
+    (80, "http"),
+    (102, "s7comm"),
+    (443, "https"),
+    (445, "microsoft-ds"),
+    (502, "modbus-tcp"),
+    (1883, "mqtt"),
+    (2222, "ethernet-ip"),
+    (3000, "frontend-ui"),
+    (3389, "rdp"),
+    (4840, "opc-ua"),
+    (5000, "flask-api"),
+    (8080, "http-alt")
+]
+
+def is_nmap_installed():
+    return shutil.which('nmap') is not None
+
+def probe_host_ports(ip_str, timeout=0.15):
+    """
+    Performs real TCP socket connection tests against known standard and critical ports.
+    Never returns fabricated or synthetic data.
+    """
+    open_ports = []
+    for test_port, svc_name in COMMON_PROBE_PORTS:
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(timeout)
+        try:
+            res = s.connect_ex((ip_str, test_port))
+            if res == 0:
+                open_ports.append({
+                    "port": test_port,
+                    "protocol": "tcp",
+                    "service": svc_name,
+                    "state": "open",
+                    "is_critical": test_port in CRITICAL_PORTS
+                })
+        except Exception:
+            pass
+        finally:
+            s.close()
+    return open_ports
+
 def scan_network(target):
     """
     Executes network scan against the validated target.
     Uses nmap.PortScanner if Nmap binary is installed.
-    Provides reliable, non-crashing socket ping fallback when binary is absent.
+    Provides truthful socket TCP fallback when binary is absent.
+    Never returns fabricated hosts.
     Returns (result_dict, error_message)
     """
     clean_target = target.strip()
@@ -61,82 +109,57 @@ def scan_network(target):
                 "target": clean_target,
                 "devices_found": len(hosts_list),
                 "hosts": hosts_list,
-                "scanner_engine": "Nmap Native Engine"
+                "scanner_engine": "Nmap Native Engine",
+                "nmap_available": True,
+                "limitations": None
             }, None
 
         except Exception as e:
-            app_logger.warning(f"Nmap execution encountered error: {str(e)}. Utilizing fallback scanner.")
+            app_logger.warning(f"Nmap execution encountered error: {str(e)}. Utilizing fallback socket scanner.")
 
-    # Graceful Fallback / Simulation Scanner
-    # Runs when Nmap is not installed or permissions prevent raw socket execution
-    app_logger.info(f"Running fallback network discovery for target: {clean_target}")
+    # Truthful Socket TCP Fallback
+    # Runs when Nmap is not installed or unavailable
+    app_logger.info(f"Running fallback TCP socket discovery for target: {clean_target}")
     hosts_list = []
 
     if clean_target in ('127.0.0.1', 'localhost', '127.0.0.1/32'):
-        open_local_ports = []
-        for test_port, svc_name in [(80, 'http'), (443, 'https'), (5000, 'flask-api'), (3000, 'frontend-ui'), (22, 'ssh')]:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.settimeout(0.1)
-            res = s.connect_ex(('127.0.0.1', test_port))
-            if res == 0:
-                open_local_ports.append({
-                    "port": test_port,
-                    "protocol": "tcp",
-                    "service": svc_name,
-                    "state": "open",
-                    "is_critical": test_port in CRITICAL_PORTS
+        open_ports = probe_host_ports('127.0.0.1', timeout=0.1)
+        if open_ports:
+            hosts_list.append({
+                "ip": "127.0.0.1",
+                "status": "up",
+                "hostname": "localhost",
+                "ports": open_ports
+            })
+    elif '/' in clean_target:
+        # For CIDR subnets, probe standard gateway addresses (.1, .254)
+        subnet_prefix = clean_target.rsplit('.', 1)[0]
+        candidate_ips = [f"{subnet_prefix}.1", f"{subnet_prefix}.254"]
+        for cand_ip in candidate_ips:
+            open_ports = probe_host_ports(cand_ip, timeout=0.08)
+            if open_ports:
+                hosts_list.append({
+                    "ip": cand_ip,
+                    "status": "up",
+                    "hostname": "",
+                    "ports": open_ports
                 })
-            s.close()
-
-        hosts_list.append({
-            "ip": "127.0.0.1",
-            "status": "up",
-            "hostname": "localhost",
-            "ports": open_local_ports
-        })
     else:
-        # Generate structured synthetic test discovery for authorized lab subnets (e.g. 192.168.1.0/24)
-        subnet_prefix = clean_target.rsplit('.', 1)[0] if '.' in clean_target else "192.168.1"
-        hosts_list = [
-            {
-                "ip": f"{subnet_prefix}.1",
+        # Single target IP
+        open_ports = probe_host_ports(clean_target, timeout=0.15)
+        if open_ports:
+            hosts_list.append({
+                "ip": clean_target,
                 "status": "up",
-                "hostname": "gateway-router.local",
-                "ports": [
-                    {"port": 53, "protocol": "tcp", "service": "domain", "state": "open", "is_critical": False},
-                    {"port": 80, "protocol": "tcp", "service": "http", "state": "open", "is_critical": False}
-                ]
-            },
-            {
-                "ip": f"{subnet_prefix}.10",
-                "status": "up",
-                "hostname": "scada-plc-01.ot.local",
-                "ports": [
-                    {"port": 502, "protocol": "tcp", "service": "modbus-tcp", "state": "open", "is_critical": True},
-                    {"port": 80, "protocol": "tcp", "service": "http-mgmt", "state": "open", "is_critical": False}
-                ]
-            },
-            {
-                "ip": f"{subnet_prefix}.24",
-                "status": "up",
-                "hostname": "inspection-cam-node.ot.local",
-                "ports": [
-                    {"port": 554, "protocol": "tcp", "service": "rtsp", "state": "open", "is_critical": False}
-                ]
-            },
-            {
-                "ip": f"{subnet_prefix}.45",
-                "status": "up",
-                "hostname": "telemetry-gateway.ot.local",
-                "ports": [
-                    {"port": 1883, "protocol": "tcp", "service": "mqtt", "state": "open", "is_critical": False}
-                ]
-            }
-        ]
+                "hostname": "",
+                "ports": open_ports
+            })
 
     return {
         "target": clean_target,
         "devices_found": len(hosts_list),
         "hosts": hosts_list,
-        "scanner_engine": "Sentinel-Trace Internal Engine"
+        "scanner_engine": "Python Socket Fallback (Nmap unavailable)",
+        "nmap_available": False,
+        "limitations": "Nmap binary is not installed on this system. Operating in non-privileged TCP socket fallback mode. ICMP sweeps, OS fingerprinting, and raw SYN packet inspection are unavailable."
     }, None

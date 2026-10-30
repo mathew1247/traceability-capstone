@@ -7,22 +7,28 @@ document.addEventListener("DOMContentLoaded", async () => {
   await populateSuppliersDropdown();
   await loadMaterialsTable();
   initMaterialForm();
+  initEditMaterialForm();
 });
 
 async function populateSuppliersDropdown() {
   const select = document.getElementById("mat-supplier");
-  if (!select) return;
+  const editSelect = document.getElementById("edit-mat-supplier");
 
   try {
     const suppliers = await getSuppliers();
     if (suppliers && suppliers.length > 0) {
-      select.innerHTML = "";
-      suppliers.forEach(s => {
-        const opt = document.createElement("option");
-        opt.value = s.id;
-        opt.textContent = `${s.name} (${s.id})`;
-        select.appendChild(opt);
-      });
+      const fill = (el) => {
+        if (!el) return;
+        el.innerHTML = "";
+        suppliers.forEach(s => {
+          const opt = document.createElement("option");
+          opt.value = s.id;
+          opt.textContent = `${s.name} (${s.id})`;
+          el.appendChild(opt);
+        });
+      };
+      fill(select);
+      fill(editSelect);
     }
   } catch (err) {
     console.warn("Could not populate supplier dropdown:", err);
@@ -62,6 +68,12 @@ async function loadMaterialsTable() {
                 <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
               </svg>
             </button>
+            <button class="btn-table-action" title="Edit Material" onclick="handleEditMaterial('${m.id}')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+              </svg>
+            </button>
             <button class="btn-table-action danger" title="Delete" onclick="handleDeleteMaterial('${m.id}')">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6"></polyline>
@@ -98,6 +110,59 @@ function initMaterialForm() {
       await loadMaterialsTable();
     } catch (err) {
       showToast(`Failed to create raw material: ${err.message}`, "danger");
+    }
+  });
+}
+
+async function handleEditMaterial(id) {
+  try {
+    const materials = await getMaterials();
+    const mat = materials.find(m => m.id === id);
+    if (!mat) {
+      showToast("Material not found.", "danger");
+      return;
+    }
+    document.getElementById("edit-mat-id").value = mat.id;
+    document.getElementById("edit-mat-name").value = mat.name || mat.material_name || "";
+    if (mat.supplier_id) {
+      document.getElementById("edit-mat-supplier").value = mat.supplier_id;
+    }
+    document.getElementById("edit-mat-qty").value = mat.quantity || 0;
+    document.getElementById("edit-mat-unit").value = mat.unit || "kg";
+    openModal("edit-material-modal");
+  } catch (err) {
+    showToast(`Failed to load material details: ${err.message}`, "danger");
+  }
+}
+
+function initEditMaterialForm() {
+  const form = document.getElementById("edit-material-form");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-mat-id").value;
+    const name = document.getElementById("edit-mat-name").value.trim();
+    const supplier = document.getElementById("edit-mat-supplier").value;
+    const quantity = parseFloat(document.getElementById("edit-mat-qty").value);
+    const unit = document.getElementById("edit-mat-unit").value;
+
+    if (!name) {
+      showToast("Material name is required.", "danger");
+      return;
+    }
+    if (isNaN(quantity) || quantity < 0) {
+      showToast("Valid non-negative quantity is required.", "danger");
+      return;
+    }
+
+    try {
+      await updateMaterial(id, { name, supplier, quantity, unit });
+      closeModal("edit-material-modal");
+      showToast(`Material ${id} updated successfully!`, "success");
+      await loadMaterialsTable();
+    } catch (err) {
+      showToast(`Failed to update material: ${err.message}`, "danger");
     }
   });
 }

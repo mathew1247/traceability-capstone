@@ -3,7 +3,8 @@ from services.alert_service import (
     get_alerts,
     get_alert_by_id,
     create_alert,
-    update_alert_action
+    update_alert_action,
+    clear_all_notices
 )
 from middleware.auth_middleware import token_required, role_required
 from utils.response import success_response, error_response
@@ -100,21 +101,34 @@ def handle_update_alert_action(alert_id):
 
 @alert_bp.route('/test-email', methods=['POST'])
 @token_required
+@role_required('Admin')
 def handle_test_email():
     """
     POST /api/alerts/test-email
-    Body: { "recipient": "...", "app_password": "..." }
+    Restricted to Administrator role.
+    SMTP credentials must come exclusively from trusted server configuration.
+    User requests cannot supply or mutate process-level SMTP credentials.
     """
     import os
     from datetime import datetime, timezone
+    from config import Config
     from services.email_service import EmailService
 
     data = request.get_json() or {}
-    recipient = data.get('recipient') or os.environ.get('ALERT_NOTIFICATION_EMAIL') or 'probot12309@gmail.com'
-    app_pwd = data.get('app_password')
-    if app_pwd:
-        os.environ['SMTP_PASSWORD'] = app_pwd.strip()
-    
+    recipient = data.get('recipient') or os.environ.get('ALERT_NOTIFICATION_EMAIL') or Config.ALERT_FROM_EMAIL or 'probot12309@gmail.com'
+
+    # Verify SMTP credentials exist in trusted server configuration
+    server_smtp_host = os.environ.get('SMTP_HOST') or getattr(Config, 'SMTP_HOST', None)
+    server_smtp_user = os.environ.get('SMTP_USER') or getattr(Config, 'SMTP_USER', None)
+    server_smtp_pass = os.environ.get('SMTP_PASSWORD') or getattr(Config, 'SMTP_PASSWORD', None)
+
+    if not (server_smtp_host and server_smtp_user and server_smtp_pass and str(server_smtp_pass).strip()):
+        return error_response(
+            code="SMTP_NOT_CONFIGURED",
+            message="SMTP service is not configured on the server. Please configure SMTP credentials in server environment variables.",
+            status_code=503
+        )
+
     test_alert = {
         "id": "ALT-TEST-VERIFY",
         "severity": "Warning",
@@ -126,5 +140,28 @@ def handle_test_email():
     result, err = EmailService.send_alert_notification(test_alert, recipient, action="Test Triggered")
     if err:
         return error_response(code="EMAIL_SEND_FAILED", message=f"Failed to transmit email: {err}", status_code=400)
-    
-    return success_response(data=result, message=result.get("message", f"Test email dispatched to {recipient}"))
+
+    # Sanitize payload to guarantee credentials are never reflected
+    safe_data = result.copy() if isinstance(result, dict) else {}
+    safe_data.pop("password", None)
+    safe_data.pop("smtp_password", None)
+    safe_data.pop("app_password", None)
+
+    return success_response(data=safe_data, message=safe_data.get("message", f"Test email dispatched to {recipient}"))
+
+
+
+@alert_bp.route('/clear-notices', methods=['POST', 'PUT'])
+@token_required
+@role_required('Admin', 'Inspector', 'Operator')
+def handle_clear_notices():
+    """
+    POST/PUT /api/alerts/clear-notices
+    Dismisses all active Notice alerts, preserving Critical and Warning alerts
+    and maintaining audit logs.
+    """
+    client_ip = request.remote_addr
+    result, err, status_code = clear_all_notices(g.current_user, ip_address=client_ip)
+    if err:
+        return error_response(code="CLEAR_NOTICES_FAILED", message=err, status_code=status_code)
+    return success_response(data=result, message=result.get("message", "Notices cleared successfully."))

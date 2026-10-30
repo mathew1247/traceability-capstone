@@ -69,14 +69,11 @@ def token_required(f):
                     'status': user_data.get('status', 'Active')
                 }
             else:
-                # Fallback to verified JWT payload context
-                g.current_user = {
-                    'user_id': user_id,
-                    'username': payload.get('username', 'Jack Mathew'),
-                    'email': payload.get('email', 'admin@sentineltrace.local'),
-                    'role': payload.get('role', 'Admin'),
-                    'status': 'Active'
-                }
+                return error_response(
+                    code="USER_NOT_FOUND",
+                    message="Authenticated user account does not exist or has been deleted.",
+                    status_code=401
+                )
 
         except jwt.ExpiredSignatureError:
             return error_response(

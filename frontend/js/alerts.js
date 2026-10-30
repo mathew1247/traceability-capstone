@@ -145,3 +145,17 @@ window.configureNotificationEmail = configureNotificationEmail;
 window.sendTestNotificationEmail = sendTestNotificationEmail;
 window.handleAlertAction = handleAlertAction;
 window.setAlertFilter = setAlertFilter;
+
+async function clearAllNotices() {
+  try {
+    showToast("Clearing active notice alerts from Cloud Firestore...", "info");
+    const res = await (window.clearAllNoticesApi ? window.clearAllNoticesApi() : apiRequest("/alerts/clear-notices", { method: "POST" }));
+    const count = res?.cleared_count ?? res?.data?.cleared_count ?? 0;
+    showToast(res?.message || `Cleared ${count} active notice(s).`, "info");
+    await loadAlerts();
+  } catch (err) {
+    showToast(`Failed to clear notices: ${err.message}`, "danger");
+  }
+}
+
+window.clearAllNotices = clearAllNotices;

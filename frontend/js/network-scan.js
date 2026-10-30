@@ -31,45 +31,74 @@ function initScanControls() {
     scanBtn.innerHTML = `<span>Scanning Subnet...</span>`;
     statusBox.style.display = "block";
     resultsCard.style.display = "none";
-    terminal.innerHTML = `[${new Date().toLocaleTimeString()}] Initiating Nmap probe target: ${target}...\n`;
+    terminal.innerHTML = `[${new Date().toLocaleTimeString()}] Initializing probe for target: ${target}...\n`;
 
-    // Simulated terminal progress steps while triggering API
     let progress = 0;
     const interval = setInterval(() => {
       progress += 20;
-      if (progress <= 100) {
+      if (progress <= 90) {
         progressBar.style.width = `${progress}%`;
         progressPercent.textContent = `${progress}%`;
       }
       if (progress === 20) {
-        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] Sending ARP discovery broadcast on local segment...\n`;
+        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] Validating authorization and target subnet boundary...\n`;
       } else if (progress === 60) {
-        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-success">Discovered 14 active OT/IT host interfaces.</span>\n`;
-        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] Probing TCP SYN top ports (22, 80, 443, 502, 4840)...\n`;
-      } else if (progress === 100) {
-        clearInterval(interval);
+        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] Dispatching probe request to backend scanner service...\n`;
       }
     }, 280);
 
     try {
       const scanResult = await startNetworkScan(target);
-      setTimeout(() => {
-        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-success">Nmap scan complete. Duration: ${scanResult.duration}</span>\n`;
-        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-warning">ALERT: Exposed unauthenticated Modbus-TCP detected on 192.168.1.88:502</span>\n`;
-        scanBtn.disabled = false;
-        scanBtn.innerHTML = `
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="5 3 19 12 5 21 5 3"></polygon>
-          </svg>
-          Start Network Scan
-        `;
-        renderScanResults(scanResult);
-        loadScanHistory();
-        showToast("Network scan finished successfully!", "success");
-      }, 1600);
+      clearInterval(interval);
+      progressBar.style.width = "100%";
+      progressPercent.textContent = "100%";
+
+      const engineName = scanResult.scannerEngine || scanResult.scanner_engine || "Scanner Engine";
+      terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-success">Execution complete. Engine: ${engineName}</span>\n`;
+
+      if (scanResult.limitations) {
+        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-warning">Engine Notice: ${scanResult.limitations}</span>\n`;
+      }
+
+      terminal.innerHTML += `[${new Date().toLocaleTimeString()}] Scan Result: Discovered ${scanResult.devicesFound} active host(s).\n`;
+
+      if (scanResult.openPorts && scanResult.openPorts.length > 0) {
+        scanResult.openPorts.forEach(p => {
+          const isCrit = p.risk === "Critical" || p.is_critical;
+          const cls = isCrit ? "log-warning" : "log-success";
+          terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="${cls}">Open Port: ${p.port}/${p.service || 'tcp'} on ${p.host} (${p.state || 'open'})</span>\n`;
+        });
+      } else {
+        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] No open ports discovered on target.\n`;
+      }
+
+      if (scanResult.newHostsDetected && scanResult.newHostsDetected.length > 0) {
+        terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-warning">ALERT: Unverified newly observed host(s): ${scanResult.newHostsDetected.join(", ")}</span>\n`;
+      }
+
+      scanBtn.disabled = false;
+      scanBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Start Network Scan
+      `;
+      renderScanResults(scanResult);
+      await loadScanHistory();
+      showToast(`Network scan completed (${engineName})`, "success");
     } catch (err) {
+      clearInterval(interval);
+      progressBar.style.width = "100%";
+      progressPercent.textContent = "Failed";
+      terminal.innerHTML += `[${new Date().toLocaleTimeString()}] <span class="log-error" style="color: #ef4444;">Scan execution error: ${err.message}</span>\n`;
       showToast("Scan probe error: " + err.message, "danger");
       scanBtn.disabled = false;
+      scanBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        Start Network Scan
+      `;
     }
   });
 }
@@ -81,27 +110,31 @@ function renderScanResults(scan) {
   container.style.display = "block";
   document.getElementById("res-target").textContent = scan.target;
   document.getElementById("res-devices").textContent = `${scan.devicesFound} Hosts Active`;
-  document.getElementById("res-duration").textContent = scan.duration;
+  document.getElementById("res-duration").textContent = scan.duration || "N/A";
 
   const portsTbody = document.getElementById("scan-ports-body");
-  if (portsTbody && scan.openPorts) {
-    let html = "";
-    scan.openPorts.forEach(p => {
-      const isCritical = p.risk === "Critical";
-      const isWarning = p.risk === "Warning";
-      const badge = isCritical ? "badge-danger" : isWarning ? "badge-warning" : "badge-success";
+  if (portsTbody) {
+    if (scan.openPorts && scan.openPorts.length > 0) {
+      let html = "";
+      scan.openPorts.forEach(p => {
+        const isCritical = p.risk === "Critical";
+        const isWarning = p.risk === "Warning";
+        const badge = isCritical ? "badge-danger" : isWarning ? "badge-warning" : "badge-success";
 
-      html += `
-        <tr>
-          <td class="td-code" style="font-weight: 700; color: #e05e5e;">${p.port} / TCP</td>
-          <td><strong>${p.service}</strong></td>
-          <td>${p.host}</td>
-          <td><span class="badge badge-success"><span class="badge-dot"></span>${p.state}</span></td>
-          <td><span class="badge ${badge}">${p.risk}</span></td>
-        </tr>
-      `;
-    });
-    portsTbody.innerHTML = html;
+        html += `
+          <tr>
+            <td class="td-code" style="font-weight: 700; color: #e05e5e;">${p.port} / TCP</td>
+            <td><strong>${p.service || 'unknown'}</strong></td>
+            <td>${p.host || scan.target}</td>
+            <td><span class="badge badge-success"><span class="badge-dot"></span>${p.state || 'open'}</span></td>
+            <td><span class="badge ${badge}">${p.risk || (isCritical ? 'Critical' : 'Normal')}</span></td>
+          </tr>
+        `;
+      });
+      portsTbody.innerHTML = html;
+    } else {
+      portsTbody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 24px; color: var(--text-secondary);">No open ports discovered on target.</td></tr>`;
+    }
   }
 }
 

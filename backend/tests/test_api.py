@@ -3,6 +3,10 @@ import unittest
 import json
 from pathlib import Path
 
+import os
+# Explicitly use local engine for automated unit test execution
+os.environ.setdefault('USE_LOCAL_FIRESTORE', 'true')
+
 # Add backend directory to path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -286,6 +290,137 @@ class SentinelTraceApiTests(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         logs = res.get_json()['data']
         self.assertIsInstance(logs, list)
+
+    # 15. Audit Lineage Chain Validation
+    def test_17_audit_lineage_chain(self):
+        token = self.get_auth_token("admin@sentineltrace.local", "ChangeMe123!")
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Valid product lineage audit
+        res = self.client.post('/api/traceability/PRD101/audit', headers=headers)
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()['data']
+        self.assertEqual(data['query_id'], 'PRD101')
+        self.assertIn('integrity_status', data)
+        self.assertGreater(data['nodes_verified'], 0)
+
+        # Non-existent identifier
+        err_res = self.client.post('/api/traceability/NONEXISTENT999/audit', headers=headers)
+        self.assertEqual(err_res.status_code, 404)
+
+        # Unauthenticated request rejected
+        unauth_res = self.client.post('/api/traceability/PRD101/audit')
+        self.assertEqual(unauth_res.status_code, 401)
+
+    # 16. Verify Supplier Documents Against Records
+    def test_18_verify_supplier_documents(self):
+        admin_token = self.get_auth_token("admin@sentineltrace.local", "ChangeMe123!")
+        admin_headers = {"Authorization": f"Bearer {admin_token}"}
+
+        # Valid supplier with real records
+        res = self.client.get('/api/suppliers/SUP101/verify-documents', headers=admin_headers)
+        self.assertEqual(res.status_code, 200)
+        data = res.get_json()['data']
+        self.assertEqual(data['supplier_id'], 'SUP101')
+        self.assertIn('verified', data)
+        self.assertIn('message', data)
+
+        # Non-existent supplier
+        not_found = self.client.get('/api/suppliers/SUP9999/verify-documents', headers=admin_headers)
+        self.assertEqual(not_found.status_code, 404)
+
+        # Role restriction: Operator cannot verify vendor documents
+        op_token = self.get_auth_token("operator@sentineltrace.local", "ChangeMe123!")
+        op_res = self.client.get('/api/suppliers/SUP101/verify-documents', headers={"Authorization": f"Bearer {op_token}"})
+        self.assertEqual(op_res.status_code, 403)
+
+    # 17. Clear All Notices Preserves Unrelated Alerts & History
+    def test_19_clear_all_notices_preserves_unrelated_alerts(self):
+        token = self.get_auth_token("admin@sentineltrace.local", "ChangeMe123!")
+        headers = {"Authorization": f"Bearer {token}"}
+
+        # Create Notice alert
+        n_res = self.client.post('/api/alerts', headers=headers, json={
+            "severity": "Notice",
+            "source": "System",
+            "message": "Routine maintenance notice test"
+        })
+        self.assertEqual(n_res.status_code, 201)
+        notice_id = n_res.get_json()['data']['alert_id']
+
+        # Create Critical alert (must NOT be cleared by Clear Notices)
+        c_res = self.client.post('/api/alerts', headers=headers, json={
+            "severity": "Critical",
+            "source": "Security",
+            "message": "Critical intrusion prevention test"
+        })
+        self.assertEqual(c_res.status_code, 201)
+        critical_id = c_res.get_json()['data']['alert_id']
+
+        # Execute Clear All Notices
+        clear_res = self.client.post('/api/alerts/clear-notices', headers=headers)
+        self.assertEqual(clear_res.status_code, 200)
+        self.assertGreaterEqual(clear_res.get_json()['data']['cleared_count'], 1)
+
+        # Check Notice alert was dismissed
+        chk_notice = self.client.get(f'/api/alerts/{notice_id}', headers=headers)
+        self.assertEqual(chk_notice.get_json()['data']['status'], 'Dismissed')
+
+        # Check Critical alert was PRESERVED as Active
+        chk_crit = self.client.get(f'/api/alerts/{critical_id}', headers=headers)
+        self.assertEqual(chk_crit.get_json()['data']['status'], 'Active')
+
+    # 18. Password Recovery & Cryptographic Reset
+    def test_20_password_recovery_and_reset(self):
+        # Request password reset for existing inspector
+        email = "inspector@sentineltrace.local"
+        forgot_res = self.client.post('/api/auth/forgot-password', json={"email": email})
+        self.assertEqual(forgot_res.status_code, 200)
+        data = forgot_res.get_json()['data']
+        self.assertTrue(data['dispatched'])
+        reset_token = data.get('token')
+        self.assertIsNotNone(reset_token)
+
+        # Request reset with invalid email format rejected with 400
+        inv_res = self.client.post('/api/auth/forgot-password', json={"email": "not-valid-email"})
+        self.assertEqual(inv_res.status_code, 400)
+
+        # Reset password using token
+        new_pass = "UpdatedSecurePass999!"
+        reset_res = self.client.post('/api/auth/reset-password', json={
+            "token": reset_token,
+            "new_password": new_pass
+        })
+        self.assertEqual(reset_res.status_code, 200)
+
+        # Authenticate with new password
+        login_res = self.client.post('/api/auth/login', json={
+            "email": email,
+            "password": new_pass
+        })
+        self.assertEqual(login_res.status_code, 200)
+
+        # Old password must now be rejected
+        old_login_res = self.client.post('/api/auth/login', json={
+            "email": email,
+            "password": "ChangeMe123!"
+        })
+        self.assertEqual(old_login_res.status_code, 401)
+
+    # 19. Firebase Configuration and Safe Diagnostics
+    def test_21_firebase_diagnostic(self):
+        diag_res = self.client.get('/api/diagnostic/firebase')
+        # Diagnostic should return 200 or 503 depending on live connectivity, but always valid structure
+        self.assertIn(diag_res.status_code, (200, 503))
+        payload = diag_res.get_json()
+        self.assertIn('data', payload)
+        diag = payload['data']
+        self.assertEqual(diag.get('configured_project_id'), 'capstone-8ee41')
+        # Confirm no private keys or credentials leaked
+        diag_str = str(payload)
+        self.assertNotIn('private_key', diag_str)
+        self.assertNotIn('client_email', diag_str)
+        self.assertNotIn('BEGIN PRIVATE KEY', diag_str)
 
 if __name__ == '__main__':
     unittest.main()

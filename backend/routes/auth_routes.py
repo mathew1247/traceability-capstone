@@ -1,5 +1,5 @@
 from flask import Blueprint, request, g
-from services.auth_service import login, create_user
+from services.auth_service import login, create_user, request_password_reset, reset_password_with_token
 from middleware.auth_middleware import token_required
 from utils.response import success_response, error_response
 from utils.validators import validate_required_fields, validate_email
@@ -86,3 +86,42 @@ def handle_get_current_user():
     Returns current authenticated user details.
     """
     return success_response(data=g.current_user, status_code=200)
+
+
+@auth_bp.route('/forgot-password', methods=['POST'])
+def handle_forgot_password():
+    """
+    POST /api/auth/forgot-password
+    Public endpoint: sends password recovery instructions with secure cryptographic token.
+    """
+    data = request.get_json() or {}
+    email = data.get('email')
+    if not email:
+        return error_response(code="VALIDATION_ERROR", message="Email address is required.", status_code=400)
+
+    client_ip = request.remote_addr
+    result, err, status_code = request_password_reset(email, ip_address=client_ip)
+    if err:
+        return error_response(code="PASSWORD_RECOVERY_FAILED", message=err, status_code=status_code)
+
+    return success_response(data=result, message=result.get("message", "Password recovery instructions dispatched."))
+
+
+@auth_bp.route('/reset-password', methods=['POST'])
+def handle_reset_password():
+    """
+    POST /api/auth/reset-password
+    Public endpoint: validates reset token and updates password.
+    """
+    data = request.get_json() or {}
+    token = data.get('token')
+    new_password = data.get('new_password')
+    if not token or not new_password:
+        return error_response(code="VALIDATION_ERROR", message="Reset token and new password are required.", status_code=400)
+
+    client_ip = request.remote_addr
+    result, err, status_code = reset_password_with_token(token, new_password, ip_address=client_ip)
+    if err:
+        return error_response(code="PASSWORD_RESET_FAILED", message=err, status_code=status_code)
+
+    return success_response(data=result, message=result.get("message", "Password successfully updated."))
