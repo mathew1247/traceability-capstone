@@ -171,8 +171,15 @@ def get_security_monitor_summary():
     Aggregates network security observations:
     network_status, active_devices, suspicious_hosts, open_critical_ports, threat_level, recent_events.
     """
-    scans = get_scan_history(limit=5)
-    latest_scan = scans[0] if scans else None
+    scans = get_scan_history(limit=10)
+    # Prefer the most recent scan that discovered devices/open ports; fallback to latest scan
+    latest_scan = None
+    for s in scans:
+        if s.get('devices_found', 0) > 0 or s.get('open_ports'):
+            latest_scan = s
+            break
+    if not latest_scan and scans:
+        latest_scan = scans[0]
 
     devices_count = latest_scan.get('devices_found', 0) if latest_scan else 0
     all_open_ports = latest_scan.get('open_ports', []) if latest_scan else []

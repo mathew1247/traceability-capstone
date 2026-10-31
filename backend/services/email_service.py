@@ -51,9 +51,16 @@ class EmailService:
                 msg.attach(part1)
                 msg.attach(part2)
 
-                server = smtplib.SMTP(smtp_host, smtp_port, timeout=12)
-                if smtp_use_tls:
-                    server.starttls()
+                try:
+                    server = smtplib.SMTP(smtp_host, smtp_port, timeout=10)
+                    if smtp_use_tls:
+                        server.starttls()
+                except Exception as conn_err:
+                    if "unreachable" in str(conn_err).lower() or smtp_port == 587:
+                        # Fallback to direct SSL on port 465
+                        server = smtplib.SMTP_SSL(smtp_host, 465, timeout=10)
+                    else:
+                        raise conn_err
                 server.login(smtp_user, clean_password)
                 server.sendmail(from_email, [to_email], msg.as_string())
                 server.quit()

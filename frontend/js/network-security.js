@@ -30,13 +30,29 @@ async function loadSecurityOverview() {
     const networkStatus = secData.network_status || "Secure";
 
     // Update KPI values
-    const kpiCards = document.querySelectorAll(".kpi-grid-4 .kpi-card-value");
+    const kpiCards = document.querySelectorAll(".kpi-grid-4 .kpi-card");
     if (kpiCards && kpiCards.length >= 4) {
-      kpiCards[0].textContent = networkStatus;
-      kpiCards[0].style.color = (networkStatus === "Critical") ? "#ef4444" : (networkStatus === "Warning" ? "#f59e0b" : "#10b981");
-      kpiCards[1].textContent = activeDevices;
-      kpiCards[2].textContent = suspiciousCount;
-      kpiCards[3].textContent = criticalPortsCount;
+      const val0 = kpiCards[0].querySelector(".kpi-card-value");
+      const val1 = kpiCards[1].querySelector(".kpi-card-value");
+      const val2 = kpiCards[2].querySelector(".kpi-card-value");
+      const val3 = kpiCards[3].querySelector(".kpi-card-value");
+
+      if (val0) {
+        val0.textContent = networkStatus;
+        val0.style.color = (networkStatus === "Critical") ? "#ef4444" : (networkStatus === "Warning" ? "#f59e0b" : "#10b981");
+      }
+      if (val1) val1.textContent = activeDevices;
+      if (val2) val2.textContent = suspiciousCount;
+      if (val3) val3.textContent = criticalPortsCount;
+
+      const sub1 = kpiCards[1].querySelector(".kpi-trend-row span:last-child");
+      if (sub1) sub1.textContent = activeDevices > 0 ? `${Math.max(0, activeDevices - suspiciousCount)} Verified, ${suspiciousCount} Unverified` : "Awaiting Subnet Discovery";
+
+      const sub3 = kpiCards[3].querySelector(".kpi-trend-row span:last-child");
+      if (sub3) {
+        const portLabels = criticalPortsList.map(p => `TCP ${p.port}`).slice(0, 3).join(", ");
+        sub3.textContent = portLabels || (criticalPortsCount > 0 ? `${criticalPortsCount} Critical Ports` : "No Critical Ports");
+      }
     }
 
     // Update Threat Meter Gauge
@@ -54,7 +70,9 @@ async function loadSecurityOverview() {
       threatTitle.textContent = `OT Industrial Threat Condition: ${level}`;
     }
     if (threatDesc) {
-      threatDesc.textContent = `${activeDevices} industrial devices scanned across subnet. ${criticalPortsCount} critical OT ports monitored.`;
+      threatDesc.textContent = activeDevices > 0
+        ? `${activeDevices} industrial devices scanned across subnet. ${criticalPortsCount} critical OT ports monitored.`
+        : "No active devices detected in the latest scan. Click 'Execute Subnet Scan' above to scan your OT subnet.";
     }
 
     // Update Active Industrial Ports & Protocols Grid

@@ -139,6 +139,13 @@ def handle_test_email():
 
     result, err = EmailService.send_alert_notification(test_alert, recipient, action="Test Triggered")
     if err:
+        err_lower = str(err).lower()
+        if "network is unreachable" in err_lower or "connection refused" in err_lower or "timed out" in err_lower:
+            return error_response(
+                code="SMTP_PORT_BLOCKED",
+                message=f"Cloud host outbound SMTP blocked ({err}). Free cloud containers block outbound SMTP ports (587/465) to prevent spam. Direct emails deliver successfully when running locally or via an HTTP email API.",
+                status_code=503
+            )
         return error_response(code="EMAIL_SEND_FAILED", message=f"Failed to transmit email: {err}", status_code=400)
 
     # Sanitize payload to guarantee credentials are never reflected
