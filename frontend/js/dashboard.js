@@ -156,6 +156,12 @@ async function loadDashboardMetrics() {
     const trendMaterials = document.getElementById("kpi-trend-materials");
     if (trendMaterials) trendMaterials.innerHTML = `↑ ${totalKg.toLocaleString()} Kg <span>Across ${supCount} Suppliers</span>`;
 
+    const prodCount = stats.total_products ?? 6;
+    const elProducts = document.getElementById("kpi-val-products");
+    if (elProducts) elProducts.textContent = `${prodCount} SKUs`;
+    const trendProducts = document.getElementById("kpi-trend-products");
+    if (trendProducts) trendProducts.innerHTML = `✓ Active <span>Traceable Catalog</span>`;
+
     if (elNetwork) {
       const netStatus = stats?.network_status || stats?.networkStatus || "Secure";
       elNetwork.textContent = netStatus;

@@ -97,8 +97,7 @@ function injectHeader() {
   const isDash = path.endsWith("dashboard.html") || path.endsWith("/");
   const isTraceCat = path.endsWith("traceability.html") || path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
   const isComp = path.endsWith("compliance.html");
-  const isNetCat = path.endsWith("network-scan.html") || path.endsWith("network-security.html");
-  const isMonCat = path.endsWith("alerts.html") || path.endsWith("reports.html") || path.endsWith("activity-logs.html");
+  const isMonCat = path.endsWith("reports.html") || path.endsWith("activity-logs.html");
   const isAdminCat = path.endsWith("users.html");
 
   mount.innerHTML = `
@@ -172,37 +171,14 @@ function injectHeader() {
             <span>Compliance</span>
           </a>
 
-          <!-- 4. Network Security Category Dropdown -->
-          <div class="header-pill-dropdown-wrapper">
-            <button class="header-pill-link ${isNetCat ? 'active' : ''}">
-              ${getIconSvg('radar')}
-              <span>Network Security</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div class="header-pill-dropdown-menu">
-              <a href="network-scan.html" class="dropdown-item ${path.endsWith('network-scan.html') ? 'active' : ''}">
-                ${getIconSvg('radar')}
-                <span>Network Subnet Scanner</span>
-              </a>
-              <a href="network-security.html" class="dropdown-item ${path.endsWith('network-security.html') ? 'active' : ''}">
-                ${getIconSvg('shield-alert')}
-                <span>Security Monitor SOC</span>
-              </a>
-            </div>
-          </div>
-
-          <!-- 5. Monitoring Category Dropdown -->
+          <!-- 4. Reports & Analytics Dropdown -->
           <div class="header-pill-dropdown-wrapper">
             <button class="header-pill-link ${isMonCat ? 'active' : ''}">
-              ${getIconSvg('bell-ring')}
-              <span>Monitoring</span>
+              ${getIconSvg('bar-chart-3')}
+              <span>Reports</span>
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
             <div class="header-pill-dropdown-menu">
-              <a href="alerts.html" class="dropdown-item ${path.endsWith('alerts.html') ? 'active' : ''}">
-                ${getIconSvg('bell-ring')}
-                <span>Operational Alerts</span>
-              </a>
               <a href="reports.html" class="dropdown-item ${path.endsWith('reports.html') ? 'active' : ''}">
                 ${getIconSvg('bar-chart-3')}
                 <span>Reports & Analytics</span>
@@ -214,7 +190,7 @@ function injectHeader() {
             </div>
           </div>
 
-          <!-- 6. Administration -->
+          <!-- 5. Administration -->
           <a href="users.html" class="header-pill-link ${isAdminCat ? 'active' : ''}">
             ${getIconSvg('users')}
             <span>Users</span>
@@ -233,13 +209,6 @@ function injectHeader() {
         </div>
 
         <div class="header-actions-group">
-          <a href="alerts.html" class="header-icon-btn" title="Alert Telemetry (⌘ A)">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path>
-              <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path>
-            </svg>
-            <span class="header-badge-dot"></span>
-          </a>
 
           <div class="header-user-pill">
             <div class="user-avatar" style="width: 32px; height: 32px; font-size: 0.82rem; background: linear-gradient(135deg, #fa7b7b, #e05e5e); color: #fff;">${(user.name || user.username || 'U').charAt(0).toUpperCase()}</div>
@@ -272,7 +241,6 @@ function injectDock() {
   const isDash = path.endsWith("dashboard.html") || path.endsWith("/") || path.endsWith("index.html");
   const isTrace = path.endsWith("traceability.html") || path.endsWith("products.html") || path.endsWith("batches.html") || path.endsWith("materials.html") || path.endsWith("suppliers.html");
   const isComp = path.endsWith("compliance.html") || path.endsWith("reports.html") || path.endsWith("activity-logs.html");
-  const isSec = path.endsWith("alerts.html") || path.endsWith("network-security.html") || path.endsWith("network-scan.html");
   const isAdmin = path.endsWith("users.html");
 
   const currentStyle = localStorage.getItem("sentinelDockStyle") || "style-3";
@@ -322,34 +290,13 @@ function injectDock() {
       </a>
     </div>
 
-    <!-- 3. Security & Telemetry Popover Menu -->
-    <div class="category-popover" id="popover-security">
-      <div class="category-popover-header">SECURITY & TELEMETRY</div>
-      <a href="alerts.html" class="category-popover-item ${path.endsWith('alerts.html') ? 'active' : ''}">
-        ${getIconSvg('bell-ring')}
-        <span>Operational Alerts</span>
-      </a>
-      <a href="network-security.html" class="category-popover-item ${path.endsWith('network-security.html') ? 'active' : ''}">
-        ${getIconSvg('shield-alert')}
-        <span>Security Monitor SOC</span>
-      </a>
-      <a href="network-scan.html" class="category-popover-item ${path.endsWith('network-scan.html') ? 'active' : ''}">
-        ${getIconSvg('radar')}
-        <span>OT & PLC Network Scanner</span>
-      </a>
-    </div>
-
-    <!-- 4. Administration & System Popover Menu -->
+    <!-- 3. Administration & System Popover Menu -->
     <div class="category-popover" id="popover-admin">
       <div class="category-popover-header">ADMINISTRATION & SETTINGS</div>
       <a href="users.html" class="category-popover-item ${path.endsWith('users.html') ? 'active' : ''}">
         ${getIconSvg('users')}
         <span>User Administration</span>
       </a>
-      <button class="category-popover-item" onclick="openModal('help-telemetry-modal')" style="border:none; background:transparent; width:100%; cursor:pointer; text-align:left;">
-        <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
-        <span>System Diagnostics</span>
-      </button>
       <button class="category-popover-item" onclick="handleLogout()" style="border:none; background:transparent; width:100%; cursor:pointer; color:#ef4444; text-align:left;">
         <svg class="nav-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
         <span>Sign Out</span>
@@ -400,20 +347,7 @@ function injectDock() {
         <div class="dock-active-line"></div>
       </button>
 
-      <!-- 4. Security Tab (Categorized Telemetry & SOC Modules) -->
-      <button class="dock-category-btn ${isSec ? 'active' : ''}" id="cat-btn-security" onclick="toggleCategoryPopover('security', event)" data-tab="security" title="Security & Alert Telemetry">
-        <div class="dock-icon-wrapper">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span class="dock-badge-dot"></span>
-        </div>
-        <span class="dock-label">Security</span>
-        <div class="dock-active-line"></div>
-      </button>
-
-      <!-- 5. Admin Tab (User & Credential Settings) -->
+      <!-- 4. Admin Tab (User & Credential Settings) -->
       <button class="dock-category-btn ${isAdmin ? 'active' : ''}" id="cat-btn-admin" onclick="toggleCategoryPopover('admin', event)" data-tab="admin" title="Administration & User Settings">
         <div class="dock-icon-wrapper">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -667,20 +601,6 @@ function injectMobileDrawer() {
       <a href="activity-logs.html" class="mobile-nav-item ${path.endsWith('activity-logs.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
         ${getIconSvg('file-text')}
         <span>Activity Audit Trail</span>
-      </a>
-
-      <div class="mobile-nav-group-title">SECURITY & TELEMETRY</div>
-      <a href="alerts.html" class="mobile-nav-item ${path.endsWith('alerts.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
-        ${getIconSvg('bell-ring')}
-        <span>Operational Alerts</span>
-      </a>
-      <a href="network-security.html" class="mobile-nav-item ${path.endsWith('network-security.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
-        ${getIconSvg('shield-alert')}
-        <span>Security Monitor SOC</span>
-      </a>
-      <a href="network-scan.html" class="mobile-nav-item ${path.endsWith('network-scan.html') ? 'active' : ''}" onclick="closeMobileNavDrawer()">
-        ${getIconSvg('radar')}
-        <span>OT Subnet Scanner</span>
       </a>
 
       <div class="mobile-nav-group-title">ADMINISTRATION</div>

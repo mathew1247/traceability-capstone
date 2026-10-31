@@ -47,13 +47,7 @@
               <line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
           </button>
-          <a href="alerts.html" class="finexy-icon-circle-btn" title="Industrial Alerts & Telemetry">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          </a>
-          <button class="finexy-icon-circle-btn" onclick="showHelpModal()" title="Help & System Telemetry">
+          <button class="finexy-icon-circle-btn" onclick="showHelpModal()" title="Help & Documentation">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <line x1="12" y1="16" x2="12" y2="12"/>
@@ -73,7 +67,7 @@
             </svg>
             <div class="finexy-user-dropdown-menu" id="user-dropdown-menu">
               <a href="users.html" class="dropdown-item">User Administration</a>
-              <a href="network-security.html" class="dropdown-item">Security Monitor SOC</a>
+              <a href="reports.html" class="dropdown-item">Reports & Analytics</a>
               <a href="activity-logs.html" class="dropdown-item">Activity Audit Logs</a>
               <div class="dropdown-divider"></div>
               <button onclick="handleLogout()" class="dropdown-item text-danger">Sign Out</button>
@@ -120,9 +114,9 @@
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                     <span>Create Batch</span>
                   </a>
-                  <a href="network-scan.html" class="finexy-action-btn btn-light">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
-                    <span>Run Scan</span>
+                  <a href="products.html" class="finexy-action-btn btn-light">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+                    <span>Products</span>
                   </a>
                 </div>
 
@@ -274,16 +268,16 @@
                     <div class="kpi-trend-note" id="kpi-trend-materials">↑ 100% <span>Genealogy Linked</span></div>
                   </div>
 
-                  <!-- KPI 4: Network Security Status (Security SOC Module) -->
+                  <!-- KPI 4: Active Products (Products Module) -->
                   <div class="finexy-kpi-card kpi-white">
                     <div class="kpi-header-row">
-                      <span class="kpi-label">Network Status</span>
+                      <span class="kpi-label">Active Products</span>
                       <div class="kpi-icon-bubble">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
                       </div>
                     </div>
-                    <div class="kpi-number-val" id="kpi-val-network" style="color: #10b981;">Secure</div>
-                    <div class="kpi-trend-note" id="kpi-trend-network">✓ 14 Nodes <span>0 Breaches</span></div>
+                    <div class="kpi-number-val" id="kpi-val-products">6 SKUs</div>
+                    <div class="kpi-trend-note" id="kpi-trend-products">✓ Active <span>Traceable Catalog</span></div>
                   </div>
                 </div>
 
